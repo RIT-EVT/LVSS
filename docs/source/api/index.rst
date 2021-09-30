@@ -12,5 +12,5 @@ is not strictly a rule. An LED is a simplistic example of a device.
 LED
 ===
 
-.. doxygenclass:: BOARD_NAME::DEV::LED
+.. doxygenclass:: LVSS::DEV::LED
    :members:
