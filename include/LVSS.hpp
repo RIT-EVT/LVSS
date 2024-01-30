@@ -1,11 +1,11 @@
 #pragma once
 
-namespace BOARD_NAME {
+namespace LVSS {
 
 /**
  * This is an example of a class for a board
  */
-class BOARD_NAME {
+class LVSS {
 public:
 private:
 };

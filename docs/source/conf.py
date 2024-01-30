@@ -15,11 +15,11 @@ import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
-BOARD_NAME = 'BOARD_NAME'
+BOARD_NAME = 'LVSS'
 
 # -- Project information -----------------------------------------------------
 
-project = BOARD_NAME
+project = LVSS
 copyright = '2021, EVT'
 author = 'EVT'
 
@@ -60,6 +60,6 @@ html_static_path = ['_static']
 
 # -- Doxygen support ---- #
 os.system('mkdir -p ../build/doxygen')
-breathe_default_project = BOARD_NAME
-breathe_projects = {BOARD_NAME: '../build/doxygen/xml/'}
+breathe_default_project = LVSS
+breathe_projects = {LVSS: '../build/doxygen/xml/'}
 os.system('cd ../; doxygen')
