@@ -1,5 +1,5 @@
 ###############################################################################
-# Top level CMakeList for building the *EVT_BOARD_NAME* source code
+# Top level CMakeList for building LVSS source code
 ###############################################################################
 cmake_minimum_required(VERSION 3.15)
 
@@ -44,7 +44,7 @@ include(${EVT_CORE_DIR}/cmake/evt-core_install.cmake)
 ###############################################################################
 # Project Setup
 ###############################################################################
-set(BOARD_LIB_NAME BOARD_NAME)
+set(BOARD_LIB_NAME LVSS)
 if("${BOARD_LIB_NAME}" STREQUAL BOARD_NAME)
     message(FATAL_ERROR
             "You must set the template project name in the top-level CMakeLists.txt")
@@ -61,8 +61,7 @@ add_library(${PROJECT_NAME} STATIC)
 
 # Add sources
 target_sources(${PROJECT_NAME} PRIVATE
-        src/dev/LED.cpp
-        src/BOARD_NAME.cpp
+        src/LVSS.cpp
         )
 
 ###############################################################################
