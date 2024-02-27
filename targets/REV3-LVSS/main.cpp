@@ -48,13 +48,12 @@ int main() {
     log::LOGGER.setUART(&uart);
     log::LOGGER.setLogLevel(log::Logger::LogLevel::INFO);
 
-    IO::GPIO& lvssEn0 = IO::getGPIO<IO::Pin::PA_10>(IO::GPIO::Direction::OUTPUT);
+    IO::GPIO& lvssEn0 = IO::getGPIO<IO::Pin::PA_10>(IO::GPIO::Direction::INPUT);
+    IO::GPIO& lvssEn1 = IO::getGPIO<IO::Pin::PA_9>(IO::GPIO::Direction::INPUT);
+    IO::GPIO& lvssEn2 = IO::getGPIO<IO::Pin::PA_8>(IO::GPIO::Direction::INPUT);
 
-
-    // initialize timer? probably don't need
+    // initialize timer? probably don't need (yes we do, to initialize CAN)
     DEV::Timerf3xx timer(TIM2, 160);
-
-    LVSS::LVSS lvss(&)
 
     types::FixedQueue<CANOPEN_QUEUE_SIZE, IO::CANMessage> canOpenQueue;
 
@@ -66,7 +65,7 @@ int main() {
     uint8_t sdoBuffer[CO_SSDO_N * CO_SDO_BUF_BYTE];
     CO_TMR_MEM appTmrMem[16];
 
-    // Reserve CAN drivers
+    // Reserve CAN dev
     CO_IF_DRV canStackDriver;
     CO_IF_CAN_DRV canDriver;
     CO_IF_TIMER_DRV timerDriver;
@@ -75,7 +74,7 @@ int main() {
     // Reserve canNode
     CO_NODE canNode;
 
-//    // Adds CAN filtering to only allow messages from IDs 1, 5, and 8.
+//    // TODO(?) Adds CAN filtering to only allow messages from IDs 1, 5, and 8.
 //    can.addCANFilter(0x1, 0b00001111111, 0);
 //    can.addCANFilter(0x8, 0b00001111111, 1);
 //    can.addCANFilter(0x5, 0b00001111111, 2);
@@ -91,8 +90,10 @@ int main() {
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Connected to CAN network\r\n");
     }
 
-    // Initialize all the CANOpen drivers.
+    // Initialize all the CANOpen dev.
     IO::initializeCANopenDriver(&canOpenQueue, &can, &timer, &canStackDriver, &nvmDriver, &timerDriver, &canDriver);
+
+    LVSS::LVSS lvss = LVSS::LVSS(lvssEn0, lvssEn1, lvssEn2);
 
     // Initialize the CANOpen node we are using.
     IO::initializeCANopenNode(&canNode, &lvss, &canStackDriver, sdoBuffer, appTmrMem);
