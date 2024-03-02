@@ -2,7 +2,7 @@
 
 namespace LVSS {
 
-LVSS::LVSS(IO::GPIO& lvssEn, IO::ADC& adc0) : LVSS_EN(lvssEn), ADC(adc0){
+LVSS::LVSS(IO::GPIO& lvssEn, IO::ADC& adc0) : LVSS_EN(lvssEn), ADC(adc0) {
     //TODO: Implement
 }
 
@@ -19,17 +19,16 @@ CO_OBJ_T* LVSS::getObjectDictionary() {
 }
 
 void LVSS::process() {
-
 }
 
 uint32_t LVSS::readCurrent(IO::ADC& adc0) {
     uint32_t current, voltage = static_cast<uint32_t>(adc0.read() * 1000);
-    uint32_t r = ( 50 * 10^-3 ), r2 = 5000, r3 = 50000 ;
+    uint32_t r = (50 * 10 ^ -3), r2 = 5000, r3 = 50000;
 
     //Current = (Vout * 5k ohms) / (Rshunt * R3)
-    current = ( (voltage * r2) / (r * r3) );
+    current = ((voltage * r2) / (r * r3));
 
     return current;
 }
 
-}
+}// namespace LVSS

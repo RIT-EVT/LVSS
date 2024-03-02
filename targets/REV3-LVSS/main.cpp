@@ -105,11 +105,10 @@ int main() {
 
     while (1) {
         // Read user input
-//        uart.printf("Enter message: ");
-//        uart.gets(buf, 100);
-//        uart.printf("\n\recho: %s\n\r", buf);
+        //        uart.printf("Enter message: ");
+        //        uart.gets(buf, 100);
+        //        uart.printf("\n\recho: %s\n\r", buf);
 
-        uart.printf("ADC0 : %d mA\r\n", lvss.readCurrent(adc0) );
-
+        uart.printf("ADC0 : %d mA\r\n", lvss.readCurrent(adc0));
     }
 }

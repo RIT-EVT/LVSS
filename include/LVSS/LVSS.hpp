@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include <EVT/io/CANopen.hpp>
 #include <EVT/dev/LCD.hpp>
+#include <EVT/io/CANopen.hpp>
 #include <EVT/io/GPIO.hpp>
 #include <EVT/io/SPI.hpp>
 #include <EVT/utils/log.hpp>
@@ -18,14 +18,13 @@ namespace IO = EVT::core::IO;
 namespace DEV = EVT::core::DEV;
 namespace log = EVT::core::log;
 
-namespace LVSS{
+namespace LVSS {
 
 /**
  * This is an example of a class for a board
  */
 class LVSS : public CANDevice {
 public:
-
     static constexpr uint8_t NODE_ID = 42;
 
     /**
@@ -69,5 +68,5 @@ private:
     IO::ADC& ADC;
 };
 
-} // namespace LVSS
+}// namespace LVSS
 #endif
