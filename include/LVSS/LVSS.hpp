@@ -12,8 +12,11 @@
 #include <cstdio>
 #include <cstring>
 
+#include <EVT/io/ADC.hpp>
+
 namespace IO = EVT::core::IO;
 namespace DEV = EVT::core::DEV;
+namespace log = EVT::core::log;
 
 namespace LVSS{
 
@@ -28,7 +31,7 @@ public:
     /**
      * Placeholder constructor for the LVSS class
      */
-    LVSS(IO::GPIO& lvssEn);
+    LVSS(IO::GPIO& lvssEn, IO::ADC& adc0);
 
     CO_OBJ_T* getObjectDictionary() override;
 
@@ -46,13 +49,24 @@ public:
      */
     uint8_t getNodeID() override;
 
+    /**
+     * Handle running the core logic of the LVSS
+     */
+    void process();
+
+    /**
+     * Calculates current using the input voltage rail into the Vicor
+     *
+     * @return the current
+     */
+    uint32_t readCurrent(IO::ADC&);
+
 private:
     // TODO: Figure out internal state of LVSS board
     // false = OFF, true = ON?
     // this is the power switch output (TPS2HB35)
     IO::GPIO& LVSS_EN;
-
-
+    IO::ADC& ADC;
 };
 
 } // namespace LVSS

@@ -50,11 +50,13 @@ int main() {
 
     IO::GPIO& lvssEn0 = IO::getGPIO<IO::Pin::PA_10>(IO::GPIO::Direction::OUTPUT);
 
-
     // initialize timer? probably don't need
     DEV::Timerf3xx timer(TIM2, 160);
 
-    LVSS::LVSS lvss(&)
+    //ADC
+    IO::ADC& adc0 = IO::getADC<IO::Pin::PA_1>();
+
+    LVSS::LVSS lvss(lvssEn0, adc0);
 
     types::FixedQueue<CANOPEN_QUEUE_SIZE, IO::CANMessage> canOpenQueue;
 
@@ -74,11 +76,12 @@ int main() {
 
     // Reserve canNode
     CO_NODE canNode;
-
-//    // Adds CAN filtering to only allow messages from IDs 1, 5, and 8.
-//    can.addCANFilter(0x1, 0b00001111111, 0);
-//    can.addCANFilter(0x8, 0b00001111111, 1);
-//    can.addCANFilter(0x5, 0b00001111111, 2);
+    /*
+    // Adds CAN filtering to only allow messages from IDs 1, 5, and 8.
+    can.addCANFilter(0x1, 0b00001111111, 0);
+   can.addCANFilter(0x8, 0b00001111111, 1);
+    can.addCANFilter(0x5, 0b00001111111, 2);
+    */
 
     // Attempt to join the CAN network
     IO::CAN::CANStatus result = can.connect();
@@ -102,8 +105,11 @@ int main() {
 
     while (1) {
         // Read user input
-        uart.printf("Enter message: ");
-        uart.gets(buf, 100);
-        uart.printf("\n\recho: %s\n\r", buf);
+//        uart.printf("Enter message: ");
+//        uart.gets(buf, 100);
+//        uart.printf("\n\recho: %s\n\r", buf);
+
+        uart.printf("ADC0 : %d mA\r\n", lvss.readCurrent(adc0) );
+
     }
 }
