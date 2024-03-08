@@ -6,8 +6,8 @@
 #include "EVT/io/GPIO.hpp"
 #include "EVT/io/SPI.hpp"
 #include "EVT/utils/log.hpp"
-#include "LVSS.hpp"
 #include "INA138.hpp"
+#include "LVSS.hpp"
 
 namespace IO = EVT::core::IO;
 namespace DEV = EVT::core::DEV;
@@ -53,7 +53,6 @@ private:
     // false = OFF, true = ON?
     // this is the power switch output (TPS2HB35)
     IO::GPIO& LVSS_EN;
-
 };
 
 }// namespace LVSS

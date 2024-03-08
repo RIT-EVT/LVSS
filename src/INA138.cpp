@@ -19,4 +19,4 @@ uint32_t INA138::readCurrent(IO::ADC& adc0) {
     return current;
 }
 
-}
+}// namespace LVSS
