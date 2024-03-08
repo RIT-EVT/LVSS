@@ -1,18 +1,13 @@
 #ifndef _LVSS_
 #define _LVSS_
 
-#pragma once
-
-#include <EVT/dev/LCD.hpp>
-#include <EVT/io/CANopen.hpp>
-#include <EVT/io/GPIO.hpp>
-#include <EVT/io/SPI.hpp>
-#include <EVT/utils/log.hpp>
-#include <LVSS/LVSS.hpp>
-#include <cstdio>
-#include <cstring>
-
-#include <EVT/io/ADC.hpp>
+#include "EVT/dev/LCD.hpp"
+#include "EVT/io/CANopen.hpp"
+#include "EVT/io/GPIO.hpp"
+#include "EVT/io/SPI.hpp"
+#include "EVT/utils/log.hpp"
+#include "LVSS.hpp"
+#include "INA138.hpp"
 
 namespace IO = EVT::core::IO;
 namespace DEV = EVT::core::DEV;
@@ -30,7 +25,7 @@ public:
     /**
      * Placeholder constructor for the LVSS class
      */
-    LVSS(IO::GPIO& lvssEn, IO::ADC& adc0);
+    LVSS(IO::GPIO& lvssEn);
 
     CO_OBJ_T* getObjectDictionary() override;
 
@@ -53,19 +48,12 @@ public:
      */
     void process();
 
-    /**
-     * Calculates current using the input voltage rail into the Vicor
-     *
-     * @return the current
-     */
-    uint32_t readCurrent(IO::ADC&);
-
 private:
     // TODO: Figure out internal state of LVSS board
     // false = OFF, true = ON?
     // this is the power switch output (TPS2HB35)
     IO::GPIO& LVSS_EN;
-    IO::ADC& ADC;
+
 };
 
 }// namespace LVSS

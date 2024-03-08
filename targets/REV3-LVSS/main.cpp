@@ -4,7 +4,7 @@
  * enters.
  */
 
-#include "LVSS/LVSS.hpp"
+#include "LVSS.hpp"
 #include <EVT/io/CANopen.hpp>
 #include <EVT/io/GPIO.hpp>
 #include <EVT/io/UART.hpp>
@@ -56,7 +56,7 @@ int main() {
     //ADC
     IO::ADC& adc0 = IO::getADC<IO::Pin::PA_1>();
 
-    LVSS::LVSS lvss(lvssEn0, adc0);
+    LVSS::LVSS lvss(lvssEn0);
 
     types::FixedQueue<CANOPEN_QUEUE_SIZE, IO::CANMessage> canOpenQueue;
 
@@ -105,10 +105,8 @@ int main() {
 
     while (1) {
         // Read user input
-        //        uart.printf("Enter message: ");
-        //        uart.gets(buf, 100);
-        //        uart.printf("\n\recho: %s\n\r", buf);
-
-        uart.printf("ADC0 : %d mA\r\n", lvss.readCurrent(adc0));
+         uart.printf("Enter message: ");
+         uart.gets(buf, 100);
+         uart.printf("\n\recho: %s\n\r", buf);
     }
 }
