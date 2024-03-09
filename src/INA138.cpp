@@ -11,7 +11,7 @@ uint32_t INA138::readCurrent(IO::ADC& adc0) {
     voltage *= fixedPoint;
 
     //Current = (Vout * 5k ohms) / (Rshunt * R3)
-    uint32_t current = ((voltage * r1) / (rShunt * r3));
+    uint32_t current = ((adcCounts * r1 * 330) / (rShunt * r3 * 4096));
 
     //divide the current by 1k fixed point get the actual number
     current /= fixedPoint;
