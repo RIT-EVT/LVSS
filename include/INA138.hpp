@@ -1,13 +1,8 @@
 #ifndef LVSS_INA138_HPP
 #define LVSS_INA138_HPP
 
-#include "EVT/dev/LCD.hpp"
-#include "EVT/io/ADC.hpp"
-#include "EVT/io/CANopen.hpp"
-#include "EVT/io/GPIO.hpp"
-#include "EVT/io/SPI.hpp"
-#include "EVT/utils/log.hpp"
-#include "LVSS.hpp"
+#include <EVT/io/ADC.hpp>
+#include <EVT/utils/log.hpp>
 
 namespace IO = EVT::core::IO;
 namespace DEV = EVT::core::DEV;
@@ -39,9 +34,9 @@ private:
     ///Read INA138 datasheet page 3
     //Resistor variables
     static constexpr uint32_t fixedPoint = 1000;         //Use fixpoint variable to multiply everything by 1k
-    static constexpr uint32_t rShunt = 0.05 * fixedPoint;//0.5 ohm resistor
+    static constexpr uint32_t rShunt = 0.05 * fixedPoint;//0.05 ohm resistor
     static constexpr uint32_t r1 = 5000 * fixedPoint;    //5k ohm
-    static constexpr uint32_t r3 = 50000 * fixedPoint;   //50k ohm
+    static constexpr uint32_t r3 = 50000;   //50k ohm
 };
 
 }// namespace LVSS
