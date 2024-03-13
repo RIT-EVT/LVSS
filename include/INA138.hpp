@@ -36,7 +36,7 @@ private:
     static constexpr uint32_t fixedPoint = 1000;         //Use fixpoint variable to multiply everything by 1k
     static constexpr uint32_t rShunt = 0.05 * fixedPoint;//0.05 ohm resistor
     static constexpr uint32_t r1 = 5000 * fixedPoint;    //5k ohm
-    static constexpr uint32_t r3 = 50000;   //50k ohm
+    static constexpr uint32_t r3 = 50000;                //50k ohm
 };
 
 }// namespace LVSS
