@@ -6,8 +6,8 @@
 #include "EVT/io/GPIO.hpp"
 #include "EVT/io/SPI.hpp"
 #include "EVT/utils/log.hpp"
-#include "INA138.hpp"
 #include "LVSS.hpp"
+#include "dev/INA138.hpp"
 
 namespace IO = EVT::core::IO;
 namespace DEV = EVT::core::DEV;

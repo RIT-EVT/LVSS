@@ -58,12 +58,13 @@ project(${BOARD_LIB_NAME}
         )
 
 add_library(${PROJECT_NAME} STATIC
-        targets/REV3-INA138/INA138_main.cpp)
+        )
 
 # Add sources
 target_sources(${PROJECT_NAME} PRIVATE
         src/LVSS.cpp
-        src/INA138.cpp
+        src/dev/INA138.cpp
+        targets/REV3-INA138/INA138_main.cpp
         )
 
 ###############################################################################

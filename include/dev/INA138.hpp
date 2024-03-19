@@ -1,8 +1,8 @@
 #ifndef LVSS_INA138_HPP
 #define LVSS_INA138_HPP
 
-#include <EVT/io/ADC.hpp>
-#include <EVT/utils/log.hpp>
+#include "EVT/io/ADC.hpp"
+#include "EVT/utils/log.hpp"
 
 namespace IO = EVT::core::IO;
 namespace DEV = EVT::core::DEV;
