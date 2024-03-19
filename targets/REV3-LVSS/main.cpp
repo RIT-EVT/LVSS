@@ -4,7 +4,7 @@
  * enters.
  */
 
-#include "LVSS.hpp"
+#include <LVSS.hpp>
 #include <EVT/io/CANopen.hpp>
 #include <EVT/io/GPIO.hpp>
 #include <EVT/io/UART.hpp>
@@ -52,9 +52,6 @@ int main() {
 
     // initialize timer? probably don't need
     DEV::Timerf3xx timer(TIM2, 160);
-
-    //ADC
-    IO::ADC& adc0 = IO::getADC<IO::Pin::PA_1>();
 
     LVSS::LVSS lvss(lvssEn0);
 

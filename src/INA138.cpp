@@ -2,8 +2,7 @@
 
 namespace LVSS {
 
-INA138::INA138(IO::ADC& adc0) : ADC(adc0) {
-}
+INA138::INA138(IO::ADC& adc0) : ADC(adc0) {}
 
 uint32_t INA138::readCurrent(IO::ADC& adc0) {
     //Gets adcCounts from adc
