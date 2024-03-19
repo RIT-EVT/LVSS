@@ -33,9 +33,9 @@ private:
 
     ///Read INA138 datasheet page 3
     //Resistor variables
-     static constexpr uint32_t rShunt = 0.05 * 100;//0.05 ohm resistor
-    static constexpr uint32_t r1 = 5000 ;    //5k ohm
-    static constexpr uint32_t r3 = 50000;   //50k ohm
+    static constexpr uint32_t rShunt = 0.05 * 100;//0.05 ohm resistor
+    static constexpr uint32_t r1 = 5000;          //5k ohm
+    static constexpr uint32_t r3 = 50000;         //50k ohm
 };
 
 }// namespace LVSS
