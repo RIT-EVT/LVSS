@@ -19,7 +19,7 @@ namespace log = EVT::core::log;
 namespace types = EVT::core::types;
 using namespace std;
 
-int main(){
+int main() {
     // Initialize system
     EVT::core::platform::init();
 
@@ -33,7 +33,7 @@ int main(){
 
     LVSS::INA138 ina138(adc0);
 
-    while(1){
+    while (1) {
         uart.printf("ADC0: %d\r\n mA", ina138.readCurrent(adc0));
         time::wait(500);
     }
