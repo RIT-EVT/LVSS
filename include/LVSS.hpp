@@ -1,13 +1,13 @@
 #ifndef _LVSS_
 #define _LVSS_
 
-#include "EVT/dev/LCD.hpp"
-#include "EVT/io/CANopen.hpp"
-#include "EVT/io/GPIO.hpp"
-#include "EVT/io/SPI.hpp"
-#include "EVT/utils/log.hpp"
-#include "LVSS.hpp"
-#include "dev/INA138.hpp"
+#include <EVT/dev/LCD.hpp>
+#include <EVT/io/CANopen.hpp>
+#include <EVT/io/GPIO.hpp>
+#include <EVT/io/SPI.hpp>
+#include <EVT/utils/log.hpp>
+#include <LVSS.hpp>
+#include <dev/INA138.hpp>
 
 namespace IO = EVT::core::IO;
 namespace DEV = EVT::core::DEV;
@@ -29,18 +29,8 @@ public:
 
     CO_OBJ_T* getObjectDictionary() override;
 
-    /**
-     * Gets the size of the Object Dictionary
-     *
-     * @return size of the Object Dictionary
-     */
     uint8_t getNumElements() override;
 
-    /**
-    * Get the device's node ID
-    *
-    * @return The node ID of the can device.
-     */
     uint8_t getNodeID() override;
 
     /**

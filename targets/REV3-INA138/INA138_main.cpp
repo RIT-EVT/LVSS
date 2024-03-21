@@ -34,7 +34,7 @@ int main() {
     LVSS::INA138 ina138(adc0);
 
     while (1) {
-        uart.printf("ADC0: %d\r\n mA", ina138.readCurrent(adc0));
+        uart.printf("ADC0: %d\r\n mA", ina138.readCurrent());
         time::wait(500);
     }
 }
