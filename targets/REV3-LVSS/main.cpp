@@ -4,7 +4,7 @@
  * enters.
  */
 
-#include "LVSS/LVSS.hpp"
+#include "LVSS.hpp"
 #include <EVT/io/CANopen.hpp>
 #include <EVT/io/GPIO.hpp>
 #include <EVT/io/UART.hpp>
@@ -93,10 +93,10 @@ int main() {
     // Initialize all the CANOpen dev.
     IO::initializeCANopenDriver(&canOpenQueue, &can, &timer, &canStackDriver, &nvmDriver, &timerDriver, &canDriver);
 
-    LVSS::LVSS lvss = LVSS::LVSS(lvssEn0, lvssEn1, lvssEn2);
+    // LVSS::LVSS lvss = LVSS::LVSS(lvssEn0, lvssEn1, lvssEn2);
 
     // Initialize the CANOpen node we are using.
-    IO::initializeCANopenNode(&canNode, &lvss, &canStackDriver, sdoBuffer, appTmrMem);
+    // IO::initializeCANopenNode(&canNode, &lvss, &canStackDriver, sdoBuffer, appTmrMem);
 
     // String to store user input
     char buf[100];

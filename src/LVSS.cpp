@@ -1,10 +1,6 @@
-#include <LVSS/LVSS.hpp>
+#include <LVSS.hpp>
 
 namespace LVSS {
-
-LVSS::LVSS(IO::GPIO& lvssEn) : LVSS_EN(lvssEn) {
-    // TODO: Implement
-}
 
 uint8_t LVSS::getNodeID() {
     return NODE_ID;
@@ -18,8 +14,8 @@ CO_OBJ_T* LVSS::getObjectDictionary() {
     return nullptr;
 }
 
-
-
-
+LVSS::LVSS(TPS2HB50BQ1 powerSwitchArr[POWER_SWITCHES_SIZE], ACS781XLR currentSensor) : PowerSwitches(powerSwitchArr), currentSensor(currentSensor) {
+}
+LVSS::LVSS(TPS2HB50BQ1* powerSwitches) : PowerSwitches(powerSwitches) {}
 
 }
