@@ -1,14 +1,14 @@
 #ifndef _LVSS_
 #define _LVSS_
 
-#pragma once
-
-#include <EVT/io/CANopen.hpp>
+#include "dev/ACS781XLR.hpp"
 #include <EVT/dev/LCD.hpp>
+#include <EVT/io/CANopen.hpp>
 #include <EVT/io/GPIO.hpp>
 #include <EVT/io/SPI.hpp>
 #include <EVT/utils/log.hpp>
-#include <LVSS/LVSS.hpp>
+#include <LVSS.hpp>
+#include <dev/TPS2HB50BQ1.hpp>
 #include <cstdio>
 #include <cstring>
 
@@ -16,6 +16,8 @@ namespace IO = EVT::core::IO;
 namespace DEV = EVT::core::DEV;
 
 namespace LVSS{
+
+static constexpr uint8_t POWER_SWITCHES_SIZE = 3;
 
 /**
  * This is an example of a class for a board
@@ -25,10 +27,12 @@ public:
 
     static constexpr uint8_t NODE_ID = 42;
 
+
     /**
      * Placeholder constructor for the LVSS class
      */
-    LVSS(IO::GPIO& lvssEn);
+    LVSS(TPS2HB50BQ1 powerSwitches[POWER_SWITCHES_SIZE], ACS781XLR currentSensor);
+    explicit LVSS(TPS2HB50BQ1* powerSwitches);
 
     CO_OBJ_T* getObjectDictionary() override;
 
@@ -49,10 +53,9 @@ public:
 private:
     // TODO: Figure out internal state of LVSS board
     // false = OFF, true = ON?
-    // this is the power switch output (TPS2HB35)
-    IO::GPIO& LVSS_EN;
 
-
+    TPS2HB50BQ1* PowerSwitches; // a struct for each power switch (of which there are 3)
+    ACS781XLR currentSensor;
 };
 
 } // namespace LVSS
