@@ -18,4 +18,4 @@ LVSS::LVSS(TPS2HB50BQ1 powerSwitchArr[POWER_SWITCHES_SIZE], ACS781XLR currentSen
 }
 LVSS::LVSS(TPS2HB50BQ1* powerSwitches) : PowerSwitches(powerSwitches) {}
 
-}
+}// namespace LVSS
