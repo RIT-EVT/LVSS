@@ -2,11 +2,11 @@
 #ifndef LVSS_TPS2HB50BQ1_HPP
 #define LVSS_TPS2HB50BQ1_HPP
 
-#include <EVT/io/GPIO.hpp>
 #include <EVT/io/ADC.hpp>
 #include <EVT/io/CAN.hpp>
 #include <EVT/io/CANOpenMacros.hpp>
 #include <EVT/io/CANopen.hpp>
+#include <EVT/io/GPIO.hpp>
 
 namespace IO = EVT::core::IO;
 
@@ -32,9 +32,7 @@ public:
 
     void disable2();
 
-
 private:
-
     enum DIAG_MODE {
         OFF = 0x00,
         FAULT_STATUS = 0x01,
@@ -66,7 +64,7 @@ private:
     // should pass in LATCH_MODE_LATCHED or LATCH_MODE_AUTO_RETRY
     void setLatch(LATCH_MODE mode);
 
-    void readSenseOut(uint32_t &senseOut);
+    void readSenseOut(uint32_t& senseOut);
 
     void setDiagnostics(enum DIAG_MODE diag_mode);
 
@@ -75,5 +73,5 @@ private:
     uint32_t getFaultStatus();
 };
 
-}
+}// namespace LVSS
 #endif//LVSS_TPS2HB50BQ1_HPP

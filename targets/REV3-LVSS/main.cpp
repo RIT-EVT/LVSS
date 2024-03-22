@@ -73,10 +73,10 @@ int main() {
     // Reserve canNode
     CO_NODE canNode;
 
-//    // TODO(?) Adds CAN filtering to only allow messages from IDs 1, 5, and 8.
-//    can.addCANFilter(0x1, 0b00001111111, 0);
-//    can.addCANFilter(0x8, 0b00001111111, 1);
-//    can.addCANFilter(0x5, 0b00001111111, 2);
+    //    // TODO(?) Adds CAN filtering to only allow messages from IDs 1, 5, and 8.
+    //    can.addCANFilter(0x1, 0b00001111111, 0);
+    //    can.addCANFilter(0x8, 0b00001111111, 1);
+    //    can.addCANFilter(0x5, 0b00001111111, 2);
 
     // Attempt to join the CAN network
     IO::CAN::CANStatus result = can.connect();

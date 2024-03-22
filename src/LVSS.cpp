@@ -21,4 +21,4 @@ LVSS::LVSS(TPS2HB50BQ1* powerSwitches) : powerSwitches(powerSwitches) {
 //}
 //LVSS::LVSS(TPS2HB50BQ1* powerSwitches) : PowerSwitches(powerSwitches) {}
 //
-}
+} // namespace LVSS
