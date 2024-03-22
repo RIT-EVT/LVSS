@@ -52,7 +52,6 @@ int main() {
     IO::GPIO& lvssEn1 = IO::getGPIO<IO::Pin::PA_9>(IO::GPIO::Direction::INPUT);
     IO::GPIO& lvssEn2 = IO::getGPIO<IO::Pin::PA_8>(IO::GPIO::Direction::INPUT);
 
-    // initialize timer? probably don't need (yes we do, to initialize CAN)
     DEV::Timerf3xx timer(TIM2, 160);
 
     types::FixedQueue<CANOPEN_QUEUE_SIZE, IO::CANMessage> canOpenQueue;

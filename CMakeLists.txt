@@ -58,15 +58,12 @@ project(${BOARD_LIB_NAME}
         )
 
 add_library(${PROJECT_NAME} STATIC
-        include/LVSS.hpp
-        src/dev/TPS2HB50BQ1.cpp
-        include/dev/TPS2HB50BQ1.hpp
-        src/dev/ACS781XLR.cpp
-        include/dev/ACS781XLR.hpp)
+)
 
 # Add sources
 target_sources(${PROJECT_NAME} PRIVATE
         src/LVSS.cpp
+        src/dev/TPS2HB50BQ1.cpp
         )
 
 ###############################################################################

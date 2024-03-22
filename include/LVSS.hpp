@@ -1,7 +1,6 @@
 #ifndef _LVSS_
 #define _LVSS_
 
-#include "dev/ACS781XLR.hpp"
 #include <EVT/dev/LCD.hpp>
 #include <EVT/io/CANopen.hpp>
 #include <EVT/io/GPIO.hpp>
@@ -31,8 +30,7 @@ public:
     /**
      * Placeholder constructor for the LVSS class
      */
-    LVSS(TPS2HB50BQ1 powerSwitches[POWER_SWITCHES_SIZE], ACS781XLR currentSensor);
-    explicit LVSS(TPS2HB50BQ1* powerSwitches);
+    explicit LVSS(TPS2HB50BQ1 powerSwitches[POWER_SWITCHES_SIZE]);
 
     CO_OBJ_T* getObjectDictionary() override;
 
@@ -54,8 +52,8 @@ private:
     // TODO: Figure out internal state of LVSS board
     // false = OFF, true = ON?
 
-    TPS2HB50BQ1* PowerSwitches; // a struct for each power switch (of which there are 3)
-    ACS781XLR currentSensor;
+    TPS2HB50BQ1* powerSwitches; // a struct for each power switch (of which there are 3)
+    // ACS781XLR currentSensor;
 };
 
 } // namespace LVSS

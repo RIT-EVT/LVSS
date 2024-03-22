@@ -8,16 +8,6 @@
 #include <EVT/io/CANOpenMacros.hpp>
 #include <EVT/io/CANopen.hpp>
 
-// latch mode consts
-#define LATCH_MODE_LATCHED 0x00
-#define LATCH_MODE_AUTO_RETRY 0x01
-
-// diagnostic mode consts
-#define DIAG_MODE_OFF 0x00
-#define DIAG_MODE_FAULT_STATUS 0x01
-#define DIAG_MODE_CURRENT 0x02
-#define DIAG_MODE_TEMP 0x03
-
 namespace IO = EVT::core::IO;
 
 namespace LVSS {
@@ -52,6 +42,11 @@ private:
         TEMP = 0x03
     };
 
+    enum LATCH_MODE {
+        LATCHED = 0x00,
+        AUTO_RETRY = 0x01
+    };
+
     IO::GPIO& EN1;
     IO::GPIO& EN2;
     IO::GPIO& SENSE_OUT;
@@ -62,13 +57,14 @@ private:
     IO::ADC& ADC;
 
     DIAG_MODE current_diag_mode;
+    LATCH_MODE current_latch_mode;
 
     void enableDiag();
 
     void disableDiag();
 
     // should pass in LATCH_MODE_LATCHED or LATCH_MODE_AUTO_RETRY
-    void setLatch(uint8_t mode);
+    void setLatch(LATCH_MODE mode);
 
     void readSenseOut(uint32_t &senseOut);
 

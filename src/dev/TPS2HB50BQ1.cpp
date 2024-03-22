@@ -1,7 +1,3 @@
-//
-// Created by eaton on 2/22/2024.
-//
-
 #include <dev/TPS2HB50BQ1.hpp>
 
 
@@ -54,11 +50,13 @@ void TPS2HB50BQ1::disableDiag() {
  * Page 23/27 of the datasheet has a table with the different modes.
  * @param mode
  */
-void TPS2HB50BQ1::setLatch(uint8_t mode) {
-    if (mode == LATCH_MODE_LATCHED) {
+void TPS2HB50BQ1::setLatch(LATCH_MODE mode) {
+    if (mode == LATCH_MODE::LATCHED) {
         LATCH.writePin(IO::GPIO::State::LOW);
-    } else if (mode == LATCH_MODE_AUTO_RETRY) {
+        current_latch_mode = LATCH_MODE::LATCHED;
+    } else if (mode == LATCH_MODE::AUTO_RETRY) {
         LATCH.writePin(IO::GPIO::State::HIGH);
+        current_latch_mode = LATCH_MODE::AUTO_RETRY;
     }
 }
 
