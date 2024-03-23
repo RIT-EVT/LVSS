@@ -57,11 +57,13 @@ project(${BOARD_LIB_NAME}
         LANGUAGES CXX C
         )
 
-add_library(${PROJECT_NAME} STATIC)
+add_library(${PROJECT_NAME} STATIC
+)
 
 # Add sources
 target_sources(${PROJECT_NAME} PRIVATE
         src/LVSS.cpp
+        src/dev/INA138.cpp
         )
 
 ###############################################################################
