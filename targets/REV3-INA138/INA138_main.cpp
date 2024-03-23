@@ -3,8 +3,6 @@
  * LVSS using the INA138 IC
 */
 
-#include <EVT/io/CANopen.hpp>
-#include <EVT/io/GPIO.hpp>
 #include <EVT/io/UART.hpp>
 #include <EVT/io/pin.hpp>
 #include <EVT/manager.hpp>

@@ -32,7 +32,7 @@ using namespace std;
  */
 // create a can interrupt handler
 void canInterrupt(IO::CANMessage& message, void* priv) {
-    auto* queue = (types::FixedQueue<CANOPEN_QUEUE_SIZE, IO::CANMessage>*) priv;
+    auto* queue = reinterpret_cast<types::FixedQueue<CANOPEN_QUEUE_SIZE, IO::CANMessage>*>(priv);
 
     if (queue != nullptr) {
         queue->append(message);

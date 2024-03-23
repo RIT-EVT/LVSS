@@ -31,8 +31,8 @@ private:
     /** ADC instance for getting input voltage */
     IO::ADC& ADC;
 
-    ///Read INA138 datasheet page 3
-    //Resistor variables
+    /** Read INA138 datasheet page 3 */
+    /** Resistor variables */
     static constexpr uint32_t rShunt = 0.05 * 100;//0.05 ohm resistor
     static constexpr uint32_t r1 = 5000;          //5k ohm
     static constexpr uint32_t r3 = 50000;         //50k ohm
@@ -40,4 +40,4 @@ private:
 
 }// namespace LVSS
 
-#endif//LVSS_INA138_HPP
+#endif
