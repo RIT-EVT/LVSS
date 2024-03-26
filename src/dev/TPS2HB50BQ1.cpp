@@ -2,8 +2,7 @@
 
 namespace LVSS {
 
-TPS2HB50BQ1::TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& senseOut, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc, uint8_t current_diag_mode) :
-EN1(en1), EN2(en2), SENSE_OUT(senseOut), LATCH(latch), DIAG_EN(diagEn), DIAG_SELECT_1(diagSelect1), DIAG_SELECT_2(diagSelect2), ADC(adc) {
+TPS2HB50BQ1::TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& senseOut, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc, uint8_t current_diag_mode) : EN1(en1), EN2(en2), SENSE_OUT(senseOut), LATCH(latch), DIAG_EN(diagEn), DIAG_SELECT_1(diagSelect1), DIAG_SELECT_2(diagSelect2), ADC(adc) {
     setDiagnostics(DIAG_MODE::OFF);
 }
 
@@ -132,4 +131,4 @@ uint32_t TPS2HB50BQ1::getFaultStatus() {
     return faultStatus;
 }
 
-} // namespace LVSS
+}// namespace LVSS

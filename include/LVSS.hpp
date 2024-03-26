@@ -54,5 +54,5 @@ private:
     // ACS781XLR currentSensor;
 };
 
-} // namespace LVSS
+}// namespace LVSS
 #endif
