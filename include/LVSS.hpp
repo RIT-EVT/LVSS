@@ -50,7 +50,7 @@ private:
     // TODO: Figure out internal state of LVSS board
     // false = OFF, true = ON?
 
-    TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE]{}; // a struct for each power switch (of which there are 3)
+    TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE]{};// a struct for each power switch (of which there are 3)
     // ACS781XLR currentSensor;
 };
 
