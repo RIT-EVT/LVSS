@@ -13,7 +13,11 @@ uint8_t LVSS::getNumElements() {
 CO_OBJ_T* LVSS::getObjectDictionary() {
     return nullptr;
 }
-LVSS::LVSS(TPS2HB50BQ1* powerSwitches) : powerSwitches(powerSwitches) {
+
+LVSS::LVSS(TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE]){
+    for (int i = 0; i < POWER_SWITCHES_SIZE; i++) {
+        this->powerSwitches[i] = powerSwitches[i];
+    }
 }
 
 // temporarily commented out to make compiler happy
