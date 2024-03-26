@@ -15,25 +15,26 @@ void TPS2HB50BQ1::disableAll() {
     EN1.writePin(IO::GPIO::State::LOW);
     EN2.writePin(IO::GPIO::State::LOW);
 }
-void TPS2HB50BQ1::enable1() {
+void TPS2HB50BQ1::enable_ps_one() {
     EN1.writePin(IO::GPIO::State::HIGH);
 }
 
-void TPS2HB50BQ1::disable1() {
+void TPS2HB50BQ1::disable_ps_one() {
     EN1.writePin(IO::GPIO::State::LOW);
 }
 
-void TPS2HB50BQ1::enable2() {
+void TPS2HB50BQ1::enable_ps_two() {
     EN2.writePin(IO::GPIO::State::HIGH);
 }
 
-void TPS2HB50BQ1::disable2() {
+void TPS2HB50BQ1::disable_ps_two() {
     EN2.writePin(IO::GPIO::State::LOW);
 }
 
 void TPS2HB50BQ1::enableDiag() {
     DIAG_EN.writePin(IO::GPIO::State::HIGH);
 }
+
 
 void TPS2HB50BQ1::disableDiag() {
     DIAG_EN.writePin(IO::GPIO::State::LOW);
@@ -101,7 +102,7 @@ void TPS2HB50BQ1::setDiagnostics(DIAG_MODE diag_mode) {
 
 /**
  * Get the fault status of the TPS2HB50BQ1
- *
+ * Currently do not know the adc output for this, so it is a placeholder.
  * @return the fault status of the TPS2HB50BQ1
  */
 uint32_t TPS2HB50BQ1::getCurrent() {
@@ -113,6 +114,10 @@ uint32_t TPS2HB50BQ1::getCurrent() {
     return current;
 }
 
+/**
+ * Get the temperature of the TPS2HB50BQ1
+ * @return the temperature of the TPS2HB50BQ1
+ */
 uint32_t TPS2HB50BQ1::getTemp() {
     if (current_diag_mode != DIAG_MODE::TEMP) {
         setDiagnostics(DIAG_MODE::TEMP);
@@ -122,6 +127,11 @@ uint32_t TPS2HB50BQ1::getTemp() {
     return temp;
 }
 
+/**
+ * Get the fault status of the TPS2HB50BQ1
+ * Currently do not know the adc output for this, so it is a placeholder.
+ * @return the fault status of the TPS2HB50BQ1
+ */
 uint32_t TPS2HB50BQ1::getFaultStatus() {
     if (current_diag_mode != DIAG_MODE::FAULT_STATUS) {
         setDiagnostics(DIAG_MODE::FAULT_STATUS);

@@ -13,24 +13,47 @@ namespace IO = EVT::core::IO;
 namespace LVSS {
 
 /**
- * Power switch for LVSS
- * /datasheets/TPS2HB35-Q1 Power Switch Data Sheet.pdf
+ * This class is used to control the TPS2HB50BQ1 power switch.
+ * The TPS2HB50BQ1 is a high side switch that can be used to control
+ * the power to up to two devices.
+ *
+ * The TPS2HB50BQ1 has a diagnostic mode that can be used to read the
+ * current, temperature, or fault status of the device.
  */
 class TPS2HB50BQ1 {
 public:
     TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& senseOut, IO::GPIO& latch, IO::GPIO& diagEn,
                 IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc, uint8_t current_diag_mode);
+
+    /**
+     * Enable both power switches
+     */
     void enableAll();
 
+    /**
+     * Disable both power switches
+     */
     void disableAll();
 
-    void enable1();
+    /**
+     * Enable power switch 1
+     */
+    void enable_ps_one();
 
-    void disable1();
+    /**
+     * Disable power switch 1
+     */
+    void disable_ps_one();
 
-    void enable2();
+    /**
+     * Enable power switch 2
+     */
+    void enable_ps_two();
 
-    void disable2();
+    /**
+     * Disable power switch 2
+     */
+    void disable_ps_two();
 
 private:
     enum DIAG_MODE {
@@ -57,19 +80,55 @@ private:
     DIAG_MODE current_diag_mode;
     LATCH_MODE current_latch_mode;
 
+    /**
+     * Enable the diagnostic mode
+     */
     void enableDiag();
 
+    /**
+     * Disable the diagnostic mode
+     */
     void disableDiag();
 
-    // should pass in LATCH_MODE_LATCHED or LATCH_MODE_AUTO_RETRY
+   /**
+    * Set the latch mode of the power switch
+    * @param mode The latch mode to set
+    */
     void setLatch(LATCH_MODE mode);
 
+    /**
+     * Read the sense out of the power switch
+     * @param senseOut The sense out value
+     */
     void readSenseOut(uint32_t& senseOut);
 
+    /**
+     * Set the diagnostic mode
+     * Diagnostics modes include:
+     * DIAG_MODE::OFF: Sets diagnostics pin to low, along with both diag select pins.
+     * DIAG_MODE::FAULT_STATUS: Get the fault status of the power switch
+     * DIAG_MODE::CURRENT: Get the current of the power switch
+     * DIAG_MODE::TEMP: Get the temperature of the power switch
+     * @param diag_mode The diagnostic mode to set
+     */
     void setDiagnostics(enum DIAG_MODE diag_mode);
 
+    /**
+     * Get the current of the power switch
+     * @return The current of the power switch
+     */
     uint32_t getCurrent();
+
+    /**
+     * Get the temperature of the power switch
+     * @return The temperature of the power switch
+     */
     uint32_t getTemp();
+
+    /**
+     * Get the fault status of the power switch
+     * @return The fault status of the power switch
+     */
     uint32_t getFaultStatus();
 };
 
