@@ -16,8 +16,8 @@ namespace LVSS {
 class INA138 {
 public:
     /**
-      * Constructor for current sensing class
-      */
+     * Constructor for current sensing class
+     */
     INA138(IO::ADC& adc0);
 
     /**
