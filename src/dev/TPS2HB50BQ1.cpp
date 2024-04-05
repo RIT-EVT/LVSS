@@ -39,7 +39,6 @@ void TPS2HB50BQ1::enableDiag() {
     DIAG_EN.writePin(IO::GPIO::State::HIGH);
 }
 
-
 void TPS2HB50BQ1::disableDiag() {
     DIAG_EN.writePin(IO::GPIO::State::LOW);
 }

@@ -104,7 +104,7 @@ private:
      */
     void disableDiag();
 
-   /**
+    /**
     * Set the latch mode of the power switch
     * @param mode The latch mode to set
     */
