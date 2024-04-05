@@ -23,7 +23,7 @@ namespace LVSS {
 class TPS2HB50BQ1 {
 public:
     TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& senseOut, IO::GPIO& latch, IO::GPIO& diagEn,
-                IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc, uint8_t current_diag_mode);
+                IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc);
 
     /**
      * Enable both power switches
@@ -55,7 +55,24 @@ public:
      */
     void disable_ps_two();
 
-private:
+    /**
+     * Get the fault status of the power switch
+     * @return The fault status of the power switch
+     */
+    void getFaultStatus(uint32_t& temp);
+
+    /**
+     * Get the current of the power switch
+     * @return The current of the power switch
+     */
+    void getCurrent(uint32_t& temp);
+
+    /**
+     * Get the temperature of the power switch
+     * @return The temperature of the power switch
+     */
+    void getTemp(uint32_t& temp);
+
     enum DIAG_MODE {
         OFF = 0x00,
         FAULT_STATUS = 0x01,
@@ -63,6 +80,7 @@ private:
         TEMP = 0x03
     };
 
+private:
     enum LATCH_MODE {
         LATCHED = 0x00,
         AUTO_RETRY = 0x01
@@ -70,15 +88,11 @@ private:
 
     IO::GPIO& EN1;
     IO::GPIO& EN2;
-    IO::GPIO& SENSE_OUT;
     IO::GPIO& LATCH;
     IO::GPIO& DIAG_EN;
     IO::GPIO& DIAG_SELECT_1;
     IO::GPIO& DIAG_SELECT_2;
     IO::ADC& ADC;
-
-    DIAG_MODE current_diag_mode;
-    LATCH_MODE current_latch_mode;
 
     /**
      * Enable the diagnostic mode
@@ -113,23 +127,6 @@ private:
      */
     void setDiagnostics(enum DIAG_MODE diag_mode);
 
-    /**
-     * Get the current of the power switch
-     * @return The current of the power switch
-     */
-    uint32_t getCurrent();
-
-    /**
-     * Get the temperature of the power switch
-     * @return The temperature of the power switch
-     */
-    uint32_t getTemp();
-
-    /**
-     * Get the fault status of the power switch
-     * @return The fault status of the power switch
-     */
-    uint32_t getFaultStatus();
 };
 
 }// namespace LVSS
