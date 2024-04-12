@@ -48,22 +48,22 @@ public:
     void getTemp(uint32_t& temp);
 
     /**
-     * DIAG_MODE::OFF: Sets diagnostics pin to low, along with both diag select pins.
-     * DIAG_MODE::FAULT_STATUS: Get the fault status of the power switch
-     * DIAG_MODE::CURRENT: Get the current of the power switch
-     * DIAG_MODE::TEMP: Get the temperature of the power switch
+     * diagMode::OFF: Sets diagnostics pin to low, along with both diag select pins.
+     * diagMode::FAULT_STATUS: Get the fault status of the power switch
+     * diagMode::CURRENT: Get the current of the power switch
+     * diagMode::TEMP: Get the temperature of the power switch
      */
-    enum DIAG_MODE {
-        OFF = 0x00,
-        FAULT_STATUS = 0x01,
-        CURRENT = 0x02,
-        TEMP = 0x03
+    enum diagMode {
+        off = 0x00,
+        faultStatus = 0x01,
+        current = 0x02,
+        temp = 0x03
     };
 
 private:
-    enum LATCH_MODE {
-        LATCHED = 0x00,
-        AUTO_RETRY = 0x01
+    enum latchMode {
+        latched = 0x00,
+        autoRetry = 0x01
     };
 
     IO::GPIO& EN1;
@@ -81,7 +81,7 @@ private:
      *
     * @param mode The latch mode to set
     */
-    void setLatch(LATCH_MODE mode);
+    void setLatch(latchMode mode);
 
     /**
      * Read the sense out of the power switch
@@ -92,11 +92,11 @@ private:
 
     /**
      * Set the diagnostic mode
-     * See the DIAG_MODE enum for the different modes
+     * See the diagMode enum for the different modes
      *
      * @param diag_mode The diagnostic mode to set
      */
-    void setDiagnostics(enum DIAG_MODE diag_mode);
+    void setDiagnostics(enum diagMode diag_mode);
 
 };
 
