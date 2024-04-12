@@ -10,37 +10,26 @@ TPS2HB50BQ1::TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& senseOut, IO::G
     setDiagnostics(DIAG_MODE::OFF);
 }
 
-void TPS2HB50BQ1::enableAll() {
-    EN1.writePin(IO::GPIO::State::HIGH);
-    EN2.writePin(IO::GPIO::State::HIGH);
+void TPS2HB50BQ1::setPowerSwitchStates(bool powerSwitchOneEnabled, bool powerSwitchTwoEnabled) {
+    if (powerSwitchOneEnabled) {
+        EN1.writePin(IO::GPIO::State::HIGH);
+    } else {
+        EN1.writePin(IO::GPIO::State::LOW);
+    }
+
+    if (powerSwitchTwoEnabled) {
+        EN2.writePin(IO::GPIO::State::HIGH);
+    } else {
+        EN2.writePin(IO::GPIO::State::LOW);
+    }
 }
 
-void TPS2HB50BQ1::disableAll() {
-    EN1.writePin(IO::GPIO::State::LOW);
-    EN2.writePin(IO::GPIO::State::LOW);
-}
-void TPS2HB50BQ1::enable_ps_one() {
-    EN1.writePin(IO::GPIO::State::HIGH);
-}
-
-void TPS2HB50BQ1::disable_ps_one() {
-    EN1.writePin(IO::GPIO::State::LOW);
-}
-
-void TPS2HB50BQ1::enable_ps_two() {
-    EN2.writePin(IO::GPIO::State::HIGH);
-}
-
-void TPS2HB50BQ1::disable_ps_two() {
-    EN2.writePin(IO::GPIO::State::LOW);
-}
-
-void TPS2HB50BQ1::enableDiag() {
-    DIAG_EN.writePin(IO::GPIO::State::HIGH);
-}
-
-void TPS2HB50BQ1::disableDiag() {
-    DIAG_EN.writePin(IO::GPIO::State::LOW);
+void TPS2HB50BQ1::setDiagStateEnabled(bool state) {
+    if (state) {
+        DIAG_EN.writePin(IO::GPIO::State::HIGH);
+    } else {
+        DIAG_EN.writePin(IO::GPIO::State::LOW);
+    }
 }
 
 
@@ -60,26 +49,27 @@ void TPS2HB50BQ1::readSenseOut(uint32_t& senseOut) {
 void TPS2HB50BQ1::setDiagnostics(DIAG_MODE diag_mode) {
     switch (diag_mode) {
     case OFF:
-        disableDiag();
+        setDiagStateEnabled(false);
         DIAG_SELECT_1.writePin(IO::GPIO::State::LOW);
         DIAG_SELECT_2.writePin(IO::GPIO::State::LOW);
         break;
     case FAULT_STATUS:
+        setDiagStateEnabled(false);
         DIAG_SELECT_1.writePin(IO::GPIO::State::HIGH);
         DIAG_SELECT_2.writePin(IO::GPIO::State::LOW);
-        enableDiag();
+        setDiagStateEnabled(true);
         break;
     case CURRENT:
+        setDiagStateEnabled(false);
         DIAG_SELECT_1.writePin(IO::GPIO::State::LOW);
         DIAG_SELECT_2.writePin(IO::GPIO::State::HIGH);
-        enableDiag();
+        setDiagStateEnabled(true);
         break;
     case TEMP:
+        setDiagStateEnabled(false);
         DIAG_SELECT_1.writePin(IO::GPIO::State::HIGH);
         DIAG_SELECT_2.writePin(IO::GPIO::State::HIGH);
-        enableDiag();
-        break;
-    default:
+        setDiagStateEnabled(true);
         break;
     }
 }

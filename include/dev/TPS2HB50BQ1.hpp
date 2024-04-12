@@ -1,6 +1,5 @@
-// Driver for power switch
-#ifndef LVSS_TPS2HB50BQ1_HPP
-#define LVSS_TPS2HB50BQ1_HPP
+#ifndef TPS2HB50BQ1_HPP
+#define TPS2HB50BQ1_HPP
 
 #include <EVT/io/ADC.hpp>
 #include <EVT/io/CAN.hpp>
@@ -25,50 +24,25 @@ public:
     TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& senseOut, IO::GPIO& latch, IO::GPIO& diagEn,
                 IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc);
 
-    /**
-     * Enable both power switches
-     */
-    void enableAll();
-
-    /**
-     * Disable both power switches
-     */
-    void disableAll();
-
-    /**
-     * Enable power switch 1
-     */
-    void enable_ps_one();
-
-    /**
-     * Disable power switch 1
-     */
-    void disable_ps_one();
-
-    /**
-     * Enable power switch 2
-     */
-    void enable_ps_two();
-
-    /**
-     * Disable power switch 2
-     */
-    void disable_ps_two();
+    void setPowerSwitchStates(bool powerSwitchOneEnabled, bool powerSwitchTwoEnabled);
 
     /**
      * Get the fault status of the power switch
+     *
      * @return The fault status of the power switch
      */
     void getFaultStatus(uint32_t& temp);
 
     /**
      * Get the current of the power switch
+     *
      * @return The current of the power switch
      */
     void getCurrent(uint32_t& temp);
 
     /**
      * Get the temperature of the power switch
+     *
      * @return The temperature of the power switch
      */
     void getTemp(uint32_t& temp);
@@ -94,30 +68,25 @@ private:
     IO::GPIO& DIAG_SELECT_2;
     IO::ADC& ADC;
 
-    /**
-     * Enable the diagnostic mode
-     */
-    void enableDiag();
-
-    /**
-     * Disable the diagnostic mode
-     */
-    void disableDiag();
+    void setDiagStateEnabled(bool state);
 
     /**
     * Set the latch mode of the power switch
+     *
     * @param mode The latch mode to set
     */
     void setLatch(LATCH_MODE mode);
 
     /**
      * Read the sense out of the power switch
+     *
      * @param senseOut The sense out value
      */
     void readSenseOut(uint32_t& senseOut);
 
     /**
      * Set the diagnostic mode
+     *
      * Diagnostics modes include:
      * DIAG_MODE::OFF: Sets diagnostics pin to low, along with both diag select pins.
      * DIAG_MODE::FAULT_STATUS: Get the fault status of the power switch
@@ -130,4 +99,4 @@ private:
 };
 
 }// namespace LVSS
-#endif//LVSS_TPS2HB50BQ1_HPP
+#endif
