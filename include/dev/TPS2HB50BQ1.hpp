@@ -53,17 +53,17 @@ public:
      * diagMode::CURRENT: Get the current of the power switch
      * diagMode::TEMP: Get the temperature of the power switch
      */
-    enum diagMode {
-        off = 0x00,
-        faultStatus = 0x01,
-        current = 0x02,
-        temp = 0x03
+    enum DiagMode {
+        Off = 0x00,
+        FaultStatus = 0x01,
+        Current = 0x02,
+        Temp = 0x03
     };
 
 private:
-    enum latchMode {
-        latched = 0x00,
-        autoRetry = 0x01
+    enum LatchMode {
+        Latched = 0x00,
+        AutoRetry = 0x01
     };
 
     IO::GPIO& EN1;
@@ -81,7 +81,7 @@ private:
      *
     * @param mode The latch mode to set
     */
-    void setLatch(latchMode mode);
+    void setLatch(LatchMode mode);
 
     /**
      * Read the sense out of the power switch
@@ -96,7 +96,7 @@ private:
      *
      * @param diag_mode The diagnostic mode to set
      */
-    void setDiagnostics(enum diagMode diag_mode);
+    void setDiagnostics(DiagMode diag_mode);
 
 };
 
