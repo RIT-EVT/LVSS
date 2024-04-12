@@ -10,7 +10,7 @@
 #include <cstdio>
 #include <cstring>
 #include <dev/TPS2HB50BQ1.hpp>
-
+#include <dev/INA138.hpp>
 namespace IO = EVT::core::IO;
 namespace DEV = EVT::core::DEV;
 
@@ -29,22 +29,18 @@ public:
      * Placeholder constructor for the LVSS class
      */
     explicit LVSS(TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE]);
+    LVSS(IO::GPIO& lvssEn);
 
     CO_OBJ_T* getObjectDictionary() override;
 
-    /**
-     * Gets the size of the Object Dictionary
-     *
-     * @return size of the Object Dictionary
-     */
     uint8_t getNumElements() override;
 
-    /**
-    * Get the device's node ID
-    *
-    * @return The node ID of the can device.
-     */
     uint8_t getNodeID() override;
+
+    /**
+     * Handle running the core logic of the LVSS
+     */
+    void process();
 
 private:
     // TODO: Figure out internal state of LVSS board

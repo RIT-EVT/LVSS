@@ -1,0 +1,395 @@
+﻿REV3 LVSS - Official Documentation  
+Introduction
+        This document serves as an official reference for the system architecture, schematic capture, physical layout, and design of the Low-Voltage Subsystem (LVSS). The primary function of the LVSS is to convert the 400 VDC battery pack into 12 VDC power that is then distributed to the rest of the bike.
+
+
+Project Members:
+
+
+Team Lead:       Spencer Dodge (sed4479@rit.edu)
+Team Member: Andrew Wolters(ajw9323@rit.edu)
+Team Member: Christian Secular(cds5872@rit.edu)
+Team Member: Kevin Harper (krh7399@rit.edu) 
+Team Member: Brandon Burton (bmb3610@rit.edu)
+Team Member: Michael Hale (msh7802@rit.edu)
+
+
+________________
+Table of Contents
+Introduction        1
+Table of Contents        2
+1: System Architecture        3
+1.1: High-Level Architecture        3
+1.2: Low-Level Architecture        5
+2: Schematic Capture        6
+2.1: Inrush Current Protection        6
+LTSPICE Simulations        7
+Altium Schematic        7
+2.2: The Vicor (400VDC-13v8VDC DC/DC Converter)        8
+Simulation Results        8
+Altium Schematic        8
+BOM        8
+2.3: Current Sensing        9
+2.4: Power Switches        10
+2.5: Other DC/DC Converters        11
+12v0-5v0 DC/DC Converter        11
+5v0-3v3 DC/DC Converter        12
+2.6: Microcontroller and CAN circuitry        14
+2.7: External Connectors        15
+________________
+1: System Architecture
+1.1: High-Level Architecture
+
+
+        At its simplest, the LVSS can be thought of as High Voltage in, Low Voltage out:
+
+
+  
+
+Fig. 1.1.1: High-Level Operation of the LVSS.
+
+
+        Of course, the actual design of the LVSS is far more complex, but a baseline understanding of the LVSS’ goal helps in interpreting a more detailed system architecture. The first nuance to consider are the various systems that the LVSS will be powering. These systems are:
+* The Thermal Management System (TMS)
+* The Handlebar Interface Board (HIB)
+* The Motor Controller (MC)
+* An External 12V0 Battery used to power the Vehicle Control Unit (VCU)
+* The Bike Lights
+* All other Accessory Boards
+
+
+        These 6 systems will each get their own power lines, meaning that there will be six unique 12V0 outputs for the LVSS. 
+
+
+
+
+
+
+        In addition to power inputs and outputs, there are a few more external connections that are implemented to further integrate the LVSS with the greater bike architecture. These connections include:
+* LVSS_EN: A control signal from the VCU that turns on the primary converter used by the LVSS. This allows for the LVSS to be synced with other mission-critical boards.
+* CAN_OUT: a CAN line from the LVSS that reports status information regarding data and board status.
+
+
+        Thus, we arrive at the following high-level system architecture:
+
+
+  
+
+Fig. 1.1.2: A More Detailed High-Level System Architecture.
+
+
+
+
+
+
+
+
+
+
+1.2: Low-Level Architecture
+
+
+Now that the top-level connections to the rest of the bike have been defined, let’s look at the subsystems that comprise the LVSS:
+
+
+  
+
+Fig. 1.2.1: Low-Level Architecture of the LVSS.
+
+
+        The 400 VDC pack voltage enters the LVSS and goes through the 400VDC-13V8VDC DC/DC Converter before fanning out to three dual channel power-switches. Some additional conversions to 5VDC and 3V3VDC allow for a microcontroller and CAN transceiver to be powered. The specifics of each subsystem will be discussed more when going over schematic capture.
+
+
+________________
+
+
+2: Schematic Capture
+        This section covers the specifics of each subsystem seen in Fig. 1.3, such as subsystem purpose, design methodology, simulation results, Altium schematics, and relevant BOM information. 
+
+
+2.1: Inrush Current Protection
+
+
+        The LVSS is designed to handle 400 VDC at 40 A at steady-state. However, on startup, the LVSS experiences a phenomenon known as inrush current. This is due to the exceedingly large capacitors required at the inputs and outputs of the Vicor DC/DC converter, and causes for a short spike of extremely high currents (~80A). This can prove catastrophic if not handled properly:
+
+
+  
+
+Fig. 2.1.1: Simulated Inrush Current Into the Vicor (Courtesy of the Vicor Website).
+
+
+        There are several configurations that can be used to limit inrush current. We chose to use a PTC thermistor that crushes the initial inrush current in conjunction with a relay that shorts across the PTC thermistor once the output power rail of the Vicor is powered.
+
+
+________________
+LTSPICE Simulations
+Although there is no SPICE model available for the Vicor, information about the Vicor’s capacitance/inductance, as well as recommendations for external circuitry can be found in the VICOR website and datasheet. Looking at the datasheet, it was found that the Vicor has 0.8uF of input capacitance, with 2.5mΩ of ESR (equivalent series resistance). All other components seen in Fig. 2.1.2 are part of the recommended Vicor implementation and are external to the converter.
+
+
+Fig. 2.1.2 below shows the inrush current drawn by the Vicor with no inrush protection implemented. In order to do this, the PTC thermistor is shorted across, removing any current flowing through it.  In this scenario, the Vicor draws ~90A of inrush current. This is very close to the inrush current found through provided simulations given on the Vicor website.
+
+
+  
+
+Fig. 2.1.2: Simulated Inrush Current With PTC Thermistor Shorted Across.
+
+
+Fig. 2.1.3 below shows the inrush current drawn by the Vicor with inrush protection implemented. Using this implementation, inrush current is reduced to ~1.2A, almost 90x smaller than the default inrush current.
+  
+
+Fig. 2.1.3: Simulated Inrush Current Utilizing the PTC Thermistor Inrush Protection Implementation.
+Altium Schematic
+Fig. 2.1.4 below shows the Altium schematic for the Vicor circuitry, with inrush protection implemented on the input side. The 
+  
+
+Fig. 2.1.4: Vicor Circuitry Implemented in Altium Schematic
+
+
+Table XXX - Subsystem STM32 Relevant Pinout ←-Use this template for any tables
+	Pin Function
+	
+
+	Net Name
+	Pin Name
+	I/O
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	
+
+	2.2: The Vicor (400VDC-13v8VDC DC/DC Converter)
+        To step the voltage from 400 Volts to 13.8 Volts, a Vicor DC/DC converter module is used. Unfortunately there is no available SPICE model for this converter, however the Vicor website has a few online simulators at our disposal. The converter itself has a few control pins on top of the voltage input and output pins, those being trim, enable, and fault. 
+
+
+The trim pin is used to specifically tune the output to achieve the desired output voltage. To calculate the size of the resistor used the Vicor Product calculator webpage can be used (www.vicorpower.com/calculators). Inputting the desired output voltage of 13.8V and a current load of 32A, the value of the trim resistor comes out to be 150kΩ. 
+
+
+The enable pin is used to turn on the converter via software by pulling and holding the EN pin high. Functionally the converter works the same if the EN pin is held high and the input voltage is connected (REV2), however we chose to utilize the EN pin to make testing easier.
+
+
+The fault pin is used to detect a problem in the converter power train. If the converter is performing as it should and the enable pin is high there should be no output from the fault pin. 
+
+
+Using the online Vicor Simulator as seen in Fig. 2.2.1, we were able to tune the values for the input filter using the resultant waveforms.
+  
+
+Fig. 2.2.1: Vicor Simulation Circuitry
+Simulation Results
+  
+
+Fig. 2.2.2: Vicor Input Voltage When Enable is High
+        
+
+
+  
+
+Fig. 2.2.3: Vicor Input and Output Currents When Enable is High
+  
+
+Fig. 2.2.4: Vicor Output Voltage When Enable is High
+
+
+        According to Fig. 2.2.4 the time it takes for the output to reach the desired voltage is around 40 ms. 
+  
+
+Fig. 2.2.5: Vicor Control Signals
+Altium Schematic
+  
+
+Fig. 2.2.6: Vicor Circuitry with Inrush Protection Circuitry
+BOM
+________________
+2.3: Current Sensing
+
+
+        There are a lot of nice, but not mission-critical features that we’d like to implement on the LVSS. At the foremost of these features is current sensing capabilities for the input voltage rail into the Vicor. This feature is implemented using a verified TI design that uses a low-voltage IC that uses external components to jerry-rig it for high power applications.
+
+
+Schematics and Data
+
+
+        The verified TI design can be found here under the name Current_Sensing_High_Power. 
+Altium Implementation 
+
+
+
+
+________________
+2.4: Power Switches
+The power to each board can be turned on and off using the power switches on the board. We are using TPS2HB50B-Q1 power switches. Each power switch has two separately-controlled outputs that allows the LVSS’s 13V8 rail to go to the other boards. When an enable signal is set high, the 13V8 will be allowed to pass. There are six outputs from the board so three of these power switches are used. All of the GPIO pins have a 15k Rprot resistor to protect the microcontroller. The latch pin, when set, will prevent the switch from turning back on until the latch is reset if a fault occurs.
+
+
+The TPS2HB5 also have built-in current fuses with their current limits being set by a Rlim. This Rlim is set by ICL = KCL / RILIM, where ICL is the desired current limit, KCL is a current limit ratio specified by the datasheet (nominal 90 A * kΩ). The range for RILIm  is between 5 kΩ and 25 kΩ and is set individually for each board. At 5kΩ the current limit is 18A.
+
+
+The TPS2HB5 also provides current sensing and temperature measurement using a SNS pin. The SNS pin requires two resistors (Rprot and Rsns) and a decoupling capacitor (Csns). Each SNS output is fed to a 4:1 MUX (TMUX1104) which two select pins from the microcontroller use to select the output. This allows for the power switches to share the Rprot, Rsns and Csns and reduce required circuitry. The output of the MUX is sent to pin PA1 on the STM32, or ADC1_IN2. This current sensing serves to provide information to integration regarding the power draw of boards on the bike. Rsns is calculated below to be 270Ω, meaning that 17.5A is largest diagnosable load current that can be detected.
+  
+
+Fig. 2.4.1: RSNS Calculation
+
+
+The TPS2HB5 also allows for a ground protection network by wiring a resistor and diode in parallel to GND. This was not implemented to avoid a microcontroller offset from ground voltage
+Altium Schematic
+Power Switches:
+  
+
+Fig. 2.4.2: Power Switch Circuitry (The Harnesses Combining Many Ports Into One!).
+  
+
+Fig. 2.4.3: SNS MUX. Used to Read Current Draw From Power Switches in Fig. 2.4.2.
+
+
+Current Monitoring
+Figure 2.5.3 shows the pin configuration needed to choose device temperature or channel current.
+  
+
+2.5: Other DC/DC Converters
+        In order to power the on-board CAN transceiver and STM32 microcontroller, some more DC/DC converters are needed to convert the 13v8 VDC power coming from the Vicor to 5v0 and 3v3 lines. This is done in two phases, with two converters to maximize efficiency and minimize the heat dissipated by these converters.
+
+
+12v0-5v0 DC/DC Converter
+
+
+        For converting down to 5 volts, a Buck Converter was used:
+
+
+  
+
+Fig. 2.5.1: A Buck Converter, Courtesy of WeBench.
+
+
+        This Buck Converter was generated using TI’s WeBench software. All components except for the inductor was normalized to an 0603 package and implemented in Altium:
+
+
+  
+
+Fig. 2.5.2: Fig. 2.5.1 Normalized and Implemented in Altium.
+
+
+
+
+ 
+Table 2.5.1 - Buck Converter BOM
+	Part Number
+	Product Number
+	Designator
+	Datasheet
+	Package
+	595-TPS562242DRLR
+	TPS562242DRLR
+	U3
+	Mouser
+	SOT-5X3-6
+	311-11.3KHRTR-ND
+	RC0603FR-0711K3L
+	R2
+	Digikey
+	0603
+	541-100KLTR-ND
+	CRCW0402100KFKED
+	R3
+	Digikey
+	0603
+	RMCF0603JT30K0TR-ND
+	RMCF0603JT30K0
+	R4
+	Digikey
+	0603
+	13-AC0603FR-07158KLTR-ND
+	AC0603FR-07158KL
+	R5
+	Digikey
+	0603
+	490-10748-2-ND
+	GRM21BR61E106MA73L
+	C1
+	Digikey
+	0603
+	490-10746-2-ND
+	GRM21BR61A226ME44L
+	C2
+	Digikey
+	0603
+	490-6439-2-ND
+	GRM188R72A104KA35J
+	C3,C4,C5
+	Digikey
+	0603
+	77-VJ0603D330JXPAJ
+	VJ0603D330JXPAJ
+	C6
+	Mouser
+	0603
+	587-2892-2-ND
+	NRS4018T3R3MDGJ
+	L1
+	Digikey
+	Nonstandard
+	
+
+
+
+5v0-3v3 DC/DC Converter
+
+
+An LDO is used to drop the 5v0 coming out of the Buck Converter down to the 3v3 power line.  A TI Product was used to implement this LDO:
+
+
+  
+
+Fig. 2.5.3: Schematic for LDO Sourced from TI Datasheet.
+ 
+The implementation into Altium and the resulting BOM is shown below:
+
+
+  
+
+Fig. 2.5.4: Fig. 2.5.3 Translated Into Altium.
+
+
+
+
+Table 2.5.2 - LDO BOM
+	Part Number
+	Product Number
+	Designator
+	Datasheet
+	Package
+	LM3940IMP-3.3/NOPBTR-ND
+	LM3940IMP-3.3/NOPB
+	U7
+	Digikey
+	TO-261AA
+	587-2670-2-ND
+	TMK107B7474KA-TR
+	C27
+	Digikey
+	0603
+	445-5986-2-ND
+	C2012X5R0J336M125AC
+	C26
+	Digikey
+	0805
+	________________
+
+
+2.6: Microcontroller and CAN circuitry
+
+
+________________
+2.7: External Connectors

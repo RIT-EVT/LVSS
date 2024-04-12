@@ -1,10 +1,8 @@
 /**
-* This is a basic sample to show how the current sensing feature of the
+ * This is a basic sample to show how the current sensing feature of the
  * LVSS using the INA138 IC
-*/
+ */
 
-#include <EVT/io/CANopen.hpp>
-#include <EVT/io/GPIO.hpp>
 #include <EVT/io/UART.hpp>
 #include <EVT/io/pin.hpp>
 #include <EVT/manager.hpp>
@@ -16,8 +14,6 @@ namespace IO = EVT::core::IO;
 namespace DEV = EVT::core::DEV;
 namespace time = EVT::core::time;
 namespace log = EVT::core::log;
-namespace types = EVT::core::types;
-using namespace std;
 
 int main() {
     // Initialize system

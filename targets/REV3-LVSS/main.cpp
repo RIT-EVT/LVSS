@@ -4,7 +4,6 @@
  * enters.
  */
 
-#include "LVSS.hpp"
 #include <EVT/io/CANopen.hpp>
 #include <EVT/io/GPIO.hpp>
 #include <EVT/io/UART.hpp>
@@ -12,6 +11,7 @@
 #include <EVT/manager.hpp>
 #include <EVT/utils/log.hpp>
 #include <EVT/utils/time.hpp>
+#include <LVSS.hpp>
 
 namespace IO = EVT::core::IO;
 namespace DEV = EVT::core::DEV;
@@ -32,7 +32,7 @@ using namespace std;
  */
 // create a can interrupt handler
 void canInterrupt(IO::CANMessage& message, void* priv) {
-    auto* queue = (types::FixedQueue<CANOPEN_QUEUE_SIZE, IO::CANMessage>*) priv;
+    auto* queue = reinterpret_cast<types::FixedQueue<CANOPEN_QUEUE_SIZE, IO::CANMessage>*>(priv);
 
     if (queue != nullptr) {
         queue->append(message);
@@ -52,8 +52,10 @@ int main() {
     IO::GPIO& lvssEn1 = IO::getGPIO<IO::Pin::PA_9>(IO::GPIO::Direction::INPUT);
     IO::GPIO& lvssEn2 = IO::getGPIO<IO::Pin::PA_8>(IO::GPIO::Direction::INPUT);
 
+    // initialize timer? probably don't need
     DEV::Timerf3xx timer(TIM2, 160);
 
+    LVSS::LVSS lvss(lvssEn0);
     types::FixedQueue<CANOPEN_QUEUE_SIZE, IO::CANMessage> canOpenQueue;
 
     // Initialize CAN, add an IRQ which will add messages to the queue above
@@ -72,11 +74,12 @@ int main() {
 
     // Reserve canNode
     CO_NODE canNode;
-
-    //    // TODO(?) Adds CAN filtering to only allow messages from IDs 1, 5, and 8.
-    //    can.addCANFilter(0x1, 0b00001111111, 0);
-    //    can.addCANFilter(0x8, 0b00001111111, 1);
-    //    can.addCANFilter(0x5, 0b00001111111, 2);
+    /*
+    // Adds CAN filtering to only allow messages from IDs 1, 5, and 8.
+    can.addCANFilter(0x1, 0b00001111111, 0);
+   can.addCANFilter(0x8, 0b00001111111, 1);
+    can.addCANFilter(0x5, 0b00001111111, 2);
+    */
 
     // Attempt to join the CAN network
     IO::CAN::CANStatus result = can.connect();
