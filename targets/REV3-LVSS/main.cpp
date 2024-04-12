@@ -55,7 +55,6 @@ int main() {
     // initialize timer? probably don't need
     DEV::Timerf3xx timer(TIM2, 160);
 
-    LVSS::LVSS lvss(lvssEn0);
     types::FixedQueue<CANOPEN_QUEUE_SIZE, IO::CANMessage> canOpenQueue;
 
     // Initialize CAN, add an IRQ which will add messages to the queue above
