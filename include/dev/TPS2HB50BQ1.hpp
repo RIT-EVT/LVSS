@@ -47,6 +47,12 @@ public:
      */
     void getTemp(uint32_t& temp);
 
+    /**
+     * DIAG_MODE::OFF: Sets diagnostics pin to low, along with both diag select pins.
+     * DIAG_MODE::FAULT_STATUS: Get the fault status of the power switch
+     * DIAG_MODE::CURRENT: Get the current of the power switch
+     * DIAG_MODE::TEMP: Get the temperature of the power switch
+     */
     enum DIAG_MODE {
         OFF = 0x00,
         FAULT_STATUS = 0x01,
@@ -86,12 +92,8 @@ private:
 
     /**
      * Set the diagnostic mode
+     * See the DIAG_MODE enum for the different modes
      *
-     * Diagnostics modes include:
-     * DIAG_MODE::OFF: Sets diagnostics pin to low, along with both diag select pins.
-     * DIAG_MODE::FAULT_STATUS: Get the fault status of the power switch
-     * DIAG_MODE::CURRENT: Get the current of the power switch
-     * DIAG_MODE::TEMP: Get the temperature of the power switch
      * @param diag_mode The diagnostic mode to set
      */
     void setDiagnostics(enum DIAG_MODE diag_mode);
