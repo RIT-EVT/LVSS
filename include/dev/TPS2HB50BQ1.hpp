@@ -31,21 +31,21 @@ public:
      *
      * @return The fault status of the power switch
      */
-    void getFaultStatus(uint32_t& temp);
+    uint32_t getFaultStatus();
 
     /**
      * Get the current of the power switch
      *
      * @return The current of the power switch
      */
-    void getCurrent(uint32_t& temp);
+    uint32_t getCurrent();
 
     /**
      * Get the temperature of the power switch
      *
      * @return The temperature of the power switch
      */
-    void getTemp(uint32_t& temp);
+    uint32_t getTemp();
 
     /**
      * diagMode::OFF: Sets diagnostics pin to low, along with both diag select pins.
@@ -88,7 +88,7 @@ private:
      *
      * @param senseOut The sense out value
      */
-    void readSenseOut(uint32_t& senseOut);
+    uint32_t readSenseOut();
 
     /**
      * Set the diagnostic mode

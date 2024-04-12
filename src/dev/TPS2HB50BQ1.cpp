@@ -41,8 +41,8 @@ void TPS2HB50BQ1::setLatch(LatchMode mode) {
     }
 }
 
-void TPS2HB50BQ1::readSenseOut(uint32_t& senseOut) {
-    senseOut = ADC.readRaw();
+uint32_t TPS2HB50BQ1::readSenseOut() {
+    return ADC.readRaw();
 }
 
 
@@ -75,24 +75,36 @@ void TPS2HB50BQ1::setDiagnostics(DiagMode diag_mode) {
 }
 
 
-void TPS2HB50BQ1::getCurrent(uint32_t& current) {
+uint32_t TPS2HB50BQ1::getCurrent() {
     setDiagnostics(DiagMode::Current);
-    readSenseOut(current);
+    uint32_t current = readSenseOut();
     setDiagnostics(DiagMode::Off);
+
+    // TODO: more processing on raw ADC output
+
+    return current;
 }
 
 
-void TPS2HB50BQ1::getTemp(uint32_t& current) {
+uint32_t TPS2HB50BQ1::getTemp() {
     setDiagnostics(DiagMode::Temp);
-    readSenseOut(current);
+    uint32_t temp = readSenseOut();
     setDiagnostics(DiagMode::Off);
+
+    // TODO: more processing on raw ADC output
+
+    return temp;
 }
 
 
-void TPS2HB50BQ1::getFaultStatus(uint32_t& fault_status) {
+uint32_t TPS2HB50BQ1::getFaultStatus() {
     setDiagnostics(DiagMode::FaultStatus);
-    readSenseOut(fault_status);
+    uint32_t fault_status = readSenseOut();
     setDiagnostics(DiagMode::Off);
+
+    // TODO: more processing on raw ADC output
+
+    return fault_status;
 }
 
 }// namespace LVSS
