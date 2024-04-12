@@ -9,8 +9,8 @@
 #include <LVSS.hpp>
 #include <cstdio>
 #include <cstring>
-#include <dev/TPS2HB50BQ1.hpp>
 #include <dev/INA138.hpp>
+#include <dev/TPS2HB50BQ1.hpp>
 namespace IO = EVT::core::IO;
 namespace DEV = EVT::core::DEV;
 

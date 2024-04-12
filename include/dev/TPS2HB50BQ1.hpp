@@ -97,7 +97,6 @@ private:
      * @param diag_mode The diagnostic mode to set
      */
     void setDiagnostics(DiagMode diag_mode);
-
 };
 
 }// namespace LVSS

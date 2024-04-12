@@ -2,7 +2,6 @@
 
 namespace LVSS {
 
-
 // TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& senseOut, IO::GPIO& latch, IO::GPIO& diagEn,
 //                IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc);
 TPS2HB50BQ1::TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& senseOut, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc)
@@ -32,7 +31,6 @@ void TPS2HB50BQ1::setDiagStateEnabled(bool state) {
     }
 }
 
-
 void TPS2HB50BQ1::setLatch(LatchMode mode) {
     if (mode == LatchMode::Latched) {
         LATCH.writePin(IO::GPIO::State::LOW);
@@ -44,7 +42,6 @@ void TPS2HB50BQ1::setLatch(LatchMode mode) {
 uint32_t TPS2HB50BQ1::readSenseOut() {
     return ADC.readRaw();
 }
-
 
 void TPS2HB50BQ1::setDiagnostics(DiagMode diag_mode) {
     switch (diag_mode) {
@@ -74,7 +71,6 @@ void TPS2HB50BQ1::setDiagnostics(DiagMode diag_mode) {
     }
 }
 
-
 uint32_t TPS2HB50BQ1::getCurrent() {
     setDiagnostics(DiagMode::Current);
     uint32_t current = readSenseOut();
@@ -85,7 +81,6 @@ uint32_t TPS2HB50BQ1::getCurrent() {
     return current;
 }
 
-
 uint32_t TPS2HB50BQ1::getTemp() {
     setDiagnostics(DiagMode::Temp);
     uint32_t temp = readSenseOut();
@@ -95,7 +90,6 @@ uint32_t TPS2HB50BQ1::getTemp() {
 
     return temp;
 }
-
 
 uint32_t TPS2HB50BQ1::getFaultStatus() {
     setDiagnostics(DiagMode::FaultStatus);
