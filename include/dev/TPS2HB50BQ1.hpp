@@ -21,7 +21,6 @@ namespace LVSS {
  */
 class TPS2HB50BQ1 {
 public:
-
     /**
      * Constructor for the TPS2HB50BQ1 class
      * @param en1 GPIO pin for first power switch
