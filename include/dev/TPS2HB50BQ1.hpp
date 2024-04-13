@@ -54,25 +54,25 @@ public:
      * diagMode::TEMP: Get the temperature of the power switch
      */
     enum DiagMode {
-        Off = 0x00,
-        FaultStatus = 0x01,
-        Current = 0x02,
-        Temp = 0x03
+        OFF = 0x00,
+        FAULT_STATUS = 0x01,
+        CURRENT = 0x02,
+        TEMP = 0x03
     };
 
 private:
     enum LatchMode {
-        Latched = 0x00,
-        AutoRetry = 0x01
+        LATCHED = 0x00,
+        AUTO_RETRY = 0x01
     };
 
-    IO::GPIO& EN1;
-    IO::GPIO& EN2;
-    IO::GPIO& LATCH;
-    IO::GPIO& DIAG_EN;
-    IO::GPIO& DIAG_SELECT_1;
-    IO::GPIO& DIAG_SELECT_2;
-    IO::ADC& ADC;
+    IO::GPIO& en1;
+    IO::GPIO& en2;
+    IO::GPIO& latchPin;
+    IO::GPIO& diagEn;
+    IO::GPIO& diagSelect1;
+    IO::GPIO& diagSelect2;
+    IO::ADC& adcPin;
 
     void setDiagStateEnabled(bool state);
 

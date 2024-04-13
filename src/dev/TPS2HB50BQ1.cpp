@@ -2,101 +2,100 @@
 
 namespace LVSS {
 
-// TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& senseOut, IO::GPIO& latch, IO::GPIO& diagEn,
-//                IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc);
+
 TPS2HB50BQ1::TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& senseOut, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc)
-    : EN1(en1), EN2(en2), LATCH(latch), DIAG_EN(diagEn), DIAG_SELECT_1(diagSelect1), DIAG_SELECT_2(diagSelect2), ADC(adc) {
-    setDiagnostics(DiagMode::Off);
+    : en1(en1), en2(en2), latchPin(latch), diagEn(diagEn), diagSelect1(diagSelect1), diagSelect2(diagSelect2), adcPin(adc) {
+    setDiagnostics(DiagMode::OFF);
 }
 
 void TPS2HB50BQ1::setPowerSwitchStates(bool powerSwitchOneEnabled, bool powerSwitchTwoEnabled) {
     if (powerSwitchOneEnabled) {
-        EN1.writePin(IO::GPIO::State::HIGH);
+        en1.writePin(IO::GPIO::State::HIGH);
     } else {
-        EN1.writePin(IO::GPIO::State::LOW);
+        en1.writePin(IO::GPIO::State::LOW);
     }
 
     if (powerSwitchTwoEnabled) {
-        EN2.writePin(IO::GPIO::State::HIGH);
+        en2.writePin(IO::GPIO::State::HIGH);
     } else {
-        EN2.writePin(IO::GPIO::State::LOW);
+        en2.writePin(IO::GPIO::State::LOW);
     }
 }
 
 void TPS2HB50BQ1::setDiagStateEnabled(bool state) {
     if (state) {
-        DIAG_EN.writePin(IO::GPIO::State::HIGH);
+        diagEn.writePin(IO::GPIO::State::HIGH);
     } else {
-        DIAG_EN.writePin(IO::GPIO::State::LOW);
+        diagEn.writePin(IO::GPIO::State::LOW);
     }
 }
 
 void TPS2HB50BQ1::setLatch(LatchMode mode) {
-    if (mode == LatchMode::Latched) {
-        LATCH.writePin(IO::GPIO::State::LOW);
-    } else if (mode == LatchMode::AutoRetry) {
-        LATCH.writePin(IO::GPIO::State::HIGH);
+    if (mode == LatchMode::LATCHED) {
+        latchPin.writePin(IO::GPIO::State::LOW);
+    } else if (mode == LatchMode::AUTO_RETRY) {
+        latchPin.writePin(IO::GPIO::State::HIGH);
     }
 }
 
 uint32_t TPS2HB50BQ1::readSenseOut() {
-    return ADC.readRaw();
+    return adcPin.readRaw();
 }
 
 void TPS2HB50BQ1::setDiagnostics(DiagMode diag_mode) {
     switch (diag_mode) {
-    case Off:
+    case OFF:
         setDiagStateEnabled(false);
-        DIAG_SELECT_1.writePin(IO::GPIO::State::LOW);
-        DIAG_SELECT_2.writePin(IO::GPIO::State::LOW);
+        diagSelect1.writePin(IO::GPIO::State::LOW);
+        diagSelect2.writePin(IO::GPIO::State::LOW);
         break;
-    case FaultStatus:
+    case FAULT_STATUS:
         setDiagStateEnabled(false);
-        DIAG_SELECT_1.writePin(IO::GPIO::State::HIGH);
-        DIAG_SELECT_2.writePin(IO::GPIO::State::LOW);
+        diagSelect1.writePin(IO::GPIO::State::HIGH);
+        diagSelect2.writePin(IO::GPIO::State::LOW);
         setDiagStateEnabled(true);
         break;
-    case Current:
+    case CURRENT:
         setDiagStateEnabled(false);
-        DIAG_SELECT_1.writePin(IO::GPIO::State::LOW);
-        DIAG_SELECT_2.writePin(IO::GPIO::State::HIGH);
+        diagSelect1.writePin(IO::GPIO::State::LOW);
+        diagSelect2.writePin(IO::GPIO::State::HIGH);
         setDiagStateEnabled(true);
         break;
-    case Temp:
+    case TEMP:
         setDiagStateEnabled(false);
-        DIAG_SELECT_1.writePin(IO::GPIO::State::HIGH);
-        DIAG_SELECT_2.writePin(IO::GPIO::State::HIGH);
+        diagSelect1.writePin(IO::GPIO::State::HIGH);
+        diagSelect2.writePin(IO::GPIO::State::HIGH);
         setDiagStateEnabled(true);
         break;
     }
 }
 
 uint32_t TPS2HB50BQ1::getCurrent() {
-    setDiagnostics(DiagMode::Current);
+    setDiagnostics(DiagMode::CURRENT);
     uint32_t current = readSenseOut();
-    setDiagnostics(DiagMode::Off);
+    setDiagnostics(DiagMode::OFF);
 
-    // TODO: more processing on raw ADC output
+    // TODO: more processing on raw adcPin output
 
     return current;
 }
 
 uint32_t TPS2HB50BQ1::getTemp() {
-    setDiagnostics(DiagMode::Temp);
+    setDiagnostics(DiagMode::TEMP);
     uint32_t temp = readSenseOut();
-    setDiagnostics(DiagMode::Off);
+    setDiagnostics(DiagMode::OFF);
 
-    // TODO: more processing on raw ADC output
+    // TODO: more processing on raw adcPin output
 
     return temp;
 }
 
 uint32_t TPS2HB50BQ1::getFaultStatus() {
-    setDiagnostics(DiagMode::FaultStatus);
+    setDiagnostics(DiagMode::FAULT_STATUS);
     uint32_t fault_status = readSenseOut();
-    setDiagnostics(DiagMode::Off);
+    setDiagnostics(DiagMode::OFF);
 
-    // TODO: more processing on raw ADC output
+    // TODO: more processing on raw adcPin output
 
     return fault_status;
 }
