@@ -32,7 +32,7 @@ public:
      * @param diagSelect2 Mux select pin for diagnostics, see setDiagnostics
      */
     TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn,
-                IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc);
+                IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& senseOut);
 
     void setPowerSwitchStates(bool powerSwitchOneEnabled, bool powerSwitchTwoEnabled);
 
@@ -82,7 +82,7 @@ private:
     IO::GPIO& diagEn;
     IO::GPIO& diagSelect1;
     IO::GPIO& diagSelect2;
-    IO::ADC& adcPin;
+    IO::ADC& senseOut;
 
     void setDiagStateEnabled(bool state);
 

@@ -48,9 +48,11 @@ int main() {
     log::LOGGER.setUART(&uart);
     log::LOGGER.setLogLevel(log::Logger::LogLevel::INFO);
 
-    IO::GPIO& lvssEn0 = IO::getGPIO<IO::Pin::PA_10>(IO::GPIO::Direction::INPUT);
-    IO::GPIO& lvssEn1 = IO::getGPIO<IO::Pin::PA_9>(IO::GPIO::Direction::INPUT);
-    IO::GPIO& lvssEn2 = IO::getGPIO<IO::Pin::PA_8>(IO::GPIO::Direction::INPUT);
+    IO::GPIO& lvssPowerSwitchEnable0 = IO::getGPIO<IO::Pin::PA_10>(IO::GPIO::Direction::OUTPUT);
+    IO::GPIO& lvssPowerSwitchEnable1 = IO::getGPIO<IO::Pin::PA_9>(IO::GPIO::Direction::OUTPUT);
+    IO::GPIO& lvssPowerSwitchEnable2 = IO::getGPIO<IO::Pin::PA_8>(IO::GPIO::Direction::OUTPUT);
+
+    IO::GPIO* powerSwitches[3] = {&lvssPowerSwitchEnable0, &lvssPowerSwitchEnable1, &lvssPowerSwitchEnable2};
 
     // initialize timer? probably don't need
     DEV::Timerf3xx timer(TIM2, 160);
@@ -94,10 +96,10 @@ int main() {
     // Initialize all the CANOpen dev.
     IO::initializeCANopenDriver(&canOpenQueue, &can, &timer, &canStackDriver, &nvmDriver, &timerDriver, &canDriver);
 
-    // LVSS::LVSS lvss = LVSS::LVSS(lvssEn0, lvssEn1, lvssEn2);
+    LVSS::LVSS lvss = LVSS::LVSS(reinterpret_cast<LVSS::TPS2HB50BQ1**>(powerSwitches));
 
     // Initialize the CANOpen node we are using.
-    // IO::initializeCANopenNode(&canNode, &lvss, &canStackDriver, sdoBuffer, appTmrMem);
+    IO::initializeCANopenNode(&canNode, &lvss, &canStackDriver, sdoBuffer, appTmrMem);
 
     // String to store user input
     char buf[100];

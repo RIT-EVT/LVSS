@@ -3,8 +3,8 @@
 namespace LVSS {
 
 
-TPS2HB50BQ1::TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& senseOut, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc)
-    : en1(en1), en2(en2), latchPin(latch), diagEn(diagEn), diagSelect1(diagSelect1), diagSelect2(diagSelect2), adcPin(adc) {
+TPS2HB50BQ1::TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc)
+    : en1(en1), en2(en2), latchPin(latch), diagEn(diagEn), diagSelect1(diagSelect1), diagSelect2(diagSelect2), senseOut(adc) {
     setDiagnostics(DiagMode::OFF);
 }
 
@@ -39,7 +39,7 @@ void TPS2HB50BQ1::setLatch(LatchMode mode) {
 }
 
 uint32_t TPS2HB50BQ1::readSenseOut() {
-    return adcPin.readRaw();
+    return senseOut.readRaw();
 }
 
 void TPS2HB50BQ1::setDiagnostics(DiagMode diag_mode) {

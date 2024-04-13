@@ -26,10 +26,10 @@ public:
     static constexpr uint8_t NODE_ID = 42;
 
     /**
-     * Placeholder constructor for the LVSS class
+     * Constructor for the LVSS class, takes a pointer to an array of power switches
+     * @param powerSwitches an array of pointers to power switches
      */
     explicit LVSS(TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE]);
-    LVSS(IO::GPIO& lvssEn);
 
     CO_OBJ_T* getObjectDictionary() override;
 
