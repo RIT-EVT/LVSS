@@ -75,7 +75,7 @@ uint32_t TPS2HB50BQ1::getCurrent() {
     uint32_t current = readSenseOut();
     setDiagnostics(DiagMode::OFF);
 
-    // TODO: more processing on raw adcPin output
+    // TODO: more processing on raw adc senseOut pin output
 
     return current;
 }
@@ -85,7 +85,7 @@ uint32_t TPS2HB50BQ1::getTemp() {
     uint32_t temp = readSenseOut();
     setDiagnostics(DiagMode::OFF);
 
-    // TODO: more processing on raw adcPin output
+    // TODO: more processing on raw adc senseOut pin output
 
     return temp;
 }
@@ -95,7 +95,7 @@ uint32_t TPS2HB50BQ1::getFaultStatus() {
     uint32_t fault_status = readSenseOut();
     setDiagnostics(DiagMode::OFF);
 
-    // TODO: more processing on raw adcPin output
+    // TODO: more processing on raw adc senseOut pin output
 
     return fault_status;
 }
