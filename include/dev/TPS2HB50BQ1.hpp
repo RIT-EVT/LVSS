@@ -21,7 +21,17 @@ namespace LVSS {
  */
 class TPS2HB50BQ1 {
 public:
-    TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& senseOut, IO::GPIO& latch, IO::GPIO& diagEn,
+
+    /**
+     * Constructor for the TPS2HB50BQ1 class
+     * @param en1 GPIO pin for first power switch
+     * @param en2 GPIO pin for second power switch
+     * @param latch GPIO pin for latch, see LatchMode enum for options
+     * @param diagEn GPIO pin for diagnostics enable, see setDiagnostics
+     * @param diagSelect1 Mux select pin for diagnostics, see setDiagnostics
+     * @param diagSelect2 Mux select pin for diagnostics, see setDiagnostics
+     */
+    TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn,
                 IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc);
 
     void setPowerSwitchStates(bool powerSwitchOneEnabled, bool powerSwitchTwoEnabled);
