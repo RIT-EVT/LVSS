@@ -48,20 +48,20 @@ int main() {
     log::LOGGER.setUART(&uart);
     log::LOGGER.setLogLevel(log::Logger::LogLevel::INFO);
 
-    IO::GPIO& lvssPowerSwitch0Enable0 = IO::getGPIO<IO::Pin::PC_14>(IO::GPIO::Direction::OUTPUT); // hib
+    IO::GPIO& lvssPowerSwitch0Enable0 = IO::getGPIO<IO::Pin::PC_14>(IO::GPIO::Direction::OUTPUT);// hib
     IO::GPIO& lvssPowerSwitch0Enable1 = IO::getGPIO<IO::Pin::PD_2>(IO::GPIO::Direction::OUTPUT); // battery
-    IO::GPIO& lvssPowerSwitch0Latch = IO::getGPIO<IO::Pin::PC_10>(IO::GPIO::Direction::OUTPUT); // latch
+    IO::GPIO& lvssPowerSwitch0Latch = IO::getGPIO<IO::Pin::PC_10>(IO::GPIO::Direction::OUTPUT);  // latch
 
-    IO::GPIO& lvssPowerSwitch1Enable0 = IO::getGPIO<IO::Pin::PF_1>(IO::GPIO::Direction::OUTPUT); // hudl
-    IO::GPIO& lvssPowerSwitch1Enable1 = IO::getGPIO<IO::Pin::PA_0>(IO::GPIO::Direction::OUTPUT); // tms
-    IO::GPIO& lvssPowerSwitch1Latch = IO::getGPIO<IO::Pin::PC_3>(IO::GPIO::Direction::OUTPUT); // latch
+    IO::GPIO& lvssPowerSwitch1Enable0 = IO::getGPIO<IO::Pin::PF_1>(IO::GPIO::Direction::OUTPUT);// hudl
+    IO::GPIO& lvssPowerSwitch1Enable1 = IO::getGPIO<IO::Pin::PA_0>(IO::GPIO::Direction::OUTPUT);// tms
+    IO::GPIO& lvssPowerSwitch1Latch = IO::getGPIO<IO::Pin::PC_3>(IO::GPIO::Direction::OUTPUT);  // latch
 
-    IO::GPIO& lvssPowerSwitch2Enable0 = IO::getGPIO<IO::Pin::PA_1>(IO::GPIO::Direction::OUTPUT); // gub
-    IO::GPIO& lvssPowerSwitch2Enable1 = IO::getGPIO<IO::Pin::PC_8>(IO::GPIO::Direction::OUTPUT); // acc
+    IO::GPIO& lvssPowerSwitch2Enable0 = IO::getGPIO<IO::Pin::PA_1>(IO::GPIO::Direction::OUTPUT);// gub
+    IO::GPIO& lvssPowerSwitch2Enable1 = IO::getGPIO<IO::Pin::PC_8>(IO::GPIO::Direction::OUTPUT);// acc
     IO::GPIO& lvssPowerSwitch2Latch = IO::getGPIO<IO::Pin::PB_14>(IO::GPIO::Direction::OUTPUT); // latch
 
     IO::GPIO& diagEnable = IO::getGPIO<IO::Pin::PC_13>(IO::GPIO::Direction::OUTPUT); // diag enable
-    IO::GPIO& diagSelect1 = IO::getGPIO<IO::Pin::PC_15>(IO::GPIO::Direction::OUTPUT); // diag select 1
+    IO::GPIO& diagSelect1 = IO::getGPIO<IO::Pin::PC_15>(IO::GPIO::Direction::OUTPUT);// diag select 1
     IO::GPIO& diagSelect2 = IO::getGPIO<IO::Pin::PF_0>(IO::GPIO::Direction::OUTPUT); // diag select 2
 
     IO::ADC& lvssPowerSwitch0SenseOut = IO::getADC<IO::Pin::PC_0>();
@@ -74,15 +74,14 @@ int main() {
                                                        lvssPowerSwitch0SenseOut);
 
     LVSS::TPS2HB50BQ1 powerSwitch1 = LVSS::TPS2HB50BQ1(lvssPowerSwitch1Enable0, lvssPowerSwitch1Enable1,
-                                                         lvssPowerSwitch1Latch, diagEnable,
-                                                         diagSelect1, diagSelect2,
-                                                         lvssPowerSwitch1SenseOut);
+                                                       lvssPowerSwitch1Latch, diagEnable,
+                                                       diagSelect1, diagSelect2,
+                                                       lvssPowerSwitch1SenseOut);
 
     LVSS::TPS2HB50BQ1 powerSwitch2 = LVSS::TPS2HB50BQ1(lvssPowerSwitch2Enable0, lvssPowerSwitch2Enable1,
-                                                            lvssPowerSwitch2Latch, diagEnable,
-                                                            diagSelect1, diagSelect2,
-                                                            lvssPowerSwitch2SenseOut);
-
+                                                       lvssPowerSwitch2Latch, diagEnable,
+                                                       diagSelect1, diagSelect2,
+                                                       lvssPowerSwitch2SenseOut);
 
     LVSS::TPS2HB50BQ1* powerSwitches[3] = {&powerSwitch0, &powerSwitch1, &powerSwitch2};
 
