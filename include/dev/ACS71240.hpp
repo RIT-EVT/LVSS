@@ -31,7 +31,6 @@ public:
 private:
     /** ADC instance for getting input voltage */
     IO::ADC& ADC;
-
 };
 
 }// namespace LVSS
