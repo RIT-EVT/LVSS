@@ -1,6 +1,6 @@
 /**
  * This is a basic sample to show how the current sensing feature of the
- * LVSS using the INA138 IC
+ * LVSS using the ACS71240 IC
  */
 
 #include <EVT/io/UART.hpp>
@@ -25,12 +25,14 @@ int main() {
     log::LOGGER.setLogLevel(log::Logger::LogLevel::INFO);
 
     //ADC
-    IO::ADC& adc0 = IO::getADC<IO::Pin::PA_1>();
+    IO::ADC& adc0 = IO::getADC<IO::Pin::A1>();
 
-    LVSS::INA138 ina138(adc0);
+    //Create ACS71240 instance
+    LVSS::ACS71240 acs71240(adc0);
 
     while (1) {
-        uart.printf("ADC0: %d\r\n mA", ina138.readCurrent());
-        time::wait(500);
+        uart.printf("ADC0: %dmA\r\n", acs71240.readCurrent());
+        uart.printf("Counts: %d\r\n", acs71240.readCounts());
+        time::wait(1000);
     }
 }

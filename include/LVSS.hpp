@@ -7,7 +7,7 @@
 #include <EVT/io/SPI.hpp>
 #include <EVT/utils/log.hpp>
 #include <LVSS.hpp>
-#include <dev/INA138.hpp>
+#include <dev/ACS71240.hpp>
 
 namespace IO = EVT::core::IO;
 namespace DEV = EVT::core::DEV;
