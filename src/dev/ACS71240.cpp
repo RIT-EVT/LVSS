@@ -8,14 +8,10 @@ int32_t ACS71240::readCurrent() {
     //Gets adcCounts from adc
     int32_t adcCounts = ADC.readRaw();
 
+    //((adcCounts - average adc counts) * 3300 / 180)
     int32_t current = (((adcCounts - 1970) * 3300) / 180);
 
     return current;
-}
-
-uint32_t ACS71240::readCounts() {
-    uint32_t adcCounts = ADC.readRaw();
-    return adcCounts;
 }
 
 }// namespace LVSS

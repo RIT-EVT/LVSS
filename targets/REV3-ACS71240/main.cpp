@@ -25,14 +25,12 @@ int main() {
     log::LOGGER.setLogLevel(log::Logger::LogLevel::INFO);
 
     //ADC
-    IO::ADC& adc0 = IO::getADC<IO::Pin::A1>();
+    IO::ADC& adc0 = IO::getADC<IO::Pin::PA_1>();
 
     //Create ACS71240 instance
     LVSS::ACS71240 acs71240(adc0);
 
     while (1) {
         uart.printf("ADC0: %dmA\r\n", acs71240.readCurrent());
-        uart.printf("Counts: %d\r\n", acs71240.readCounts());
-        time::wait(1000);
     }
 }

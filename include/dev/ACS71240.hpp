@@ -26,7 +26,6 @@ public:
       * @return The current
       */
     int32_t readCurrent();
-    uint32_t readCounts();
 
 private:
     /** ADC instance for getting input voltage */
