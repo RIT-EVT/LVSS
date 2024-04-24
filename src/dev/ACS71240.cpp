@@ -8,7 +8,7 @@ int32_t ACS71240::readCurrent() {
     //Gets adcCounts from adc
     int32_t adcCounts = ADC.readRaw();
 
-    //((adcCounts - average adc counts) * 3300 / 180)
+    //(((adcCounts - average adc counts) * 3.3) / (4096 * 0.044)) * 1000
     int32_t current = (((adcCounts - 1970) * 3300) / 180);
 
     return current;

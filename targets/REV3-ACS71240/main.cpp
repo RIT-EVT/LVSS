@@ -32,5 +32,6 @@ int main() {
 
     while (1) {
         uart.printf("ADC0: %dmA\r\n", acs71240.readCurrent());
+        time::wait(500);
     }
 }

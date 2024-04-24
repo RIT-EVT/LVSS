@@ -23,7 +23,7 @@ public:
     /**
       * Get the current detected by the ACS71240
       *
-      * @return The current
+      * @return The current in mA
       */
     int32_t readCurrent();
 
