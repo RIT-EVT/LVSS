@@ -20,9 +20,4 @@ LVSS::LVSS(TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE]) {
     }
 }
 
-// temporarily commented out to make compiler happy
-//LVSS::LVSS(TPS2HB50BQ1 powerSwitchArr[POWER_SWITCHES_SIZE]) : PowerSwitches(powerSwitchArr), currentSensor(currentSensor) {
-//}
-//LVSS::LVSS(TPS2HB50BQ1* powerSwitches) : PowerSwitches(powerSwitches) {}
-//
 }// namespace LVSS
