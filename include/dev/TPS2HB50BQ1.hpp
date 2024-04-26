@@ -33,6 +33,18 @@ public:
     TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn,
                 IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& senseOut);
 
+    enum DiagMode {
+        OFF = 0x00,
+        FAULT_STATUS = 0x01,
+        CURRENT = 0x02,
+        TEMP = 0x03
+    };
+
+    enum LatchMode {
+        LATCHED = 0x00,
+        AUTO_RETRY = 0x01
+    };
+
     void setPowerSwitchStates(bool powerSwitchOneEnabled, bool powerSwitchTwoEnabled);
 
     /**
@@ -57,23 +69,21 @@ public:
     uint32_t getTemp();
 
     /**
+    * Set the latch mode of the power switch
+    *
+    * @param mode The latch mode to set
+    */
+    void setLatch(LatchMode mode);
+
+    /**
      * diagMode::OFF: Sets diagnostics pin to low, along with both diag select pins.
      * diagMode::FAULT_STATUS: Get the fault status of the power switch
      * diagMode::CURRENT: Get the current of the power switch
      * diagMode::TEMP: Get the temperature of the power switch
      */
-    enum DiagMode {
-        OFF = 0x00,
-        FAULT_STATUS = 0x01,
-        CURRENT = 0x02,
-        TEMP = 0x03
-    };
+
 
 private:
-    enum LatchMode {
-        LATCHED = 0x00,
-        AUTO_RETRY = 0x01
-    };
 
     IO::GPIO& en1;
     IO::GPIO& en2;
@@ -84,13 +94,6 @@ private:
     IO::ADC& senseOut;
 
     void setDiagStateEnabled(bool state);
-
-    /**
-    * Set the latch mode of the power switch
-    *
-    * @param mode The latch mode to set
-    */
-    void setLatch(LatchMode mode);
 
     /**
      * Read the sense out of the power switch

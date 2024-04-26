@@ -49,22 +49,22 @@ void TPS2HB50BQ1::setDiagnostics(DiagMode diag_mode) {
         diagSelect2.writePin(IO::GPIO::State::LOW);
         break;
     case FAULT_STATUS:
-        setDiagStateEnabled(false);
+        setDiagStateEnabled(true);
         diagSelect1.writePin(IO::GPIO::State::HIGH);
         diagSelect2.writePin(IO::GPIO::State::LOW);
-        setDiagStateEnabled(true);
+//        setDiagStateEnabled(false);
         break;
     case CURRENT:
-        setDiagStateEnabled(false);
+        setDiagStateEnabled(true);
         diagSelect1.writePin(IO::GPIO::State::LOW);
         diagSelect2.writePin(IO::GPIO::State::HIGH);
-        setDiagStateEnabled(true);
+//        setDiagStateEnabled(false);
         break;
     case TEMP:
-        setDiagStateEnabled(false);
+        setDiagStateEnabled(true);
         diagSelect1.writePin(IO::GPIO::State::HIGH);
         diagSelect2.writePin(IO::GPIO::State::HIGH);
-        setDiagStateEnabled(true);
+//        setDiagStateEnabled(false);
         break;
     }
 }
@@ -72,7 +72,7 @@ void TPS2HB50BQ1::setDiagnostics(DiagMode diag_mode) {
 uint32_t TPS2HB50BQ1::getCurrent() {
     setDiagnostics(DiagMode::CURRENT);
     uint32_t current = readSenseOut();
-    setDiagnostics(DiagMode::OFF);
+    //setDiagnostics(DiagMode::OFF);
 
     // TODO: more processing on raw adc senseOut pin output
 
@@ -82,7 +82,7 @@ uint32_t TPS2HB50BQ1::getCurrent() {
 uint32_t TPS2HB50BQ1::getTemp() {
     setDiagnostics(DiagMode::TEMP);
     uint32_t temp = readSenseOut();
-    setDiagnostics(DiagMode::OFF);
+    //setDiagnostics(DiagMode::OFF);
 
     // TODO: more processing on raw adc senseOut pin output
 
@@ -92,7 +92,7 @@ uint32_t TPS2HB50BQ1::getTemp() {
 uint32_t TPS2HB50BQ1::getFaultStatus() {
     setDiagnostics(DiagMode::FAULT_STATUS);
     uint32_t fault_status = readSenseOut();
-    setDiagnostics(DiagMode::OFF);
+    //setDiagnostics(DiagMode::OFF);
 
     // TODO: more processing on raw adc senseOut pin output
 
