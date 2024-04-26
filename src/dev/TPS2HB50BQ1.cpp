@@ -52,19 +52,19 @@ void TPS2HB50BQ1::setDiagnostics(DiagMode diag_mode) {
         setDiagStateEnabled(true);
         diagSelect1.writePin(IO::GPIO::State::HIGH);
         diagSelect2.writePin(IO::GPIO::State::LOW);
-//        setDiagStateEnabled(false);
+        //        setDiagStateEnabled(false);
         break;
     case CURRENT:
         setDiagStateEnabled(true);
         diagSelect1.writePin(IO::GPIO::State::LOW);
         diagSelect2.writePin(IO::GPIO::State::HIGH);
-//        setDiagStateEnabled(false);
+        //        setDiagStateEnabled(false);
         break;
     case TEMP:
         setDiagStateEnabled(true);
         diagSelect1.writePin(IO::GPIO::State::HIGH);
         diagSelect2.writePin(IO::GPIO::State::HIGH);
-//        setDiagStateEnabled(false);
+        //        setDiagStateEnabled(false);
         break;
     }
 }

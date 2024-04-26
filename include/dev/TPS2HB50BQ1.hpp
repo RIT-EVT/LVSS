@@ -82,9 +82,7 @@ public:
      * diagMode::TEMP: Get the temperature of the power switch
      */
 
-
 private:
-
     IO::GPIO& en1;
     IO::GPIO& en2;
     IO::GPIO& latchPin;

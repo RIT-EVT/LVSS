@@ -49,36 +49,35 @@ int main() {
     log::LOGGER.setLogLevel(log::Logger::LogLevel::INFO);
 
     // PC14 is a LSE output, so we can't use it as a GPIO, so for testing we'll use PB_7
-    IO::GPIO& lvssPowerSwitch0Enable1 = IO::getGPIO<IO::Pin::PB_7>(IO::GPIO::Direction::OUTPUT); // hib
+    IO::GPIO& lvssPowerSwitch0Enable1 = IO::getGPIO<IO::Pin::PB_7>(IO::GPIO::Direction::OUTPUT);// hib
 
-    IO::GPIO& lvssPowerSwitch0Enable2 = IO::getGPIO<IO::Pin::PD_2>(IO::GPIO::Direction::OUTPUT); // battery
+    IO::GPIO& lvssPowerSwitch0Enable2 = IO::getGPIO<IO::Pin::PD_2>(IO::GPIO::Direction::OUTPUT);// battery
     IO::GPIO& lvssPowerSwitch0Latch = IO::getGPIO<IO::Pin::PC_10>(IO::GPIO::Direction::OUTPUT); // latch
 
-//    IO::GPIO& lvssPowerSwitch1Enable1 = IO::getGPIO<IO::Pin::PF_1>(IO::GPIO::Direction::OUTPUT); // hudl
-//    IO::GPIO& lvssPowerSwitch1Enable2 = IO::getGPIO<IO::Pin::PA_0>(IO::GPIO::Direction::OUTPUT); // tms
-//    IO::GPIO& lvssPowerSwitch1Latch = IO::getGPIO<IO::Pin::PC_3>(IO::GPIO::Direction::OUTPUT); // latch
-//
-//    IO::GPIO& lvssPowerSwitch2Enable0 = IO::getGPIO<IO::Pin::PA_1>(IO::GPIO::Direction::OUTPUT); // gub
-//    IO::GPIO& lvssPowerSwitch2Enable1 = IO::getGPIO<IO::Pin::PC_8>(IO::GPIO::Direction::OUTPUT); // acc
-//    IO::GPIO& lvssPowerSwitch2Latch = IO::getGPIO<IO::Pin::PB_14>(IO::GPIO::Direction::OUTPUT); // latch
+    //    IO::GPIO& lvssPowerSwitch1Enable1 = IO::getGPIO<IO::Pin::PF_1>(IO::GPIO::Direction::OUTPUT); // hudl
+    //    IO::GPIO& lvssPowerSwitch1Enable2 = IO::getGPIO<IO::Pin::PA_0>(IO::GPIO::Direction::OUTPUT); // tms
+    //    IO::GPIO& lvssPowerSwitch1Latch = IO::getGPIO<IO::Pin::PC_3>(IO::GPIO::Direction::OUTPUT); // latch
+    //
+    //    IO::GPIO& lvssPowerSwitch2Enable0 = IO::getGPIO<IO::Pin::PA_1>(IO::GPIO::Direction::OUTPUT); // gub
+    //    IO::GPIO& lvssPowerSwitch2Enable1 = IO::getGPIO<IO::Pin::PC_8>(IO::GPIO::Direction::OUTPUT); // acc
+    //    IO::GPIO& lvssPowerSwitch2Latch = IO::getGPIO<IO::Pin::PB_14>(IO::GPIO::Direction::OUTPUT); // latch
 
-    IO::GPIO& diagEnable = IO::getGPIO<IO::Pin::PC_13>(IO::GPIO::Direction::OUTPUT); // diag enable
+    IO::GPIO& diagEnable = IO::getGPIO<IO::Pin::PC_13>(IO::GPIO::Direction::OUTPUT);// diag enable
 
     // PC15 is ALSO a LSE output, so we can't use it as a GPIO, so for testing we'll use PC_3
-    IO::GPIO& diagSelect1 = IO::getGPIO<IO::Pin::PC_3>(IO::GPIO::Direction::OUTPUT); // diag select 1
+    IO::GPIO& diagSelect1 = IO::getGPIO<IO::Pin::PC_3>(IO::GPIO::Direction::OUTPUT);// diag select 1
 
     // PF_0 is a HSE, or high speed clock output so we use PC_4 instead
-    IO::GPIO& diagSelect2 = IO::getGPIO<IO::Pin::PC_4>(IO::GPIO::Direction::OUTPUT); // diag select 2
+    IO::GPIO& diagSelect2 = IO::getGPIO<IO::Pin::PC_4>(IO::GPIO::Direction::OUTPUT);// diag select 2
 
     IO::ADC& lvssPowerSwitch0SenseOut = IO::getADC<IO::Pin::PC_0>();
-//    IO::ADC& lvssPowerSwitch1SenseOut = IO::getADC<IO::Pin::PC_1>();
-//    IO::ADC& lvssPowerSwitch2SenseOut = IO::getADC<IO::Pin::PC_2>();
+    //    IO::ADC& lvssPowerSwitch1SenseOut = IO::getADC<IO::Pin::PC_1>();
+    //    IO::ADC& lvssPowerSwitch2SenseOut = IO::getADC<IO::Pin::PC_2>();
 
     LVSS::TPS2HB50BQ1 powerSwitch0 = LVSS::TPS2HB50BQ1(lvssPowerSwitch0Enable1, lvssPowerSwitch0Enable2,
                                                        lvssPowerSwitch0Latch, diagEnable,
                                                        diagSelect1, diagSelect2,
                                                        lvssPowerSwitch0SenseOut);
-
 
     // initialize timer? probably don't need
     DEV::Timerf3xx timer(TIM2, 160);
@@ -105,46 +104,36 @@ int main() {
 
         if (strcmp(buf, "help") == 0) {
             uart.printf("\r\n");
-            for (auto & command : commands) {
+            for (auto& command : commands) {
                 uart.printf("%s", command);
             }
-        }
-        else if (strcmp(buf, "latch") == 0) {
+        } else if (strcmp(buf, "latch") == 0) {
             uart.printf("\r\nSetting latch\r\n");
             powerSwitch0.setLatch(LVSS::TPS2HB50BQ1::LatchMode::LATCHED);
-        }
-        else if (strcmp(buf, "autoretry") == 0) {
+        } else if (strcmp(buf, "autoretry") == 0) {
             uart.printf("\r\nSetting auto retry\r\n");
             powerSwitch0.setLatch(LVSS::TPS2HB50BQ1::LatchMode::AUTO_RETRY);
-        }
-        else if (strcmp(buf, "enAll") == 0) {
+        } else if (strcmp(buf, "enAll") == 0) {
             uart.printf("\r\nEnabling all power switches\r\n");
             powerSwitch0.setPowerSwitchStates(true, true);
-        }
-        else if (strcmp(buf, "disAll") == 0) {
+        } else if (strcmp(buf, "disAll") == 0) {
             uart.printf("\r\nDisabling all power switches\r\n");
             powerSwitch0.setPowerSwitchStates(false, false);
-        }
-        else if (strcmp(buf, "en1") == 0) {
+        } else if (strcmp(buf, "en1") == 0) {
             uart.printf("\r\nEnabling power switch 1\r\n");
             powerSwitch0.setPowerSwitchStates(true, false);
-        }
-        else if (strcmp(buf, "en2") == 0) {
+        } else if (strcmp(buf, "en2") == 0) {
             uart.printf("\r\nEnabling power switch 2\r\n");
             powerSwitch0.setPowerSwitchStates(false, true);
-        }
-        else if (strcmp(buf, "temp") == 0) {
+        } else if (strcmp(buf, "temp") == 0) {
             uart.printf("\r\ntemp: %d\r\n", powerSwitch0.getTemp());
-        }
-        else if (strcmp(buf, "current") == 0) {
+        } else if (strcmp(buf, "current") == 0) {
             uart.printf("\r\nCurrent: %d\r\n", powerSwitch0.getCurrent());
-        }
-        else if (strcmp(buf, "fault") == 0) {
+        } else if (strcmp(buf, "fault") == 0) {
             uart.printf("\r\nFault state: %d\r\n", powerSwitch0.getFaultStatus());
-        }
-        else {
+        } else {
             uart.printf("\r\nInvalid command\r\n");
-            for (auto & command : commands) {
+            for (auto& command : commands) {
                 uart.printf("%s", command);
             }
         }
