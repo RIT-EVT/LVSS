@@ -63,8 +63,8 @@ add_library(${PROJECT_NAME} STATIC
 # Add sources
 target_sources(${PROJECT_NAME} PRIVATE
         src/LVSS.cpp
+        src/dev/ACS71240.cpp
         src/dev/TPS2HB50BQ1.cpp
-        src/dev/INA138.cpp
         )
 
 ###############################################################################
