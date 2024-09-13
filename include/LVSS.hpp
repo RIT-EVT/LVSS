@@ -7,9 +7,9 @@
 #include <EVT/io/SPI.hpp>
 #include <EVT/utils/log.hpp>
 #include <LVSS.hpp>
-#include <dev/ACS71240.hpp>
 #include <cstdio>
 #include <cstring>
+#include <dev/ACS71240.hpp>
 #include <dev/TPS2HB50BQ1.hpp>
 
 namespace IO = EVT::core::IO;
