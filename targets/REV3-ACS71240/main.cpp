@@ -1,6 +1,6 @@
 /**
- * This is a basic sample to show how the current sensing feature of the
- * LVSS using the ACS71240 IC
+ * This is a basic sample to show the current sensing feature of the
+ * LVSS using the ACS71240 IC.
  */
 
 #include <EVT/io/UART.hpp>

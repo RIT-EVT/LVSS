@@ -10,7 +10,7 @@
 #include <EVT/io/pin.hpp>
 #include <EVT/manager.hpp>
 #include <EVT/utils/log.hpp>
-#include <EVT/utils/time.hpp>
+//#include <EVT/utils/time.hpp>
 #include <LVSS.hpp>
 
 namespace IO = EVT::core::IO;
@@ -132,13 +132,26 @@ int main() {
     // Initialize the CANOpen node we are using.
     IO::initializeCANopenNode(&canNode, &lvss, &canStackDriver, sdoBuffer, appTmrMem);
 
+    CONmtSetMode(&canNode.Nmt, CO_OPERATIONAL);
+
     // String to store user input
     char buf[100];
+    uint16_t board_sig;
+    uint16_t hv_sig;
 
     while (1) {
         // Read user input
-        uart.printf("Enter message: ");
-        uart.gets(buf, 100);
-        uart.printf("\n\recho: %s\n\r", buf);
+//        uart.printf("Enter message: ");
+//        uart.gets(buf, 100);
+//        uart.printf("\n\recho: %s\n\r", buf);
+
+        lvss.setBoardEnable();
+        board_sig = lvss.getBoardEnable();
+        uart.printf("\n\rboard_sig: %d\n\r", board_sig);
+
+//        lvss.process();
+
+        IO::processCANopenNode(&canNode);
+        time::wait(500);
     }
 }
