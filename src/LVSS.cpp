@@ -14,7 +14,7 @@ CO_OBJ_T* LVSS::getObjectDictionary() {
     return  &objectDictionary[0];
 }
 
-LVSS::LVSS(TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE]) {
+LVSS::LVSS(TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE]) : boardEN({0}), VCUBoardSig(0), highValCurrent(0), swCurrent(0) {
     for (int i = 0; i < POWER_SWITCHES_SIZE; i++) {
         this->powerSwitches[i] = powerSwitches[i];
     }
@@ -53,8 +53,7 @@ void LVSS::process() {
 
 void LVSS::initState() {
     /** Entry housekeeping */
-    /* Checks if the FSM has entered a new state */
-    if (isNewState) {
+    if (isNewState) { // Checks if the FSM has entered a new state
         isNewState = false;
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Entering initialization state");
     }
@@ -62,11 +61,8 @@ void LVSS::initState() {
     /** State business */
     time::wait(102); // Wait for 102ms as per the VICOR datasheet
 
-    /**
-     * Exit housekeeping
-     * If 110ms has passed then go into the next state
-     */
-    if (time::millis() >= 110) {
+    /** Exit housekeeping */
+    if (time::millis() >= 110) { // If 110ms has passed then go into the next state
         state = State::SOFT_START;
         isNewState = true;
     }
@@ -84,17 +80,11 @@ void LVSS::softStartState() {
 
     /** State business */
     this->boardEN.val = VCUBoardSig; // Assigns the VCU signal to the union bit field
-    // Read HV Current
-    // Read Error Status
-    // Read Switch Current
 
-    log::LOGGER.log(log::Logger::LogLevel::INFO, "%d", boardEN.val);
+    log::LOGGER.log(log::Logger::LogLevel::INFO, "boardEN.val = %d", boardEN.val);
 
-    /**
-     * Exit housekeeping
-     * If the VCU sends a signal to turn on all the boards go to the power up state
-     */
-    if (boardEN.val == 0x3F) {
+    /** Exit housekeeping */
+    if (boardEN.val == 0x3F) { // If the VCU sends a signal to turn on all the boards go to the power up state
         state = State::POWER_UP;
         isNewState = true;
     }
@@ -106,14 +96,16 @@ void LVSS::powerUpState() {
         isNewState = false;
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Entering power up state");
     }
+    bool powerUpFinished = false;
 
-    /**
-     * State business
-     * 1. Assign which boards will be turned on
-     * 2. Write to the SDO server
-     */
+    /** State business */
+    // Assign which boards will be turned on
 
     /** Exit housekeeping */
+    if (powerUpFinished) {
+        state = State::IDLE;
+        isNewState = true;
+    }
 }
 
 void LVSS::idleState() {
@@ -123,16 +115,12 @@ void LVSS::idleState() {
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Entering idle state");
     }
 
-    /**
-     * State business
-     * 1. Checks important data
-     * 2. If a piece of data is not what is expected or coming in late give a corresponding error
-     */
+    /** State business */
     if(highValCurrent >= 9000) {
-        err = LVSS_ERR::LVSS_ERR_HV_CURRENT;
+        log::LOGGER.log(log::Logger::LogLevel::ERROR, "High Value Current Error\r\n");
     }
-    else {
-        err = LVSS_ERR::LVSS_ERR_NONE;
+    else if(swCurrent >= 9000) {
+        log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch Current Error\r\n");
     }
 
     /** Exit housekeeping */

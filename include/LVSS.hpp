@@ -49,13 +49,6 @@ public:
         IDLE           = 3, /* Checks values for errors */
     };
 
-    /** LVSS Errors */
-    enum class LVSS_ERR {
-        LVSS_ERR_NONE,
-        LVSS_ERR_HV_CURRENT,
-        LVSS_ERR_SW,
-    };
-
     /**
      * Constructor for the LVSS class, takes a pointer to an array of power switches
      * @param powerSwitches an array of pointers to power switches
@@ -97,7 +90,6 @@ private:
      * The current state of the LVSS
      */
     State state = State::INITIALIZATION;
-    LVSS_ERR err = LVSS_ERR::LVSS_ERR_NONE;
 
     /**
      * Boolean flag which represents that a state has just changed
@@ -144,11 +136,8 @@ private:
     uint16_t VCUBoardSig;
     uint16_t highValCurrent = 1;
 
-    /** Holds any errors */
-    uint16_t errStatus      = 2;
-
     /** Holds power switch current */
-    uint16_t swCurrent      = 3;
+    uint16_t swCurrent      = 2;
 
     /**
      * Have to know the size of the object dictionary for initialization
@@ -168,38 +157,25 @@ private:
         IDENTITY_OBJECT_1018,
         SDO_CONFIGURATION_1200,
 
-        {
-            /* Communication Object SDO Server */
-            .Key  = CO_KEY(0x1280, 0x00, CO_OBJ_D___R_),
-            .Type = CO_TUNSIGNED32,
-            .Data = (CO_DATA) 0x03,
-        },
-        {
-            /* SDO Server Request COBID */
-            .Key  = CO_KEY(0x1280, 0x01, CO_OBJ_D___R_),
-            .Type = CO_TUNSIGNED32,
-            .Data = (CO_DATA) CO_COBID_SDO_REQUEST(),
-        },
-        { /* SDO Server Response COBID */
-            .Key  = CO_KEY(0x1280, 0x02, CO_OBJ_D___R_),
-            .Type = CO_TUNSIGNED32,
-            .Data = (CO_DATA) CO_COBID_SDO_RESPONSE(),
-        },
-        {
-            .Key  = CO_KEY(0x1280, 0x03, CO_OBJ_D___R_),
-            .Type = CO_TUNSIGNED8,
-            .Data = (CO_DATA) 1,
-        },
+        RECEIVE_PDO_SETTINGS_OBJECT_140X(0x00, 0x00, TPDO_NODE_ID, RECEIVE_PDO_TRIGGER_ASYNC),
+        RECEIVE_PDO_MAPPING_START_KEY_16XX(0x00, 0x1),
+        RECEIVE_PDO_MAPPING_ENTRY_16XX(0x00, 0x01, PDO_MAPPING_UNSIGNED16),
+
+        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x00, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x00, 0x02),
+        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x00, 0x01, PDO_MAPPING_UNSIGNED16),
+        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x00, 0x02, PDO_MAPPING_UNSIGNED16),
 
         // User defined data, this will be where we put elements that can be
         // accessed via SDO and depending on configuration PDO
-        DATA_LINK_START_KEY_21XX(0x00, 0x01),
+        DATA_LINK_START_KEY_21XX(0x00, 0x03),
+        /** Receive data */
         DATA_LINK_21XX(0x00, 0x01, CO_TUNSIGNED16, &VCUBoardSig),
 
-        DATA_LINK_START_KEY_21XX(0x01, 0x03),
-        DATA_LINK_21XX(0x01, 0x01, CO_TUNSIGNED16, &highValCurrent),
-        DATA_LINK_21XX(0x01, 0x02, CO_TUNSIGNED16, &errStatus),
-        DATA_LINK_21XX(0x01, 0x03, CO_TUNSIGNED16, &swCurrent),
+        /** Transfer data */
+        DATA_LINK_21XX(0x00, 0x02, CO_TUNSIGNED16, &highValCurrent),
+        DATA_LINK_21XX(0x00, 0x03, CO_TUNSIGNED16, &swCurrent),
+
 
         // End of dictionary marker
         CO_OBJ_DICT_ENDMARK,
