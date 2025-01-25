@@ -10,7 +10,6 @@
 #include <EVT/io/pin.hpp>
 #include <EVT/manager.hpp>
 #include <EVT/utils/log.hpp>
-//#include <EVT/utils/time.hpp>
 #include <LVSS.hpp>
 
 namespace IO = EVT::core::IO;
@@ -127,7 +126,11 @@ int main() {
     // Initialize all the CANOpen dev.
     IO::initializeCANopenDriver(&canOpenQueue, &can, &timer, &canStackDriver, &nvmDriver, &timerDriver, &canDriver);
 
-    LVSS::LVSS lvss = LVSS::LVSS(powerSwitches);
+    // Get vicor fault signal
+    IO::GPIO& vicorFT = IO::getGPIO<LVSS::LVSS::vicorFaultPin>(IO::GPIO::Direction::INPUT);
+
+    // Initialize LVSS object
+    LVSS::LVSS lvss = LVSS::LVSS(powerSwitches, vicorFT);
 
     // Initialize the CANOpen node we are using.
     IO::initializeCANopenNode(&canNode, &lvss, &canStackDriver, sdoBuffer, appTmrMem);
