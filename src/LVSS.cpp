@@ -14,54 +14,48 @@ CO_OBJ_T* LVSS::getObjectDictionary() {
     return  &objectDictionary[0];
 }
 
-LVSS::LVSS(TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE]) : boardEN({0}), VCUBoardSig(0), highValCurrent(0), swCurrent(0) {
+LVSS::LVSS(TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT) : vicorFT(vicorFT), state(State::INITIALIZATION), boardEN({0}) {
     for (int i = 0; i < POWER_SWITCHES_SIZE; i++) {
         this->powerSwitches[i] = powerSwitches[i];
     }
 }
 
-// temporarily commented out to make compiler happy
-//LVSS::LVSS(TPS2HB50BQ1 powerSwitchArr[POWER_SWITCHES_SIZE]) : PowerSwitches(powerSwitchArr), currentSensor(currentSensor) {
-//}
-//LVSS::LVSS(TPS2HB50BQ1* powerSwitches) : PowerSwitches(powerSwitches) {}
-//
-
 void LVSS::setBoardEnable() {
     this->boardEN.val = VCUBoardSig;
 }
 
-uint8_t LVSS::getBoardEnable() {
-    return boardEN.val;
-}
-
-/** LVSS Vicor DCM4623 State Machine */
+/* LVSS Vicor DCM4623 State Machine */
 void LVSS::process() {
     switch (state) {
     case State::INITIALIZATION:
         initState();
+        break;
 
     case State::SOFT_START:
         softStartState();
+        break;
 
     case State::POWER_UP:
         powerUpState();
+        break;
 
     case State::IDLE:
         idleState();
+        break;
     }
 }
 
 void LVSS::initState() {
-    /** Entry housekeeping */
+    /* Entry */
     if (isNewState) { // Checks if the FSM has entered a new state
         isNewState = false;
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Entering initialization state");
     }
 
-    /** State business */
+    /* State business */
     time::wait(102); // Wait for 102ms as per the VICOR datasheet
 
-    /** Exit housekeeping */
+    /* Exit */
     if (time::millis() >= 110) { // If 110ms has passed then go into the next state
         state = State::SOFT_START;
         isNewState = true;
@@ -72,57 +66,77 @@ void LVSS::initState() {
 }
 
 void LVSS::softStartState() {
-    /** Entry housekeeping */
+    /* Entry */
     if (isNewState) {
         isNewState = false;
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Entering soft start state");
     }
 
-    /** State business */
+    /* State business */
     this->boardEN.val = VCUBoardSig; // Assigns the VCU signal to the union bit field
 
-    log::LOGGER.log(log::Logger::LogLevel::INFO, "boardEN.val = %d", boardEN.val);
+    log::LOGGER.log(log::Logger::LogLevel::INFO, "board enable: %d", boardEN.val);
 
-    /** Exit housekeeping */
-    if (boardEN.val == 0x3F) { // If the VCU sends a signal to turn on all the boards go to the power up state
+    /* Exit */
+    if (vicorFT.readPin() == VICOR_FAULT_ACTIVE_STATE) { // Check for vicor fault
+        log::LOGGER.log(log::Logger::LogLevel::INFO, "Vicor Fault Status: %d\r\n", vicorFT.readPin());
+    }
+    else if (boardEN.val == 63) { // If all the boards have been set to turn on go to the next state
         state = State::POWER_UP;
         isNewState = true;
     }
 }
 
 void LVSS::powerUpState() {
-    /** Entry housekeeping */
+    /** Entry */
     if (isNewState) {
         isNewState = false;
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Entering power up state");
     }
-    bool powerUpFinished = false;
+
+    log::LOGGER.log(log::Logger::LogLevel::INFO, "current: %d\r\ntemperature: %d\r\nfault status: %d\r\n", switchCurrent, switchTemperature, switchFaultstatus);
 
     /** State business */
-    // Assign which boards will be turned on
+    powerSwitches[0]->setPowerSwitchStates(boardEN.batt,boardEN.hib); // Turn on battery and HIB
+    powerSwitches[1]->setPowerSwitchStates(boardEN.tms,boardEN.hudl); // Turn on TMS and HUDL
+    powerSwitches[2]->setPowerSwitchStates(boardEN.acc,boardEN.gub);  // Turn on Acc and GUB
 
-    /** Exit housekeeping */
-    if (powerUpFinished) {
+    /* Exit */
+    if (vicorFT.readPin() == VICOR_FAULT_ACTIVE_STATE) { // Check for vicor fault
+        log::LOGGER.log(log::Logger::LogLevel::INFO, "Vicor Fault Status: %d\r\n", vicorFT.readPin());
+    }
+    else {
         state = State::IDLE;
         isNewState = true;
     }
 }
 
 void LVSS::idleState() {
-    /** Entry housekeeping */
+    /** Entry */
     if (isNewState) {
         isNewState = false;
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Entering idle state");
     }
 
     /** State business */
-    if(highValCurrent >= 9000) {
-        log::LOGGER.log(log::Logger::LogLevel::ERROR, "High Value Current Error\r\n");
-    }
-    else if(swCurrent >= 9000) {
-        log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch Current Error\r\n");
+    for (int i=0; i<POWER_SWITCHES_SIZE; i++) {
+        if(powerSwitches[i]->getCurrent() >= 9000){ // Check Switch current
+            log::LOGGER.log(log::Logger::LogLevel::ERROR,"Switch %d current error: %d\r\n", i, powerSwitches[i]->getCurrent());
+
+        }
+
+        else if(powerSwitches[i]->getTemp() >= 9000){ // Check Switch temperature
+            log::LOGGER.log(log::Logger::LogLevel::ERROR,"Switch %d temperature Error: %d\r\n", i, powerSwitches[i]->getTemp());
+
+        }
+
+        else if(powerSwitches[i]->getFaultStatus() >= 9000){ // Check Switch fault status
+            log::LOGGER.log(log::Logger::LogLevel::ERROR,"Switch %d fault error: %d\r\n", i, powerSwitches[i]->getFaultStatus());
+
+        }
     }
 
-    /** Exit housekeeping */
+    /** Exit */
 }
+
 }// namespace LVSS

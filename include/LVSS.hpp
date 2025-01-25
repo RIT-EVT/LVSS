@@ -3,8 +3,6 @@
 
 #include <EVT/dev/LCD.hpp>
 #include <EVT/io/CANopen.hpp>
-#include <EVT/io/GPIO.hpp>
-#include <EVT/io/SPI.hpp>
 #include <EVT/utils/log.hpp>
 #include <LVSS.hpp>
 #include <cstdio>
@@ -28,32 +26,40 @@ public:
     static constexpr uint8_t NODE_ID = 42;
     static constexpr uint8_t TPDO_NODE_ID = 1;
 
+    IO::GPIO& vicorFT;
+    static constexpr IO::Pin vicorFaultPin = IO::Pin::PB_4;
+    static constexpr IO::GPIO::State VICOR_FAULT_ACTIVE_STATE = IO::GPIO::State::HIGH;
+
     /** Union bit field to hold a bit representing which boards are on/off */
     typedef union {
-        struct {
-            uint8_t tms : 1;
-            uint8_t hib : 1;
-            uint8_t gub : 1;
-            uint8_t hudl: 1;
-            uint8_t acc : 1;
-            uint8_t batt: 1;
-        };
         uint16_t val;
+        struct {
+            uint8_t batt : 1;
+            uint8_t hib  : 1;
+            uint8_t tms  : 1;
+            uint8_t hudl : 1;
+            uint8_t gub  : 1;
+            uint8_t acc  : 1;
+        };
     } u_t;
 
     /** FSM State declaration */
     enum class State {
-        INITIALIZATION = 0, /* When LVSS is powered on */
-        SOFT_START     = 1, /* Reads VCU signal and starting data liike switch current */
-        POWER_UP       = 2, /* Turns on the specified boards */
-        IDLE           = 3, /* Checks values for errors */
+        /** When LVSS is powered on */
+        INITIALIZATION = 0,
+        /** Reads VCU signal and starting data liike switch current */
+        SOFT_START = 1,
+        /** Turns on the specified boards */
+        POWER_UP = 2,
+        /** Checks values for errors */
+        IDLE = 3,
     };
 
     /**
      * Constructor for the LVSS class, takes a pointer to an array of power switches
      * @param powerSwitches an array of pointers to power switches
      */
-    explicit LVSS(TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE]);
+    explicit LVSS(TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT);
 
     CO_OBJ_T* getObjectDictionary() override;
 
@@ -65,16 +71,6 @@ public:
      * Reads a CANopen message from VCU and assigns it to a variable
      */
     void setBoardEnable();
-    uint8_t getBoardEnable();
-
-    /** Returns high value current */
-    uint16_t getHVCurrent();
-
-    /** Returns any errors found */
-    uint16_t getErrorStatus();
-
-    /** Returns the current of the power switches */
-    uint16_t getSwitchCurrent();
 
     /**
      * Handle running the core logic of the LVSS
@@ -82,14 +78,29 @@ public:
     void process();
 
 private:
-    // false = OFF, true = ON?
-
     TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE]{};// a struct for each power switch (of which there are 3)
+
+    u_t boardEN;
+
+    /** Tracks signal from VCU */
+    uint16_t VCUBoardSig = 0x00;
+
+    /** Tracks high value current */
+    uint16_t highValCurrent = 0x00;
+
+    /** Tracks power switch current */
+    uint16_t switchCurrent = 0x00;
+
+    /** Tracks power switch temperature */
+    uint16_t switchTemperature = 0x00;
+
+    /** Tracks power switch fault */
+    uint16_t switchFaultstatus = 0x00;
 
     /**
      * The current state of the LVSS
      */
-    State state = State::INITIALIZATION;
+    State state;
 
     /**
      * Boolean flag which represents that a state has just changed
@@ -124,20 +135,11 @@ private:
     void powerUpState();
 
     /**
-     * Handle errors
+     * Checks LVSS values
      *
      * State: State::IDLE
      */
     void idleState();
-
-    u_t boardEN;
-
-    /** Holds signal from VCU */
-    uint16_t VCUBoardSig;
-    uint16_t highValCurrent = 1;
-
-    /** Holds power switch current */
-    uint16_t swCurrent      = 2;
 
     /**
      * Have to know the size of the object dictionary for initialization
@@ -168,13 +170,15 @@ private:
 
         // User defined data, this will be where we put elements that can be
         // accessed via SDO and depending on configuration PDO
-        DATA_LINK_START_KEY_21XX(0x00, 0x03),
+        DATA_LINK_START_KEY_21XX(0x00, 0x05),
         /** Receive data */
         DATA_LINK_21XX(0x00, 0x01, CO_TUNSIGNED16, &VCUBoardSig),
 
         /** Transfer data */
         DATA_LINK_21XX(0x00, 0x02, CO_TUNSIGNED16, &highValCurrent),
-        DATA_LINK_21XX(0x00, 0x03, CO_TUNSIGNED16, &swCurrent),
+        DATA_LINK_21XX(0x00, 0x03, CO_TUNSIGNED16, &switchCurrent),
+        DATA_LINK_21XX(0x00, 0x04, CO_TUNSIGNED16, &switchTemperature),
+        DATA_LINK_21XX(0x00, 0x05, CO_TUNSIGNED16, &switchFaultstatus),
 
 
         // End of dictionary marker
