@@ -103,7 +103,7 @@ void LVSS::powerUpState() {
 
     /* Exit */
     if (vicorFT.readPin() == VICOR_FAULT_ACTIVE_STATE) { // Check for vicor fault
-        log::LOGGER.log(log::Logger::LogLevel::INFO, "Vicor Fault Status: %d\r\n", vicorFT.readPin());
+        log::LOGGER.log(log::Logger::LogLevel::ERROR, "Vicor Fault Status: %d\r\n", vicorFT.readPin());
     }
     else {
         state = State::IDLE;
