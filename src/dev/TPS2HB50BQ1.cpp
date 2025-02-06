@@ -63,7 +63,7 @@ void TPS2HB50BQ1::setDiagnostics(DiagMode diag_mode) {
     case TEMP:
         setDiagStateEnabled(true);
         diagSelect1.writePin(IO::GPIO::State::HIGH);
-        diagSelect2.writePin(IO::GPIO::State::HIGH);
+        diagSelect2.writePin(IO::GPIO::State::LOW);
         //        setDiagStateEnabled(false);
         break;
     }
@@ -80,9 +80,12 @@ uint32_t TPS2HB50BQ1::getCurrent() {
 }
 
 uint32_t TPS2HB50BQ1::getTemp() {
+    uint32_t temp = 0;
     setDiagnostics(DiagMode::TEMP);
-    uint32_t temp = readSenseOut();
+    uint32_t counts = readSenseOut();
     //setDiagnostics(DiagMode::OFF);
+
+    uint32_t volts = counts * (3.3 / 4096); // Turn ADC counts into voltage
 
     // TODO: more processing on raw adc senseOut pin output
 

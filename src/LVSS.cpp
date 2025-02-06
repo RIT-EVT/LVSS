@@ -122,17 +122,14 @@ void LVSS::idleState() {
     for (int i=0; i<POWER_SWITCHES_SIZE; i++) {
         if(powerSwitches[i]->getCurrent() >= 9000){ // Check Switch current
             log::LOGGER.log(log::Logger::LogLevel::ERROR,"Switch %d current error: %d\r\n", i, powerSwitches[i]->getCurrent());
-
         }
 
-        else if(powerSwitches[i]->getTemp() >= 9000){ // Check Switch temperature
+        if(powerSwitches[i]->getTemp() >= 9000){ // Check Switch temperature
             log::LOGGER.log(log::Logger::LogLevel::ERROR,"Switch %d temperature Error: %d\r\n", i, powerSwitches[i]->getTemp());
-
         }
 
-        else if(powerSwitches[i]->getFaultStatus() >= 9000){ // Check Switch fault status
+        if(powerSwitches[i]->getFaultStatus() >= 9000){ // Check Switch fault status
             log::LOGGER.log(log::Logger::LogLevel::ERROR,"Switch %d fault error: %d\r\n", i, powerSwitches[i]->getFaultStatus());
-
         }
     }
 
