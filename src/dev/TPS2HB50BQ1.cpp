@@ -80,17 +80,20 @@ uint32_t TPS2HB50BQ1::getCurrent() {
 }
 
 uint32_t TPS2HB50BQ1::getTemp() {
-    uint32_t temp = 0;
     setDiagnostics(DiagMode::TEMP);
-    uint32_t counts = readSenseOut();
+    counts = readSenseOut();
     //setDiagnostics(DiagMode::OFF);
 
-    uint32_t volts = counts * (3.3 / 4096); // Turn ADC counts into voltage
+    volts = (counts * 3300) / 4096; // Turn ADC counts into voltage
+    // current is proportional to current since the temperature is in milliamps
+    temp = (1000*volts - 575000) / 11;
+
 
     // TODO: more processing on raw adc senseOut pin output
 
     return temp;
 }
+// 390 451 520
 
 uint32_t TPS2HB50BQ1::getFaultStatus() {
     setDiagnostics(DiagMode::FAULT_STATUS);

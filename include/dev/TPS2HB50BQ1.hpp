@@ -64,7 +64,7 @@ public:
     /**
      * Get the temperature of the power switch
      *
-     * @return The temperature of the power switch
+     * @return The temperature of the power switch in millicelsius
      */
     uint32_t getTemp();
 
@@ -90,6 +90,10 @@ private:
     IO::GPIO& diagSelect1;
     IO::GPIO& diagSelect2;
     IO::ADC& senseOut;
+
+    uint32_t temp = 0; // Power Switch Temperature
+    uint32_t counts = 0; // ADC Counts
+    uint32_t volts = 0; // ADC Voltage
 
     void setDiagStateEnabled(bool state);
 

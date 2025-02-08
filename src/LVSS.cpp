@@ -120,7 +120,7 @@ void LVSS::idleState() {
 
     /** State business */
     for (int i=0; i<POWER_SWITCHES_SIZE; i++) {
-        if(powerSwitches[i]->getCurrent() >= 9000){ // Check Switch current
+        if(powerSwitches[i]->getCurrent() >= 145000){ // Check Switch current
             log::LOGGER.log(log::Logger::LogLevel::ERROR,"Switch %d current error: %d\r\n", i, powerSwitches[i]->getCurrent());
         }
 
