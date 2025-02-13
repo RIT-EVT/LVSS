@@ -71,29 +71,26 @@ void TPS2HB50BQ1::setDiagnostics(DiagMode diag_mode) {
 
 uint32_t TPS2HB50BQ1::getCurrent() {
     setDiagnostics(DiagMode::CURRENT);
-    uint32_t current = readSenseOut();
+    counts = readSenseOut();
     //setDiagnostics(DiagMode::OFF);
 
-    // TODO: more processing on raw adc senseOut pin output
+    volts = (counts * 3300) / 4096; // Turn ADC counts into voltage
+    current = volts *  2;              // Current in nanoamps
 
-    return current;
+    return counts;
 }
 
 uint32_t TPS2HB50BQ1::getTemp() {
     setDiagnostics(DiagMode::TEMP);
     counts = readSenseOut();
-    //setDiagnostics(DiagMode::OFF);
 
     volts = (counts * 3300) / 4096; // Turn ADC counts into voltage
-    // current is proportional to current since the temperature is in milliamps
-    temp = (1000*volts - 575000) / 11;
 
-
-    // TODO: more processing on raw adc senseOut pin output
+    // Since voltage is in millivolts divided by a 1k ohm resistor, and we want milliamps this is implicitly divided by 1
+    temp = (1000 * volts - 575000) / 11;
 
     return temp;
 }
-// 390 451 520
 
 uint32_t TPS2HB50BQ1::getFaultStatus() {
     setDiagnostics(DiagMode::FAULT_STATUS);

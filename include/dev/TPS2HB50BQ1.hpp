@@ -91,9 +91,10 @@ private:
     IO::GPIO& diagSelect2;
     IO::ADC& senseOut;
 
-    uint32_t temp = 0; // Power Switch Temperature
+    uint32_t temp = 0;   // Power Switch Temperature
     uint32_t counts = 0; // ADC Counts
-    uint32_t volts = 0; // ADC Voltage
+    uint32_t volts = 0;  // ADC Voltage
+    uint32_t current = 0;// Power Switch Current in milliamps
 
     void setDiagStateEnabled(bool state);
 
