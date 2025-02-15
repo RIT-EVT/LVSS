@@ -34,10 +34,15 @@ public:
     typedef union {
         uint16_t val;
         struct {
+            // Power Switch 0
             uint8_t batt : 1;
             uint8_t hib  : 1;
+
+            // Power Switch 1
             uint8_t tms  : 1;
             uint8_t hudl : 1;
+
+            // Power Switch 2
             uint8_t gub  : 1;
             uint8_t acc  : 1;
         };
@@ -46,14 +51,25 @@ public:
     /** FSM State declaration */
     enum class State {
         /** When LVSS is powered on */
-        INITIALIZATION = 0,
+        INITIALIZATION = 0u,
         /** Reads VCU signal and starting data liike switch current */
-        SOFT_START = 1,
+        SOFT_START = 1u,
         /** Turns on the specified boards */
-        POWER_UP = 2,
+        POWER_UP = 2u,
         /** Checks values for errors */
-        IDLE = 3,
+        IDLE = 3u,
+        /** Handles errors */
+        FAULT = 4u,
     };
+
+    enum class PowerSwitchStatus {
+        Safe = 1u,
+        OverCurrent = 2u,
+        Temperature = 3u,
+        Fault = 4u
+    };
+
+    PowerSwitchStatus err[3] = {PowerSwitchStatus::Safe, PowerSwitchStatus::Safe, PowerSwitchStatus::Safe}; // Holds the error status for each power switch
 
     /**
      * Constructor for the LVSS class, takes a pointer to an array of power switches
@@ -66,11 +82,6 @@ public:
     uint8_t getNumElements() override;
 
     uint8_t getNodeID() override;
-
-    /**
-     * Reads a CANopen message from VCU and assigns it to a variable
-     */
-    void setBoardEnable();
 
     /**
      * Handle running the core logic of the LVSS
@@ -101,6 +112,9 @@ private:
      * The current state of the LVSS
      */
     State state;
+
+    uint8_t CurrentLim = 9000; // Current Limit
+    uint8_t TemperatureLim = 135; // Temperature Limit
 
     /**
      * Boolean flag which represents that a state has just changed
@@ -140,6 +154,13 @@ private:
      * State: State::IDLE
      */
     void idleState();
+
+    /**
+     * Checks LVSS values
+     *
+     * State: State::FAULT
+     */
+    void faultState();
 
     /**
      * Have to know the size of the object dictionary for initialization

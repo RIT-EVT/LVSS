@@ -52,19 +52,16 @@ void TPS2HB50BQ1::setDiagnostics(DiagMode diag_mode) {
         setDiagStateEnabled(true);
         diagSelect1.writePin(IO::GPIO::State::HIGH);
         diagSelect2.writePin(IO::GPIO::State::LOW);
-        //        setDiagStateEnabled(false);
         break;
     case CURRENT:
         setDiagStateEnabled(true);
         diagSelect1.writePin(IO::GPIO::State::LOW);
         diagSelect2.writePin(IO::GPIO::State::HIGH);
-        //        setDiagStateEnabled(false);
         break;
     case TEMP:
         setDiagStateEnabled(true);
         diagSelect1.writePin(IO::GPIO::State::HIGH);
         diagSelect2.writePin(IO::GPIO::State::LOW);
-        //        setDiagStateEnabled(false);
         break;
     }
 }
@@ -72,10 +69,19 @@ void TPS2HB50BQ1::setDiagnostics(DiagMode diag_mode) {
 uint32_t TPS2HB50BQ1::getCurrent() {
     setDiagnostics(DiagMode::CURRENT);
     counts = readSenseOut();
-    //setDiagnostics(DiagMode::OFF);
 
+    if (counts > 4000) {
+        setDiagnostics(DiagMode::OFF);
+    }
+
+    // volts = (ADC Counts * 3300 kilovolts) / 4096
     volts = (counts * 3300) / 4096; // Turn ADC counts into voltage
-    current = volts *  2;              // Current in nanoamps
+    current = volts *  2;           // Current in nanoamps
+
+    if (current >= icl) {
+        setDiagnostics(DiagMode::OFF);
+        setLatch(LatchMode::LATCHED); // Latch power switches
+    }
 
     return counts;
 }
@@ -83,6 +89,11 @@ uint32_t TPS2HB50BQ1::getCurrent() {
 uint32_t TPS2HB50BQ1::getTemp() {
     setDiagnostics(DiagMode::TEMP);
     counts = readSenseOut();
+
+    if (counts > 4000) {
+        setDiagnostics(DiagMode::OFF);
+        setLatch(LatchMode::LATCHED); // Latch power switches
+    }
 
     volts = (counts * 3300) / 4096; // Turn ADC counts into voltage
 
@@ -95,9 +106,11 @@ uint32_t TPS2HB50BQ1::getTemp() {
 uint32_t TPS2HB50BQ1::getFaultStatus() {
     setDiagnostics(DiagMode::FAULT_STATUS);
     uint32_t fault_status = readSenseOut();
-    //setDiagnostics(DiagMode::OFF);
 
-    // TODO: more processing on raw adc senseOut pin output
+    if (counts > 4000) {
+        setDiagnostics(DiagMode::OFF);
+        setLatch(LatchMode::LATCHED); // Latch power switches
+    }
 
     return fault_status;
 }

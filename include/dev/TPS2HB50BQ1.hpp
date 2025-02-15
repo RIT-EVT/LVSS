@@ -96,6 +96,10 @@ private:
     uint32_t volts = 0;  // ADC Voltage
     uint32_t current = 0;// Power Switch Current in milliamps
 
+    uint32_t kcl = 90000; // Current Limit Ratio
+    uint32_t rlim = 10000; // Resistor that sets the current limit
+    uint32_t icl = kcl / rlim;  // Current Limit Value
+
     void setDiagStateEnabled(bool state);
 
     /**

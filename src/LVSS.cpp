@@ -20,10 +20,6 @@ LVSS::LVSS(TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT) :
     }
 }
 
-void LVSS::setBoardEnable() {
-    this->boardEN.val = VCUBoardSig;
-}
-
 /* LVSS Vicor DCM4623 State Machine */
 void LVSS::process() {
     switch (state) {
@@ -41,6 +37,10 @@ void LVSS::process() {
 
     case State::IDLE:
         idleState();
+        break;
+
+    case State::FAULT:
+        faultState();
         break;
     }
 }
@@ -115,25 +115,101 @@ void LVSS::idleState() {
     /** Entry */
     if (isNewState) {
         isNewState = false;
+        this->err[0] = PowerSwitchStatus::Safe;
+        this->err[1] = PowerSwitchStatus::Safe;
+        this->err[2] = PowerSwitchStatus::Safe;
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Entering idle state");
     }
 
     /** State business */
     for (int i=0; i<POWER_SWITCHES_SIZE; i++) {
-        if(powerSwitches[i]->getCurrent() >= 9000){ // Check Switch current
+        if(powerSwitches[i]->getCurrent() >= CurrentLim){ // Check Switch current in milliamps
             log::LOGGER.log(log::Logger::LogLevel::ERROR,"Switch %d current error: %d\r\n", i, powerSwitches[i]->getCurrent());
+            this->err[i] = PowerSwitchStatus::OverCurrent;
         }
 
-        if(powerSwitches[i]->getTemp() >= 135){ // Check Switch temperature
+        if(powerSwitches[i]->getTemp() >= TemperatureLim){ // Check Switch temperature in Celsius
             log::LOGGER.log(log::Logger::LogLevel::ERROR,"Switch %d temperature Error: %d\r\n", i, powerSwitches[i]->getTemp());
+            this->err[i] = PowerSwitchStatus::Temperature;
         }
 
-        if(powerSwitches[i]->getFaultStatus() >= 9000){ // Check Switch fault status
+        if(powerSwitches[i]->getFaultStatus()){ // Check Switch fault status
             log::LOGGER.log(log::Logger::LogLevel::ERROR,"Switch %d fault error: %d\r\n", i, powerSwitches[i]->getFaultStatus());
+            this->err[i] = PowerSwitchStatus::Fault;
         }
     }
 
+    if (this->err[0] == PowerSwitchStatus::Safe) {
+        this->boardEN.batt = 1;
+        this->boardEN.hib  = 1;
+    }
+
+    if (this->err[1] == PowerSwitchStatus::Safe) {
+        this->boardEN.tms  = 1;
+        this->boardEN.hudl = 1;
+    }
+
+    if (this->err[2] == PowerSwitchStatus::Safe) {
+        this->boardEN.gub = 1;
+        this->boardEN.acc = 1;
+    }
+
+    powerSwitches[0]->setPowerSwitchStates(boardEN.batt,boardEN.hib);
+    powerSwitches[1]->setPowerSwitchStates(boardEN.tms,boardEN.hudl);
+    powerSwitches[2]->setPowerSwitchStates(boardEN.acc,boardEN.gub);
+
+
     /** Exit */
+    for (int i=0; i<POWER_SWITCHES_SIZE; i++) {
+        if (this->err[i] != PowerSwitchStatus::Safe) {
+            state = State::FAULT;
+            isNewState = true;
+        }
+    }
+}
+
+void LVSS::faultState() {
+    if (isNewState) {
+        isNewState = false;
+        log::LOGGER.log(log::Logger::LogLevel::INFO, "Entering fault state\r\nPowering down all boards");
+    }
+
+    for (int i=0; i<POWER_SWITCHES_SIZE; i++) {
+        if (this->err[i] == PowerSwitchStatus::OverCurrent) {
+            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Fault: Overcurrent");
+        }
+
+        if (this->err[i] == PowerSwitchStatus::Temperature) {
+            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Fault: Temperature");
+        }
+
+        if (this->err[i] == PowerSwitchStatus::Fault) {
+            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Fault: Fault Pin High");
+        }
+    }
+
+    if (this->err[0] != PowerSwitchStatus::Safe) {
+        this->boardEN.batt = 0;
+        this->boardEN.hib  = 0;
+    }
+
+    if (this->err[1] != PowerSwitchStatus::Safe) {
+        this->boardEN.tms  = 0;
+        this->boardEN.hudl = 0;
+    }
+
+    if (this->err[2] != PowerSwitchStatus::Safe) {
+        this->boardEN.gub = 0;
+        this->boardEN.acc = 0;
+    }
+
+    /** Exit */
+    for (int i=0; i<POWER_SWITCHES_SIZE; i++) {
+        if (this->err[i] == PowerSwitchStatus::Safe) {
+            state = State::POWER_UP;
+            isNewState = true;
+        }
+    }
 }
 
 }// namespace LVSS
