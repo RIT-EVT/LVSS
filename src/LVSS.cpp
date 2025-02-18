@@ -201,9 +201,9 @@ void LVSS::faultState() {
 
     /** Exit */
     if (this->err[0] == PowerSwitchStatus::Safe && this->err[1] == PowerSwitchStatus::Safe && this->err[2] == PowerSwitchStatus::Safe) {
-            state = State::POWER_UP;
-            isNewState = true;
-        }
+        state = State::POWER_UP;
+        isNewState = true;
+    }
 }
 
 }// namespace LVSS
