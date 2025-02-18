@@ -204,7 +204,6 @@ void LVSS::faultState() {
             state = State::POWER_UP;
             isNewState = true;
         }
-    }
 }
 
 }// namespace LVSS
