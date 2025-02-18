@@ -75,12 +75,12 @@ uint32_t TPS2HB50BQ1::getCurrent() {
     }
 
     // volts = (ADC Counts * 3300 kilovolts) / 4096
-    volts = (counts * 3300) / 4096; // Turn ADC counts into voltage
-    current = volts *  2;           // Current in nanoamps
+    volts = (counts * 3300) / 4096;// Turn ADC counts into voltage
+    current = volts * 2;           // Current in nanoamps
 
     if (current >= icl) {
         setDiagnostics(DiagMode::OFF);
-        setLatch(LatchMode::LATCHED); // Latch power switches
+        setLatch(LatchMode::LATCHED);// Latch power switches
     }
 
     return counts;
@@ -92,10 +92,10 @@ uint32_t TPS2HB50BQ1::getTemp() {
 
     if (counts > 4000) {
         setDiagnostics(DiagMode::OFF);
-        setLatch(LatchMode::LATCHED); // Latch power switches
+        setLatch(LatchMode::LATCHED);// Latch power switches
     }
 
-    volts = (counts * 3300) / 4096; // Turn ADC counts into voltage
+    volts = (counts * 3300) / 4096;// Turn ADC counts into voltage
 
     // Since voltage is in millivolts divided by a 1k ohm resistor, and we want milliamps this is implicitly divided by 1
     temp = (1000 * volts - 575000) / 11;
@@ -109,7 +109,7 @@ uint32_t TPS2HB50BQ1::getFaultStatus() {
 
     if (counts > 4000) {
         setDiagnostics(DiagMode::OFF);
-        setLatch(LatchMode::LATCHED); // Latch power switches
+        setLatch(LatchMode::LATCHED);// Latch power switches
     }
 
     return fault_status;

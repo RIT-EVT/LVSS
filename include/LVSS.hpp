@@ -36,15 +36,15 @@ public:
         struct {
             // Power Switch 0
             uint8_t batt : 1;
-            uint8_t hib  : 1;
+            uint8_t hib : 1;
 
             // Power Switch 1
-            uint8_t tms  : 1;
+            uint8_t tms : 1;
             uint8_t hudl : 1;
 
             // Power Switch 2
-            uint8_t gub  : 1;
-            uint8_t acc  : 1;
+            uint8_t gub : 1;
+            uint8_t acc : 1;
         };
     } u_t;
 
@@ -69,7 +69,7 @@ public:
         Fault = 4u
     };
 
-    PowerSwitchStatus err[3] = {PowerSwitchStatus::Safe, PowerSwitchStatus::Safe, PowerSwitchStatus::Safe}; // Holds the error status for each power switch
+    PowerSwitchStatus err[3] = {PowerSwitchStatus::Safe, PowerSwitchStatus::Safe, PowerSwitchStatus::Safe};// Holds the error status for each power switch
 
     /**
      * Constructor for the LVSS class, takes a pointer to an array of power switches
@@ -113,8 +113,8 @@ private:
      */
     State state;
 
-    uint8_t CurrentLim = 9000; // Current Limit
-    uint8_t TemperatureLim = 135; // Temperature Limit
+    uint8_t CurrentLim = 9000;   // Current Limit
+    uint8_t TemperatureLim = 135;// Temperature Limit
 
     /**
      * Boolean flag which represents that a state has just changed
@@ -200,7 +200,6 @@ private:
         DATA_LINK_21XX(0x00, 0x03, CO_TUNSIGNED16, &switchCurrent),
         DATA_LINK_21XX(0x00, 0x04, CO_TUNSIGNED16, &switchTemperature),
         DATA_LINK_21XX(0x00, 0x05, CO_TUNSIGNED16, &switchFaultstatus),
-
 
         // End of dictionary marker
         CO_OBJ_DICT_ENDMARK,

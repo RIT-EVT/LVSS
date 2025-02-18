@@ -11,7 +11,7 @@ uint8_t LVSS::getNumElements() {
 }
 
 CO_OBJ_T* LVSS::getObjectDictionary() {
-    return  &objectDictionary[0];
+    return &objectDictionary[0];
 }
 
 LVSS::LVSS(TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT) : vicorFT(vicorFT), boardEN({0}), state(State::INITIALIZATION) {
@@ -47,20 +47,19 @@ void LVSS::process() {
 
 void LVSS::initState() {
     /* Entry */
-    if (isNewState) { // Checks if the FSM has entered a new state
+    if (isNewState) {// Checks if the FSM has entered a new state
         isNewState = false;
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Entering initialization state");
     }
 
     /* State business */
-    time::wait(102); // Wait for 102ms as per the VICOR datasheet
+    time::wait(102);// Wait for 102ms as per the VICOR datasheet
 
     /* Exit */
-    if (time::millis() >= 110) { // If 110ms has passed then go into the next state
+    if (time::millis() >= 110) {// If 110ms has passed then go into the next state
         state = State::SOFT_START;
         isNewState = true;
-    }
-    else {
+    } else {
         log::LOGGER.log(log::Logger::LogLevel::ERROR, "Initialization state error");
     }
 }
@@ -73,15 +72,14 @@ void LVSS::softStartState() {
     }
 
     /* State business */
-    this->boardEN.val = VCUBoardSig; // Assigns the VCU signal to the union bit field
+    this->boardEN.val = VCUBoardSig;// Assigns the VCU signal to the union bit field
 
     log::LOGGER.log(log::Logger::LogLevel::INFO, "board enable: %d", boardEN.val);
 
     /* Exit */
-    if (vicorFT.readPin() == VICOR_FAULT_ACTIVE_STATE) { // Check for vicor fault
+    if (vicorFT.readPin() == VICOR_FAULT_ACTIVE_STATE) {// Check for vicor fault
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Vicor Fault Status: %d\r\n", vicorFT.readPin());
-    }
-    else if (boardEN.val == 63) { // If all the boards have been set to turn on go to the next state
+    } else if (boardEN.val == 63) {// If all the boards have been set to turn on go to the next state
         state = State::POWER_UP;
         isNewState = true;
     }
@@ -97,15 +95,14 @@ void LVSS::powerUpState() {
     log::LOGGER.log(log::Logger::LogLevel::INFO, "current: %d\r\ntemperature: %d\r\nfault status: %d\r\n", switchCurrent, switchTemperature, switchFaultstatus);
 
     /** State business */
-    powerSwitches[0]->setPowerSwitchStates(boardEN.batt,boardEN.hib); // Turn on battery and HIB
-    powerSwitches[1]->setPowerSwitchStates(boardEN.tms,boardEN.hudl); // Turn on TMS and HUDL
-    powerSwitches[2]->setPowerSwitchStates(boardEN.acc,boardEN.gub);  // Turn on Acc and GUB
+    powerSwitches[0]->setPowerSwitchStates(boardEN.batt, boardEN.hib);// Turn on battery and HIB
+    powerSwitches[1]->setPowerSwitchStates(boardEN.tms, boardEN.hudl);// Turn on TMS and HUDL
+    powerSwitches[2]->setPowerSwitchStates(boardEN.acc, boardEN.gub); // Turn on Acc and GUB
 
     /* Exit */
-    if (vicorFT.readPin() == VICOR_FAULT_ACTIVE_STATE) { // Check for vicor fault
+    if (vicorFT.readPin() == VICOR_FAULT_ACTIVE_STATE) {// Check for vicor fault
         log::LOGGER.log(log::Logger::LogLevel::ERROR, "Vicor Fault Status: %d\r\n", vicorFT.readPin());
-    }
-    else {
+    } else {
         state = State::IDLE;
         isNewState = true;
     }
@@ -122,30 +119,30 @@ void LVSS::idleState() {
     }
 
     /** State business */
-    for (int i=0; i<POWER_SWITCHES_SIZE; i++) {
-        if(powerSwitches[i]->getCurrent() >= CurrentLim){ // Check Switch current in milliamps
-            log::LOGGER.log(log::Logger::LogLevel::ERROR,"Switch %d current error: %d\r\n", i, powerSwitches[i]->getCurrent());
+    for (int i = 0; i < POWER_SWITCHES_SIZE; i++) {
+        if (powerSwitches[i]->getCurrent() >= CurrentLim) {// Check Switch current in milliamps
+            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d current error: %d\r\n", i, powerSwitches[i]->getCurrent());
             this->err[i] = PowerSwitchStatus::OverCurrent;
         }
 
-        if(powerSwitches[i]->getTemp() >= TemperatureLim){ // Check Switch temperature in Celsius
-            log::LOGGER.log(log::Logger::LogLevel::ERROR,"Switch %d temperature Error: %d\r\n", i, powerSwitches[i]->getTemp());
+        if (powerSwitches[i]->getTemp() >= TemperatureLim) {// Check Switch temperature in Celsius
+            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d temperature Error: %d\r\n", i, powerSwitches[i]->getTemp());
             this->err[i] = PowerSwitchStatus::Temperature;
         }
 
-        if(powerSwitches[i]->getFaultStatus()){ // Check Switch fault status
-            log::LOGGER.log(log::Logger::LogLevel::ERROR,"Switch %d fault error: %d\r\n", i, powerSwitches[i]->getFaultStatus());
+        if (powerSwitches[i]->getFaultStatus()) {// Check Switch fault status
+            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d fault error: %d\r\n", i, powerSwitches[i]->getFaultStatus());
             this->err[i] = PowerSwitchStatus::Fault;
         }
     }
 
     if (this->err[0] == PowerSwitchStatus::Safe) {
         this->boardEN.batt = 1;
-        this->boardEN.hib  = 1;
+        this->boardEN.hib = 1;
     }
 
     if (this->err[1] == PowerSwitchStatus::Safe) {
-        this->boardEN.tms  = 1;
+        this->boardEN.tms = 1;
         this->boardEN.hudl = 1;
     }
 
@@ -154,13 +151,12 @@ void LVSS::idleState() {
         this->boardEN.acc = 1;
     }
 
-    powerSwitches[0]->setPowerSwitchStates(boardEN.batt,boardEN.hib);
-    powerSwitches[1]->setPowerSwitchStates(boardEN.tms,boardEN.hudl);
-    powerSwitches[2]->setPowerSwitchStates(boardEN.acc,boardEN.gub);
-
+    powerSwitches[0]->setPowerSwitchStates(boardEN.batt, boardEN.hib);
+    powerSwitches[1]->setPowerSwitchStates(boardEN.tms, boardEN.hudl);
+    powerSwitches[2]->setPowerSwitchStates(boardEN.acc, boardEN.gub);
 
     /** Exit */
-    for (int i=0; i<POWER_SWITCHES_SIZE; i++) {
+    for (int i = 0; i < POWER_SWITCHES_SIZE; i++) {
         if (this->err[i] != PowerSwitchStatus::Safe) {
             state = State::FAULT;
             isNewState = true;
@@ -174,7 +170,7 @@ void LVSS::faultState() {
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Entering fault state\r\nPowering down all boards");
     }
 
-    for (int i=0; i<POWER_SWITCHES_SIZE; i++) {
+    for (int i = 0; i < POWER_SWITCHES_SIZE; i++) {
         if (this->err[i] == PowerSwitchStatus::OverCurrent) {
             log::LOGGER.log(log::Logger::LogLevel::ERROR, "Fault: Overcurrent");
         }
@@ -190,11 +186,11 @@ void LVSS::faultState() {
 
     if (this->err[0] != PowerSwitchStatus::Safe) {
         this->boardEN.batt = 0;
-        this->boardEN.hib  = 0;
+        this->boardEN.hib = 0;
     }
 
     if (this->err[1] != PowerSwitchStatus::Safe) {
-        this->boardEN.tms  = 0;
+        this->boardEN.tms = 0;
         this->boardEN.hudl = 0;
     }
 
@@ -204,7 +200,7 @@ void LVSS::faultState() {
     }
 
     /** Exit */
-    for (int i=0; i<POWER_SWITCHES_SIZE; i++) {
+    for (int i = 0; i < POWER_SWITCHES_SIZE; i++) {
         if (this->err[i] == PowerSwitchStatus::Safe) {
             state = State::POWER_UP;
             isNewState = true;
