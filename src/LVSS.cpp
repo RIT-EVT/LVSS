@@ -14,7 +14,7 @@ CO_OBJ_T* LVSS::getObjectDictionary() {
     return  &objectDictionary[0];
 }
 
-LVSS::LVSS(TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT) : vicorFT(vicorFT), state(State::INITIALIZATION), boardEN({0}) {
+LVSS::LVSS(TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT) : vicorFT(vicorFT), boardEN({0}), state(State::INITIALIZATION) {
     for (int i = 0; i < POWER_SWITCHES_SIZE; i++) {
         this->powerSwitches[i] = powerSwitches[i];
     }
