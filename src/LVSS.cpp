@@ -200,8 +200,7 @@ void LVSS::faultState() {
     }
 
     /** Exit */
-    for (int i = 0; i < POWER_SWITCHES_SIZE; i++) {
-        if (this->err[i] == PowerSwitchStatus::Safe) {
+    if (this->err[0] == PowerSwitchStatus::Safe && this->err[1] == PowerSwitchStatus::Safe && this->err[2] == PowerSwitchStatus::Safe) {
             state = State::POWER_UP;
             isNewState = true;
         }
