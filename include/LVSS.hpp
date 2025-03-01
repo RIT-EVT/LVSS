@@ -8,7 +8,7 @@
 #include <cstdio>
 #include <cstring>
 #include <dev/ACS71240.hpp>
-#include <dev/TPS2HB50BQ1.hpp>
+#include <dev/TPS2HB35BQ.hpp>
 
 namespace IO = EVT::core::IO;
 namespace DEV = EVT::core::DEV;
@@ -75,7 +75,7 @@ public:
      * Constructor for the LVSS class, takes a pointer to an array of power switches
      * @param powerSwitches an array of pointers to power switches
      */
-    explicit LVSS(TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT);
+    explicit LVSS(TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT);
 
     CO_OBJ_T* getObjectDictionary() override;
 
@@ -89,7 +89,7 @@ public:
     void process();
 
 private:
-    TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE]{};// a struct for each power switch (of which there are 3)
+    TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE]{};// a struct for each power switch (of which there are 3)
 
     u_t boardEN;
 

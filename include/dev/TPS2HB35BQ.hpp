@@ -19,7 +19,7 @@ namespace LVSS {
  * The TPS2HB50BQ1 has a diagnostic mode that can be used to read the
  * current, temperature, or fault status of the device.
  */
-class TPS2HB50BQ1 {
+class TPS2HB35BQ {
 public:
     /**
      * Constructor for the TPS2HB50BQ1 class
@@ -30,7 +30,7 @@ public:
      * @param diagSelect1 Mux select pin for diagnostics, see setDiagnostics
      * @param diagSelect2 Mux select pin for diagnostics, see setDiagnostics
      */
-    TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn,
+    TPS2HB35BQ(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn,
                 IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& senseOut);
 
     enum DiagMode {
@@ -48,13 +48,6 @@ public:
     void setPowerSwitchStates(bool powerSwitchOneEnabled, bool powerSwitchTwoEnabled);
 
     /**
-     * Get the fault status of the power switch
-     *
-     * @return The fault status of the power switch
-     */
-    uint32_t getFaultStatus();
-
-    /**
      * Get the current of the power switch
      *
      * @return The current of the power switch
@@ -66,7 +59,7 @@ public:
      *
      * @return The temperature of the power switch in millicelsius
      */
-    uint32_t getTemp();
+    uint32_t getTempandFault();
 
     /**
     * Set the latch mode of the power switch

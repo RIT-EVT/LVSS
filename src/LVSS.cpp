@@ -14,7 +14,7 @@ CO_OBJ_T* LVSS::getObjectDictionary() {
     return &objectDictionary[0];
 }
 
-LVSS::LVSS(TPS2HB50BQ1* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT) : vicorFT(vicorFT), boardEN({0}), state(State::INITIALIZATION) {
+LVSS::LVSS(TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT) : vicorFT(vicorFT), boardEN({0}), state(State::INITIALIZATION) {
     for (int i = 0; i < POWER_SWITCHES_SIZE; i++) {
         this->powerSwitches[i] = powerSwitches[i];
     }
@@ -120,19 +120,19 @@ void LVSS::idleState() {
 
     /** State business */
     for (int i = 0; i < POWER_SWITCHES_SIZE; i++) {
-        if (powerSwitches[i]->getCurrent() >= CurrentLim) {// Check Switch current in milliamps
+        if (powerSwitches[i]->getCurrent() >= CurrentLim) { // Check Switch current in milliamps
             log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d current error: %d\r\n", i, powerSwitches[i]->getCurrent());
             this->err[i] = PowerSwitchStatus::OverCurrent;
         }
 
-        if (powerSwitches[i]->getTemp() >= TemperatureLim) {// Check Switch temperature in Celsius
-            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d temperature Error: %d\r\n", i, powerSwitches[i]->getTemp());
-            this->err[i] = PowerSwitchStatus::Temperature;
+        if (powerSwitches[i]->getTempandFault() >= 300) { // Check Switch temperature in Celsius to determine if there is a fault
+            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d Fault: %d\r\n", i, powerSwitches[i]->getTempandFault());
+            this->err[i] = PowerSwitchStatus::Fault;
         }
 
-        if (powerSwitches[i]->getFaultStatus()) {// Check Switch fault status
-            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d fault error: %d\r\n", i, powerSwitches[i]->getFaultStatus());
-            this->err[i] = PowerSwitchStatus::Fault;
+        if (powerSwitches[i]->getTempandFault() >= 135) { // Check Switch temperature in Celsius
+            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d temperature Error: %d\r\n", i, powerSwitches[i]->getTempandFault());
+            this->err[i] = PowerSwitchStatus::Temperature;
         }
     }
 

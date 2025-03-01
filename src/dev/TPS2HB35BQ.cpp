@@ -1,13 +1,13 @@
-#include <dev/TPS2HB50BQ1.hpp>
+#include <dev/TPS2HB35BQ.hpp>
 
 namespace LVSS {
 
-TPS2HB50BQ1::TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc)
+TPS2HB35BQ::TPS2HB35BQ(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc)
     : en1(en1), en2(en2), latchPin(latch), diagEn(diagEn), diagSelect1(diagSelect1), diagSelect2(diagSelect2), senseOut(adc) {
     setDiagnostics(DiagMode::OFF);
 }
 
-void TPS2HB50BQ1::setPowerSwitchStates(bool powerSwitchOneEnabled, bool powerSwitchTwoEnabled) {
+void TPS2HB35BQ::setPowerSwitchStates(bool powerSwitchOneEnabled, bool powerSwitchTwoEnabled) {
     if (powerSwitchOneEnabled) {
         en1.writePin(IO::GPIO::State::HIGH);
     } else {
@@ -21,7 +21,7 @@ void TPS2HB50BQ1::setPowerSwitchStates(bool powerSwitchOneEnabled, bool powerSwi
     }
 }
 
-void TPS2HB50BQ1::setDiagStateEnabled(bool state) {
+void TPS2HB35BQ::setDiagStateEnabled(bool state) {
     if (state) {
         diagEn.writePin(IO::GPIO::State::HIGH);
     } else {
@@ -29,7 +29,7 @@ void TPS2HB50BQ1::setDiagStateEnabled(bool state) {
     }
 }
 
-void TPS2HB50BQ1::setLatch(LatchMode mode) {
+void TPS2HB35BQ::setLatch(LatchMode mode) {
     if (mode == LatchMode::LATCHED) {
         latchPin.writePin(IO::GPIO::State::LOW);
     } else if (mode == LatchMode::AUTO_RETRY) {
@@ -37,11 +37,11 @@ void TPS2HB50BQ1::setLatch(LatchMode mode) {
     }
 }
 
-uint32_t TPS2HB50BQ1::readSenseOut() {
+uint32_t TPS2HB35BQ::readSenseOut() {
     return senseOut.readRaw();
 }
 
-void TPS2HB50BQ1::setDiagnostics(DiagMode diag_mode) {
+void TPS2HB35BQ::setDiagnostics(DiagMode diag_mode) {
     switch (diag_mode) {
     case OFF:
         setDiagStateEnabled(false);
@@ -66,7 +66,7 @@ void TPS2HB50BQ1::setDiagnostics(DiagMode diag_mode) {
     }
 }
 
-uint32_t TPS2HB50BQ1::getCurrent() {
+uint32_t TPS2HB35BQ::getCurrent() {
     setDiagnostics(DiagMode::CURRENT);
     counts = readSenseOut();
 
@@ -86,11 +86,11 @@ uint32_t TPS2HB50BQ1::getCurrent() {
     return counts;
 }
 
-uint32_t TPS2HB50BQ1::getTemp() {
+uint32_t TPS2HB35BQ::getTempandFault() {
     setDiagnostics(DiagMode::TEMP);
     counts = readSenseOut();
 
-    if (counts > 4000) {
+    if (counts >= 4095) {
         setDiagnostics(DiagMode::OFF);
         setLatch(LatchMode::LATCHED);// Latch power switches
     }
@@ -101,18 +101,6 @@ uint32_t TPS2HB50BQ1::getTemp() {
     temp = (1000 * volts - 575000) / 11;
 
     return temp;
-}
-
-uint32_t TPS2HB50BQ1::getFaultStatus() {
-    setDiagnostics(DiagMode::FAULT_STATUS);
-    uint32_t fault_status = readSenseOut();
-
-    if (counts > 4000) {
-        setDiagnostics(DiagMode::OFF);
-        setLatch(LatchMode::LATCHED);// Latch power switches
-    }
-
-    return fault_status;
 }
 
 }// namespace LVSS
