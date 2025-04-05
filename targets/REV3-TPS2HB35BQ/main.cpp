@@ -44,23 +44,14 @@ int main() {
     EVT::core::platform::init();
 
     // Setup UART
-    IO::UART& uart = IO::getUART<IO::Pin::UART_TX, IO::Pin::UART_RX>(9600);
+    IO::UART& uart = IO::getUART<IO::Pin::UART_TX, IO::Pin::UART_RX>(9600, true);
     log::LOGGER.setUART(&uart);
     log::LOGGER.setLogLevel(log::Logger::LogLevel::INFO);
 
     // PC14 is a LSE output, so we can't use it as a GPIO, so for testing we'll use PB_7
-    IO::GPIO& lvssPowerSwitch0Enable1 = IO::getGPIO<IO::Pin::PB_7>(IO::GPIO::Direction::OUTPUT);// hib
-
-    IO::GPIO& lvssPowerSwitch0Enable2 = IO::getGPIO<IO::Pin::PD_2>(IO::GPIO::Direction::OUTPUT);// battery
-    IO::GPIO& lvssPowerSwitch0Latch = IO::getGPIO<IO::Pin::PC_10>(IO::GPIO::Direction::OUTPUT); // latch
-
-    //    IO::GPIO& lvssPowerSwitch1Enable1 = IO::getGPIO<IO::Pin::PF_1>(IO::GPIO::Direction::OUTPUT); // hudl
-    //    IO::GPIO& lvssPowerSwitch1Enable2 = IO::getGPIO<IO::Pin::PA_0>(IO::GPIO::Direction::OUTPUT); // tms
-    //    IO::GPIO& lvssPowerSwitch1Latch = IO::getGPIO<IO::Pin::PC_3>(IO::GPIO::Direction::OUTPUT); // latch
-    //
-    //    IO::GPIO& lvssPowerSwitch2Enable0 = IO::getGPIO<IO::Pin::PA_1>(IO::GPIO::Direction::OUTPUT); // gub
-    //    IO::GPIO& lvssPowerSwitch2Enable1 = IO::getGPIO<IO::Pin::PC_8>(IO::GPIO::Direction::OUTPUT); // acc
-    //    IO::GPIO& lvssPowerSwitch2Latch = IO::getGPIO<IO::Pin::PB_14>(IO::GPIO::Direction::OUTPUT); // latch
+    IO::GPIO& lvssPowerSwitch0Enable1 = IO::getGPIO<IO::Pin::PB_7>(IO::GPIO::Direction::OUTPUT);
+    IO::GPIO& lvssPowerSwitch0Enable2 = IO::getGPIO<IO::Pin::PD_2>(IO::GPIO::Direction::OUTPUT);
+    IO::GPIO& lvssPowerSwitch0Latch = IO::getGPIO<IO::Pin::PC_10>(IO::GPIO::Direction::OUTPUT);
 
     IO::GPIO& diagEnable = IO::getGPIO<IO::Pin::PC_13>(IO::GPIO::Direction::OUTPUT);// diag enable
 
@@ -71,16 +62,11 @@ int main() {
     IO::GPIO& diagSelect2 = IO::getGPIO<IO::Pin::PC_4>(IO::GPIO::Direction::OUTPUT);// diag select 2
 
     IO::ADC& lvssPowerSwitch0SenseOut = IO::getADC<IO::Pin::PC_0>();
-    //    IO::ADC& lvssPowerSwitch1SenseOut = IO::getADC<IO::Pin::PC_1>();
-    //    IO::ADC& lvssPowerSwitch2SenseOut = IO::getADC<IO::Pin::PC_2>();
 
-    LVSS::TPS2HB50BQ1 powerSwitch0 = LVSS::TPS2HB50BQ1(lvssPowerSwitch0Enable1, lvssPowerSwitch0Enable2,
+    LVSS::TPS2HB35BQ powerSwitch0 = LVSS::TPS2HB35BQ(lvssPowerSwitch0Enable1, lvssPowerSwitch0Enable2,
                                                        lvssPowerSwitch0Latch, diagEnable,
                                                        diagSelect1, diagSelect2,
                                                        lvssPowerSwitch0SenseOut);
-
-    // initialize timer? probably don't need
-    DEV::Timerf3xx timer(TIM2, 160);
 
     // String to store user input
     char buf[1000];
@@ -97,6 +83,12 @@ int main() {
         "current: Get current\r\n",
         "fault: Get fault status\r\n"};
 
+    // Display available commands at startup
+    uart.printf("\r\nAvailable commands:\r\n");
+    for (const char* command : commands) {
+        uart.printf("%s", command);
+    }
+
     while (1) {
         // Read user input
         uart.printf("\nEnter command: ");
@@ -109,10 +101,10 @@ int main() {
             }
         } else if (strcmp(buf, "latch") == 0) {
             uart.printf("\r\nSetting latch\r\n");
-            powerSwitch0.setLatch(LVSS::TPS2HB50BQ1::LatchMode::LATCHED);
+            powerSwitch0.setLatch(LVSS::TPS2HB35BQ::LatchMode::LATCHED);
         } else if (strcmp(buf, "autoretry") == 0) {
             uart.printf("\r\nSetting auto retry\r\n");
-            powerSwitch0.setLatch(LVSS::TPS2HB50BQ1::LatchMode::AUTO_RETRY);
+            powerSwitch0.setLatch(LVSS::TPS2HB35BQ::LatchMode::AUTO_RETRY);
         } else if (strcmp(buf, "enAll") == 0) {
             uart.printf("\r\nEnabling all power switches\r\n");
             powerSwitch0.setPowerSwitchStates(true, true);
@@ -126,11 +118,11 @@ int main() {
             uart.printf("\r\nEnabling power switch 2\r\n");
             powerSwitch0.setPowerSwitchStates(false, true);
         } else if (strcmp(buf, "temp") == 0) {
-            uart.printf("\r\ntemp: %d\r\n", powerSwitch0.getTemp());
+            uart.printf("\r\ntemp: %d\r\n", powerSwitch0.getTempandFault());
         } else if (strcmp(buf, "current") == 0) {
             uart.printf("\r\nCurrent: %d\r\n", powerSwitch0.getCurrent());
         } else if (strcmp(buf, "fault") == 0) {
-            uart.printf("\r\nFault state: %d\r\n", powerSwitch0.getFaultStatus());
+            uart.printf("\r\nFault state: %d\r\n", powerSwitch0.getTempandFault());
         } else {
             uart.printf("\r\nInvalid command\r\n");
             for (auto& command : commands) {

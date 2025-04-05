@@ -2,27 +2,32 @@ clc; close all; clear;
 
 % Parameters %
 IoutMax = 18; % 18 A
-Ksns =  2000; % Current Sense Ratio
+Ksns = 2000; % Current Sense Ratio
 adcVoltage = 3.3;
+Kcl = 140; % Current Limit Ratio
 
-% Vsns %
+% Current Limit Calculations %
 Vsns = 1000 * 3 / Ksns;
-
-% Rsns %
 Rsns = adcVoltage * Ksns / IoutMax;
+Rilim = Kcl / IoutMax;
 
-% Rilim
-Kcl = 140;
-Icl = 18;
-Rilim = Kcl / Icl;
+% Compute Device Temperature based on the equation (I_SNST mA - 0.85) / (dI_SNST/dT) mA/°C  + 25°C on page 34 of TPS2HB35-Q1 datasheet %
+Isnst = 0.85;
+refTemperature = 25; % Reference temperature in degrees celsius
+refCurrent = 0.85; % Reference current in mA for reference temperature
 
-% Define table
-columnNames = ["Vsns (V)", "IoutMax (A)", "Rsns (Ω)", "Ksns", "Rilim (kΩ)"];
-data = [Vsns, IoutMax, Rsns, Ksns, Rilim];
-T = array2table(data, 'VariableNames', columnNames);
-disp(T)
+tj = (Isnst - refCurrent) / 0.011 + refTemperature;
+fprintf("Device temperature at %0.4f mA is %0.4f°C\n", Isnst, tj);
+temperatureTable = table(Isnst, tj, 'VariableNames', {'Current_mA', 'Temperature_C'});
 
-% Based on the equation (I_SNST mA - 0.85) / (dI_SNST /dT) mA/°C  + 25°C on page 34 of TPS2HB35-Q1 datasheet
-Isnst = 0.12;
-tj = (Isnst - 0.85) / 0.011 + 25;
-fprintf("Device temperature at %0.2f mA = %0.4f%cC\n\n", Isnst, tj, char(176))
+% ADC Data %
+testVals = (1:10) * 1e-3; % 1mV to 10mV
+adcData = ((330 * testVals) * 4096) / adcVoltage; % Convert to ADC counts
+
+adcTable = array2table([testVals(:), adcData(:)], ...
+    "VariableNames", {'Input (mA)', 'ADC Counts'});
+
+% Table with all major data %
+FinalTable = array2table([Vsns; IoutMax; Rsns; Ksns; Rilim; min(adcData); max(adcData)], ...
+    'RowNames', ["Vsns (V)"; "IoutMax (A)"; "Rsns (Ω)"; "Ksns"; "Rilim (kΩ)"; "Min ADC Counts"; "Max ADC Counts"], ...
+    'VariableNames', {'Value'});
