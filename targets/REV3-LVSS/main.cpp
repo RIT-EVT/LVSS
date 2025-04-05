@@ -17,7 +17,6 @@ namespace DEV = EVT::core::DEV;
 namespace time = EVT::core::time;
 namespace log = EVT::core::log;
 namespace types = EVT::core::types;
-using namespace std;
 
 /**
 * Interrupt handler to get CAN messages. A function pointer to this function
@@ -43,7 +42,7 @@ int main() {
     EVT::core::platform::init();
 
     // Setup UART
-    IO::UART& uart = IO::getUART<IO::Pin::UART_TX, IO::Pin::UART_RX>(9600);
+    IO::UART& uart = IO::getUART<IO::Pin::UART_TX, IO::Pin::UART_RX>(9600, true);
     log::LOGGER.setUART(&uart);
     log::LOGGER.setLogLevel(log::Logger::LogLevel::INFO);
 
@@ -105,12 +104,6 @@ int main() {
 
     // Reserve canNode
     CO_NODE canNode;
-    /*
-   // Adds CAN filtering to only allow messages from IDs 1, 5, and 8.
-   can.addCANFilter(0x1, 0b00001111111, 0);
-  can.addCANFilter(0x8, 0b00001111111, 1);
-   can.addCANFilter(0x5, 0b00001111111, 2);
-   */
 
     // Attempt to join the CAN network
     IO::CAN::CANStatus result = can.connect();

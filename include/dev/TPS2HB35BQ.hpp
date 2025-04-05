@@ -3,8 +3,6 @@
 
 #include <EVT/io/ADC.hpp>
 #include <EVT/io/CAN.hpp>
-#include <EVT/io/CANOpenMacros.hpp>
-#include <EVT/io/CANopen.hpp>
 #include <EVT/io/GPIO.hpp>
 
 namespace IO = EVT::core::IO;
@@ -50,14 +48,14 @@ public:
     /**
      * Get the current of the power switch
      *
-     * @return The current of the power switch
+     * @return The current of the power switch in milli amps
      */
     uint32_t getCurrent();
 
     /**
      * Get the temperature of the power switch
      *
-     * @return The temperature of the power switch in millicelsius
+     * @return The temperature of the power switch in Celsius
      */
     uint32_t getTempandFault();
 
@@ -82,16 +80,13 @@ private:
     IO::GPIO& diagEn;
     IO::GPIO& diagSelect1;
     IO::GPIO& diagSelect2;
-    IO::ADC& senseOut;
+    IO::ADC&  senseOut;
 
-    uint32_t temp = 0;   // Power Switch Temperature
     uint32_t counts = 0; // ADC Counts
-    uint32_t volts = 0;  // ADC Voltage
-    uint32_t current = 0;// Power Switch Current in milliamps
 
-    uint32_t kcl = 90000;     // Current Limit Ratio
-    uint32_t rlim = 10000;    // Resistor that sets the current limit
-    uint32_t icl = kcl / rlim;// Current Limit Value
+    uint32_t rsns = 330;// Resistor that sets the current limit
+    uint32_t kcl = 140; // Current Limit Ratio
+    uint32_t icl = 18; // Current Limit Value
 
     void setDiagStateEnabled(bool state);
 

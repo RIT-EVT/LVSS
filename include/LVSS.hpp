@@ -3,6 +3,7 @@
 
 #include <EVT/dev/LCD.hpp>
 #include <EVT/io/CANopen.hpp>
+#include <EVT/io/CANOpenMacros.hpp>
 #include <EVT/utils/log.hpp>
 #include <LVSS.hpp>
 #include <cstdio>
