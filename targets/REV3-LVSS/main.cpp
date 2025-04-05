@@ -67,19 +67,19 @@ int main() {
     IO::ADC& lvssPowerSwitch2SenseOut = IO::getADC<IO::Pin::PC_2>();
 
     LVSS::TPS2HB35BQ powerSwitch0 = LVSS::TPS2HB35BQ(lvssPowerSwitch0Enable0, lvssPowerSwitch0Enable1,
-                                                       lvssPowerSwitch0Latch, diagEnable,
-                                                       diagSelect1, diagSelect2,
-                                                       lvssPowerSwitch0SenseOut);
+                                                     lvssPowerSwitch0Latch, diagEnable,
+                                                     diagSelect1, diagSelect2,
+                                                     lvssPowerSwitch0SenseOut);
 
     LVSS::TPS2HB35BQ powerSwitch1 = LVSS::TPS2HB35BQ(lvssPowerSwitch1Enable0, lvssPowerSwitch1Enable1,
-                                                       lvssPowerSwitch1Latch, diagEnable,
-                                                       diagSelect1, diagSelect2,
-                                                       lvssPowerSwitch1SenseOut);
+                                                     lvssPowerSwitch1Latch, diagEnable,
+                                                     diagSelect1, diagSelect2,
+                                                     lvssPowerSwitch1SenseOut);
 
     LVSS::TPS2HB35BQ powerSwitch2 = LVSS::TPS2HB35BQ(lvssPowerSwitch2Enable0, lvssPowerSwitch2Enable1,
-                                                       lvssPowerSwitch2Latch, diagEnable,
-                                                       diagSelect1, diagSelect2,
-                                                       lvssPowerSwitch2SenseOut);
+                                                     lvssPowerSwitch2Latch, diagEnable,
+                                                     diagSelect1, diagSelect2,
+                                                     lvssPowerSwitch2SenseOut);
 
     LVSS::TPS2HB35BQ* powerSwitches[3] = {&powerSwitch0, &powerSwitch1, &powerSwitch2};
 

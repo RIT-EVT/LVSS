@@ -29,7 +29,7 @@ public:
      * @param diagSelect2 Mux select pin for diagnostics, see setDiagnostics
      */
     TPS2HB35BQ(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn,
-                IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& senseOut);
+               IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& senseOut);
 
     enum DiagMode {
         OFF = 0x00,
@@ -80,13 +80,13 @@ private:
     IO::GPIO& diagEn;
     IO::GPIO& diagSelect1;
     IO::GPIO& diagSelect2;
-    IO::ADC&  senseOut;
+    IO::ADC& senseOut;
 
-    uint32_t counts = 0; // ADC Counts
+    uint32_t counts = 0;// ADC Counts
 
     uint32_t rsns = 330;// Resistor that sets the current limit
     uint32_t kcl = 140; // Current Limit Ratio
-    uint32_t icl = 18; // Current Limit Value
+    uint32_t icl = 18;  // Current Limit Value
 
     void setDiagStateEnabled(bool state);
 

@@ -64,9 +64,9 @@ int main() {
     IO::ADC& lvssPowerSwitch0SenseOut = IO::getADC<IO::Pin::PC_0>();
 
     LVSS::TPS2HB35BQ powerSwitch0 = LVSS::TPS2HB35BQ(lvssPowerSwitch0Enable1, lvssPowerSwitch0Enable2,
-                                                       lvssPowerSwitch0Latch, diagEnable,
-                                                       diagSelect1, diagSelect2,
-                                                       lvssPowerSwitch0SenseOut);
+                                                     lvssPowerSwitch0Latch, diagEnable,
+                                                     diagSelect1, diagSelect2,
+                                                     lvssPowerSwitch0SenseOut);
 
     // String to store user input
     char buf[1000];
