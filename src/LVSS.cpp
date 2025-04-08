@@ -118,18 +118,23 @@ void LVSS::idleState() {
 
     /* Fault Checking */
     for (int i = 0; i < POWER_SWITCHES_SIZE; i++) {
+
+        switchCurrent = powerSwitches[i]->getCurrent();
+        switchTemperature = powerSwitches[i]->getTempandFault();
+        switchFaultstatus = powerSwitches[i]->getTempandFault();
+
         if (powerSwitches[i]->getCurrent() >= CurrentLim) {// Check Switch current in milliamps
-            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d current error: %d\r\n", i, powerSwitches[i]->getCurrent());
+            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d current error: %d\r\n", i, switchCurrent);
             this->err[i] = PowerSwitchStatus::OverCurrent;
         }
 
         if (powerSwitches[i]->getTempandFault() >= 300) {// Check Switch temperature in Celsius to determine if there is a fault
-            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d Fault: %d\r\n", i, powerSwitches[i]->getTempandFault());
+            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d Fault: %d\r\n", i, switchTemperature);
             this->err[i] = PowerSwitchStatus::Fault;
         }
 
         if (powerSwitches[i]->getTempandFault() >= 135) {// Check Switch temperature in Celsius
-            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d temperature Error: %d\r\n", i, powerSwitches[i]->getTempandFault());
+            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d temperature Error: %d\r\n", i, switchFaultstatus);
             this->err[i] = PowerSwitchStatus::Temperature;
         }
     }

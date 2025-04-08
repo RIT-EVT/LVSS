@@ -57,7 +57,7 @@ public:
      *
      * @return The temperature of the power switch in Celsius
      */
-    uint32_t getTempandFault();
+    int32_t getTempandFault();
 
     /**
     * Set the latch mode of the power switch

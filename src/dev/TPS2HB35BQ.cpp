@@ -67,7 +67,7 @@ void TPS2HB35BQ::setDiagnostics(DiagMode diag_mode) {
 }
 
 uint32_t TPS2HB35BQ::getCurrent() {
-    setDiagnostics(DiagMode::CURRENT);// Set diagnostic mode to sense current
+    setDiagnostics(DiagMode::CURRENT); // Set diagnostic mode to sense current
     counts = readSenseOut();
 
     if (counts >= 4095) {
@@ -75,34 +75,34 @@ uint32_t TPS2HB35BQ::getCurrent() {
     }
 
     /* volts = (ADC Counts * 3300 kilovolts) / 4096 */
-    uint32_t millivolts = (counts * 3300) / 4096;// Turn ADC counts into milli volts
-    uint32_t milliamps = millivolts / rsns;      // Turn milli volts into milli amps
+    uint32_t millivolts = (counts * 3300) / 4096; // Turn ADC counts into milli volts
+    uint32_t milliamps = millivolts / rsns; // Turn milli volts into milli amps
 
     /* If current is greater than the current limit latch the sns pin */
     if (milliamps >= icl) {
         setDiagnostics(DiagMode::OFF);
-        setLatch(LatchMode::LATCHED);// Latch power switches
+        setLatch(LatchMode::LATCHED); // Latch power switches
     }
 
     return milliamps;
 }
 
-uint32_t TPS2HB35BQ::getTempandFault() {
+int32_t TPS2HB35BQ::getTempandFault() {
     setDiagnostics(DiagMode::TEMP);// Set diagnostic mode to sense temperature
     counts = readSenseOut();
 
     if (counts >= 4095) {
         setDiagnostics(DiagMode::OFF);
-        setLatch(LatchMode::LATCHED);// Latch power switches
+        setLatch(LatchMode::LATCHED); // Latch power switches
     }
 
-    uint32_t millivolts = (counts * 3300) / 4096;  // Turn ADC counts into milli volts
-    int32_t microamps = (millivolts * 1000) / rsns;// Turn milli volts into micro amps
+    uint32_t milliVolts = (counts * 3300) / 4096;  // Turn ADC counts into milli volts
+    int32_t microAmps = (milliVolts * 1000) / rsns;// Turn milli volts into micro amps
 
     /* ( Isns (mA) - 0.85 mA ) / (dIsnst/dT) + 25 celsius */
-    int32_t temp = (microamps - 850) / 11 + 25;
+    int32_t milliCelsius = (microAmps - 850) / 11 + 25000; // Returns temperature in milli celsius
 
-    return temp;
+    return milliCelsius;
 }
 
 }// namespace LVSS
