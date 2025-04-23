@@ -24,7 +24,8 @@ static constexpr uint8_t POWER_SWITCHES_SIZE = 3;
  */
 class LVSS : public CANDevice {
 public:
-    static constexpr uint8_t NODE_ID = 42;
+    static constexpr uint8_t NODE_ID = 1;
+    static constexpr uint8_t VCU_NODE_ID = 0;
     static constexpr uint8_t TPDO_NODE_ID = 1;
 
     IO::GPIO& vicorFT;
@@ -48,6 +49,20 @@ public:
             uint8_t acc : 1;
         };
     } u_t;
+
+    union switchState {
+        uint16_t battCurrent;
+        uint16_t hibCurrent;
+        uint16_t tmsCurrent ;
+        uint16_t hudlCurrent;
+        uint16_t accCurrent;
+        uint16_t gubCurrent;
+
+        int16_t switch0Temp;
+        int16_t switch1Temp;
+        int16_t switch2Temp;
+
+    };
 
     /** FSM State declaration */
     enum class State {
@@ -89,19 +104,26 @@ public:
      */
     void process();
 
+    void running();
+
+
 private:
     TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE]{};// a struct for each power switch (of which there are 3)
 
     u_t boardEN;
 
+    switchState PowerSwitchState;
+
+
     /** Tracks signal from VCU */
-    uint16_t VCUBoardSig = 0x00;
+    uint16_t VCUBoardSig;
 
     /** Tracks high value current */
     uint16_t highValCurrent = 0x00;
 
     /** Tracks power switch current */
-    uint16_t switchCurrent = 0x00;
+    uint16_t switchCH1Current = 0x00;
+    uint16_t switchCH2Current = 0x00;
 
     /** Tracks power switch temperature */
     uint16_t switchTemperature = 0x00;
@@ -167,8 +189,7 @@ private:
      * Have to know the size of the object dictionary for initialization
      * process.
      */
-    static constexpr uint8_t OBJECT_DICTIONARY_SIZE = 40;
-
+    static constexpr uint8_t OBJECT_DICTIONARY_SIZE = 70;
     /**
      * The object dictionary itself. Will be populated by this object during
      * construction.
@@ -181,26 +202,59 @@ private:
         IDENTITY_OBJECT_1018,
         SDO_CONFIGURATION_1200,
 
-        RECEIVE_PDO_SETTINGS_OBJECT_140X(0x00, 0x00, TPDO_NODE_ID, RECEIVE_PDO_TRIGGER_ASYNC),
-        RECEIVE_PDO_MAPPING_START_KEY_16XX(0x00, 0x1),
-        RECEIVE_PDO_MAPPING_ENTRY_16XX(0x00, 0x01, PDO_MAPPING_UNSIGNED16),
+        RECEIVE_PDO_SETTINGS_OBJECT_140X(0x04, 0x04, VCU_NODE_ID, RECEIVE_PDO_TRIGGER_ASYNC),
+        RECEIVE_PDO_MAPPING_START_KEY_16XX(0x04, 0x01),
+        RECEIVE_PDO_MAPPING_ENTRY_16XX(0x04, 0x01, PDO_MAPPING_UNSIGNED16),
 
-        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x00, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x00, TRANSMIT_PDO_TRIGGER_TIMER,TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
         TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x00, 0x02),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x00, 0x01, PDO_MAPPING_UNSIGNED16),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x00, 0x02, PDO_MAPPING_UNSIGNED16),
 
+        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x01, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x01, 0x04),
+        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x01, 0x01, PDO_MAPPING_UNSIGNED16),
+        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x01, 0x02, PDO_MAPPING_UNSIGNED16),
+        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x01, 0x03, PDO_MAPPING_UNSIGNED16),
+        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x01, 0x04, PDO_MAPPING_UNSIGNED16),
+
+        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x02, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x02, 0x02),
+        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x02, 0x01, PDO_MAPPING_UNSIGNED16),
+        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x02, 0x02, PDO_MAPPING_UNSIGNED16),
+
+        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x03, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x03, 0x03),
+        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x03, 0x01, PDO_MAPPING_UNSIGNED16),
+        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x03, 0x02, PDO_MAPPING_UNSIGNED16),
+        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x03, 0x03, PDO_MAPPING_UNSIGNED16),
+
         // User defined data, this will be where we put elements that can be
         // accessed via SDO and depending on configuration PDO
-        DATA_LINK_START_KEY_21XX(0x00, 0x05),
-        /** Receive data */
-        DATA_LINK_21XX(0x00, 0x01, CO_TUNSIGNED16, &VCUBoardSig),
 
         /** Transfer data */
-        DATA_LINK_21XX(0x00, 0x02, CO_TUNSIGNED16, &highValCurrent),
-        DATA_LINK_21XX(0x00, 0x03, CO_TUNSIGNED16, &switchCurrent),
-        DATA_LINK_21XX(0x00, 0x04, CO_TUNSIGNED16, &switchTemperature),
-        DATA_LINK_21XX(0x00, 0x05, CO_TUNSIGNED16, &switchFaultstatus),
+        DATA_LINK_START_KEY_21XX(0x00, 0x02),
+        DATA_LINK_21XX(0x00, 0x01, CO_TUNSIGNED16, &highValCurrent),
+        DATA_LINK_21XX(0x00, 0x02, CO_TUNSIGNED16, &switchFaultstatus),
+
+        DATA_LINK_START_KEY_21XX(0x01, 0x04),
+        DATA_LINK_21XX(0x01, 0x01, CO_TUNSIGNED16, &PowerSwitchState.battCurrent),
+        DATA_LINK_21XX(0x01, 0x02, CO_TUNSIGNED16, &PowerSwitchState.hibCurrent),
+        DATA_LINK_21XX(0x01, 0x03, CO_TUNSIGNED16, &PowerSwitchState.tmsCurrent),
+        DATA_LINK_21XX(0x01, 0x04, CO_TUNSIGNED16, &PowerSwitchState.hudlCurrent),
+
+        DATA_LINK_START_KEY_21XX(0x02, 0x02),
+        DATA_LINK_21XX(0x02, 0x01, CO_TUNSIGNED16, &PowerSwitchState.accCurrent),
+        DATA_LINK_21XX(0x02, 0x02, CO_TUNSIGNED16, &PowerSwitchState.gubCurrent),
+
+        DATA_LINK_START_KEY_21XX(0x03, 0x01),
+        DATA_LINK_21XX(0x03, 0x01, CO_TSIGNED16, &PowerSwitchState.switch0Temp),
+        DATA_LINK_21XX(0x03, 0x01, CO_TSIGNED16, &PowerSwitchState.switch1Temp),
+        DATA_LINK_21XX(0x03, 0x01, CO_TSIGNED16, &PowerSwitchState.switch2Temp),
+
+        /** Receive data */
+        DATA_LINK_START_KEY_21XX(0x04, 0x01),
+        DATA_LINK_21XX(0x04, 0x01, CO_TUNSIGNED16, &VCUBoardSig),
 
         // End of dictionary marker
         CO_OBJ_DICT_ENDMARK,

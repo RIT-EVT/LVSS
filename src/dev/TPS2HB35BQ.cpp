@@ -53,7 +53,12 @@ void TPS2HB35BQ::setDiagnostics(DiagMode diag_mode) {
         diagSelect1.writePin(IO::GPIO::State::HIGH);
         diagSelect2.writePin(IO::GPIO::State::LOW);
         break;
-    case CURRENT:
+    case CH1CURRENT:
+        setDiagStateEnabled(true);
+        diagSelect1.writePin(IO::GPIO::State::LOW);
+        diagSelect2.writePin(IO::GPIO::State::LOW);
+        break;
+    case CH2CURRENT:
         setDiagStateEnabled(true);
         diagSelect1.writePin(IO::GPIO::State::LOW);
         diagSelect2.writePin(IO::GPIO::State::HIGH);
@@ -66,8 +71,29 @@ void TPS2HB35BQ::setDiagnostics(DiagMode diag_mode) {
     }
 }
 
-uint32_t TPS2HB35BQ::getCurrent() {
-    setDiagnostics(DiagMode::CURRENT);// Set diagnostic mode to sense current
+uint32_t TPS2HB35BQ::getChannel1Current() {
+    setDiagnostics(DiagMode::CH1CURRENT);// Set diagnostic mode to sense current
+    counts = readSenseOut();
+
+    if (counts >= 4095) {
+        setDiagnostics(DiagMode::OFF);
+    }
+
+    /* volts = (ADC Counts * 3300 kilovolts) / 4096 */
+    uint32_t millivolts = (counts * 3300) / 4096;// Turn ADC counts into milli volts
+    uint32_t milliamps = millivolts / rsns;      // Turn milli volts into milli amps
+
+    /* If current is greater than the current limit latch the sns pin */
+    if (milliamps >= icl) {
+        setDiagnostics(DiagMode::OFF);
+        setLatch(LatchMode::LATCHED);// Latch power switches
+    }
+
+    return milliamps;
+}
+
+uint32_t TPS2HB35BQ::getChannel2Current() {
+    setDiagnostics(DiagMode::CH2CURRENT);// Set diagnostic mode to sense current
     counts = readSenseOut();
 
     if (counts >= 4095) {

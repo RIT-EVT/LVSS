@@ -53,10 +53,10 @@ void LVSS::initState() {
     }
 
     /* Wait for 102ms as per the VICOR datasheet */
-    time::wait(102);
+    // time::wait(102);
 
     /* If 110ms has passed then go into the next state */
-    if (time::millis() >= 110) {
+    if (time::millis() >= 102) {
         state = State::SOFT_START;
         isNewState = true;
     } else {
@@ -97,6 +97,8 @@ void LVSS::powerUpState() {
     powerSwitches[1]->setPowerSwitchStates(boardEN.tms, boardEN.hudl);// Turn on TMS and HUDL
     powerSwitches[2]->setPowerSwitchStates(boardEN.acc, boardEN.gub); // Turn on Acc and GUB
 
+    log::LOGGER.log(log::Logger::LogLevel::ERROR, "Vicor Fault Status: %d\r\n", vicorFT.readPin());
+
     /* Check for vicor fault */
     if (vicorFT.readPin() == VICOR_FAULT_ACTIVE_STATE) {
         log::LOGGER.log(log::Logger::LogLevel::ERROR, "Vicor Fault Status: %d\r\n", vicorFT.readPin());
@@ -119,24 +121,24 @@ void LVSS::idleState() {
     /* Fault Checking */
     for (int i = 0; i < POWER_SWITCHES_SIZE; i++) {
 
-        switchCurrent = powerSwitches[i]->getCurrent();
+        switchCH1Current = powerSwitches[i]->getChannel1Current();
         switchTemperature = powerSwitches[i]->getTempandFault();
         switchFaultstatus = powerSwitches[i]->getTempandFault();
 
-        if (powerSwitches[i]->getCurrent() >= CurrentLim) {// Check Switch current in milliamps
-            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d current error: %d\r\n", i, switchCurrent);
-            this->err[i] = PowerSwitchStatus::OverCurrent;
-        }
-
-        if (powerSwitches[i]->getTempandFault() >= 300) {// Check Switch temperature in Celsius to determine if there is a fault
-            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d Fault: %d\r\n", i, switchTemperature);
-            this->err[i] = PowerSwitchStatus::Fault;
-        }
-
-        if (powerSwitches[i]->getTempandFault() >= 135) {// Check Switch temperature in Celsius
-            log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d temperature Error: %d\r\n", i, switchFaultstatus);
-            this->err[i] = PowerSwitchStatus::Temperature;
-        }
+        // if (powerSwitches[i]->getCurrent() >= CurrentLim) {// Check Switch current in milliamps
+        //     log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d current error: %d\r\n", i, switchCurrent);
+        //     this->err[i] = PowerSwitchStatus::OverCurrent;
+        // }
+        //
+        // if (powerSwitches[i]->getTempandFault() >= 5000000000) {// Check Switch temperature in Celsius to determine if there is a fault
+        //     log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d Fault: %d\r\n", i, switchTemperature);
+        //     this->err[i] = PowerSwitchStatus::Fault;
+        // }
+        //
+        // if (powerSwitches[i]->getTempandFault() >= 135) {// Check Switch temperature in Celsius
+        //     log::LOGGER.log(log::Logger::LogLevel::ERROR, "Switch %d temperature Error: %d\r\n", i, switchFaultstatus);
+        //     this->err[i] = PowerSwitchStatus::Temperature;
+        // }
     }
 
     /* If no faults occur turn on the boards */
@@ -213,6 +215,40 @@ void LVSS::faultState() {
             isNewState = true;
         }
     }
+}
+
+void LVSS::running() {
+
+    /* Assigns the VCU signal to the union bit field */
+    this->boardEN.val = VCUBoardSig;
+
+    // log::LOGGER.log(log::Logger::LogLevel::INFO, "Battery: %d\r\nHIB: %d\r\nTMS: %d\r\nHUDL: %d\r\nACC: %d\r\nGUB: %d\r\n", boardEN.batt, boardEN.hib, boardEN.tms, boardEN.hudl, boardEN.acc, boardEN.gub);
+
+    /* Turn on boards */
+    powerSwitches[0]->setPowerSwitchStates(boardEN.batt, boardEN.hib);// Turn on Battery and HIB
+    powerSwitches[1]->setPowerSwitchStates(boardEN.tms, boardEN.hudl);// Turn on TMS and HUDL
+    powerSwitches[2]->setPowerSwitchStates(boardEN.acc, boardEN.gub); // Turn on Acc and GUB
+
+    /* Current Checking */
+    PowerSwitchState.battCurrent = powerSwitches[0]->getChannel1Current();
+    PowerSwitchState.tmsCurrent = powerSwitches[1]->getChannel1Current();
+    PowerSwitchState.accCurrent = powerSwitches[2]->getChannel1Current();
+
+    log::LOGGER.log(log::Logger::LogLevel::INFO, "Switch 0 Channel 1: %d\r\nSwitch 1 Channel 1: %d\r\nSwitch 2 Channel 1: %d\r\n", PowerSwitchState.battCurrent, PowerSwitchState.tmsCurrent, PowerSwitchState.accCurrent);
+
+    time::wait(2); // Power switches require the ADC to wait a min of 165 micro seconds before sampling SNS pin again
+
+    PowerSwitchState.hibCurrent = powerSwitches[0]->getChannel2Current();
+    PowerSwitchState.hudlCurrent = powerSwitches[1]->getChannel2Current();
+    PowerSwitchState.gubCurrent = powerSwitches[2]->getChannel2Current();
+
+    log::LOGGER.log(log::Logger::LogLevel::INFO, "Switch 0 Channel 2: %d\r\nSwitch 1 Channel 2: %d\r\nSwitch 2 Channel 2: %d\r\n", PowerSwitchState.hibCurrent, PowerSwitchState.hudlCurrent, PowerSwitchState.gubCurrent);
+
+    PowerSwitchState.switch0Temp = powerSwitches[0]->getTempandFault();
+    PowerSwitchState.switch1Temp = powerSwitches[1]->getTempandFault();
+    PowerSwitchState.switch2Temp = powerSwitches[2]->getTempandFault();
+
+    log::LOGGER.log(log::Logger::LogLevel::INFO, "Switch 0 Temperature: %d\r\nSwitch 1 Temperature: %d\r\nSwitch 2 Temperature: %d\r\n", PowerSwitchState.switch0Temp, PowerSwitchState.switch1Temp, PowerSwitchState.switch2Temp);
 }
 
 }// namespace LVSS

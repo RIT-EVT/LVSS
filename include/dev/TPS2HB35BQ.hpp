@@ -34,8 +34,9 @@ public:
     enum DiagMode {
         OFF = 0x00,
         FAULT_STATUS = 0x01,
-        CURRENT = 0x02,
-        TEMP = 0x03
+        CH1CURRENT = 0x02,
+        CH2CURRENT = 0x03,
+        TEMP = 0x04
     };
 
     enum LatchMode {
@@ -46,11 +47,18 @@ public:
     void setPowerSwitchStates(bool powerSwitchOneEnabled, bool powerSwitchTwoEnabled);
 
     /**
-     * Get the current of the power switch
+     * Get the current of the power switch on channel 1
      *
      * @return The current of the power switch in milli amps
      */
-    uint32_t getCurrent();
+    uint32_t getChannel1Current();
+
+    /**
+     * Get the current of the power switch on channel 2
+     *
+     * @return The current of the power switch in milli amps
+     */
+    uint32_t getChannel2Current();
 
     /**
      * Get the temperature of the power switch
