@@ -53,7 +53,7 @@ public:
     union switchState {
         uint16_t battCurrent;
         uint16_t hibCurrent;
-        uint16_t tmsCurrent ;
+        uint16_t tmsCurrent;
         uint16_t hudlCurrent;
         uint16_t accCurrent;
         uint16_t gubCurrent;
@@ -61,7 +61,6 @@ public:
         int16_t switch0Temp;
         int16_t switch1Temp;
         int16_t switch2Temp;
-
     };
 
     /** FSM State declaration */
@@ -106,14 +105,12 @@ public:
 
     void running();
 
-
 private:
     TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE]{};// a struct for each power switch (of which there are 3)
 
     u_t boardEN;
 
     switchState PowerSwitchState;
-
 
     /** Tracks signal from VCU */
     uint16_t VCUBoardSig;
@@ -206,7 +203,7 @@ private:
         RECEIVE_PDO_MAPPING_START_KEY_16XX(0x04, 0x01),
         RECEIVE_PDO_MAPPING_ENTRY_16XX(0x04, 0x01, PDO_MAPPING_UNSIGNED16),
 
-        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x00, TRANSMIT_PDO_TRIGGER_TIMER,TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x00, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
         TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x00, 0x02),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x00, 0x01, PDO_MAPPING_UNSIGNED16),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x00, 0x02, PDO_MAPPING_UNSIGNED16),
