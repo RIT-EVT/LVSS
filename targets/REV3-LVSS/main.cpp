@@ -130,14 +130,9 @@ int main() {
 
     CONmtSetMode(&canNode.Nmt, CO_OPERATIONAL);
 
-    // if (vicorFault == 0) {
     while (1) {
         lvss.process();
-        // lvss.running();
-
         IO::processCANopenNode(&canNode);
         time::wait(500);
     }
-
-    // else
 }

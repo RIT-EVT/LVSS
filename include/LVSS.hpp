@@ -50,7 +50,7 @@ public:
         };
     } u_t;
 
-    union switchState {
+    typedef union switchState {
         uint16_t battCurrent;
         uint16_t hibCurrent;
         uint16_t tmsCurrent ;
@@ -61,7 +61,6 @@ public:
         int16_t switch0Temp;
         int16_t switch1Temp;
         int16_t switch2Temp;
-
     };
 
     /** FSM State declaration */
@@ -202,28 +201,38 @@ private:
         IDENTITY_OBJECT_1018,
         SDO_CONFIGURATION_1200,
 
-        RECEIVE_PDO_SETTINGS_OBJECT_140X(0x04, 0x04, VCU_NODE_ID, RECEIVE_PDO_TRIGGER_ASYNC),
-        RECEIVE_PDO_MAPPING_START_KEY_16XX(0x04, 0x01),
-        RECEIVE_PDO_MAPPING_ENTRY_16XX(0x04, 0x01, PDO_MAPPING_UNSIGNED16),
+        RECEIVE_PDO_SETTINGS_OBJECT_140X(0x00, 0x00, VCU_NODE_ID, RECEIVE_PDO_TRIGGER_ASYNC),
+
+        RECEIVE_PDO_MAPPING_START_KEY_16XX(0x00, 0x01),
+        {                                                                                 \
+        .Key = CO_KEY(0x1600 + 0x00, 0x01, CO_OBJ_D___R_),                \
+        .Type = CO_TUNSIGNED32,                                                       \
+        .Data = (CO_DATA) CO_LINK(0x2200 + 0x00, 0x00 + 0x01, PDO_MAPPING_UNSIGNED16), \
+        },
 
         TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x00, TRANSMIT_PDO_TRIGGER_TIMER,TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x01, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x02, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x03, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+
+        // TPDO 0 Map
         TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x00, 0x02),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x00, 0x01, PDO_MAPPING_UNSIGNED16),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x00, 0x02, PDO_MAPPING_UNSIGNED16),
 
-        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x01, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        // TPDO 1 Map
         TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x01, 0x04),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x01, 0x01, PDO_MAPPING_UNSIGNED16),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x01, 0x02, PDO_MAPPING_UNSIGNED16),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x01, 0x03, PDO_MAPPING_UNSIGNED16),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x01, 0x04, PDO_MAPPING_UNSIGNED16),
 
-        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x02, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        // TPDO 2 Map
         TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x02, 0x02),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x02, 0x01, PDO_MAPPING_UNSIGNED16),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x02, 0x02, PDO_MAPPING_UNSIGNED16),
 
-        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x03, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        // TPDO 3 Map
         TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x03, 0x03),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x03, 0x01, PDO_MAPPING_UNSIGNED16),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x03, 0x02, PDO_MAPPING_UNSIGNED16),
@@ -247,14 +256,22 @@ private:
         DATA_LINK_21XX(0x02, 0x01, CO_TUNSIGNED16, &PowerSwitchState.accCurrent),
         DATA_LINK_21XX(0x02, 0x02, CO_TUNSIGNED16, &PowerSwitchState.gubCurrent),
 
-        DATA_LINK_START_KEY_21XX(0x03, 0x01),
+        DATA_LINK_START_KEY_21XX(0x03, 0x03),
         DATA_LINK_21XX(0x03, 0x01, CO_TSIGNED16, &PowerSwitchState.switch0Temp),
-        DATA_LINK_21XX(0x03, 0x01, CO_TSIGNED16, &PowerSwitchState.switch1Temp),
-        DATA_LINK_21XX(0x03, 0x01, CO_TSIGNED16, &PowerSwitchState.switch2Temp),
+        DATA_LINK_21XX(0x03, 0x02, CO_TSIGNED16, &PowerSwitchState.switch1Temp),
+        DATA_LINK_21XX(0x03, 0x03, CO_TSIGNED16, &PowerSwitchState.switch2Temp),
 
         /** Receive data */
-        DATA_LINK_START_KEY_21XX(0x04, 0x01),
-        DATA_LINK_21XX(0x04, 0x01, CO_TUNSIGNED16, &VCUBoardSig),
+        {                                                               \
+            .Key = CO_KEY(0x2200 + 0x00, 0, CO_OBJ_D___R_),       \
+            .Type = CO_TUNSIGNED8,                                      \
+            .Data = (CO_DATA) 0x01,                    \
+        },
+        {                                                                  \
+            .Key = CO_KEY(0x2200 + 0x00, 0x01, CO_OBJ____PRW),  \
+            .Type = CO_TUNSIGNED16,                                             \
+            .Data = (CO_DATA) &VCUBoardSig,                                \
+        },
 
         // End of dictionary marker
         CO_OBJ_DICT_ENDMARK,
