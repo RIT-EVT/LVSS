@@ -30,7 +30,6 @@ void LVSS::process() {
     case State::IDLE:
         idleState();
         break;
-
     }
 }
 
@@ -75,7 +74,7 @@ void LVSS::idleState() {
 
     log::LOGGER.log(log::Logger::LogLevel::INFO, "Switch 0 Channel 1: %d\r\nSwitch 1 Channel 1: %d\r\nSwitch 2 Channel 1: %d\r\n", PowerSwitchState.battCurrent, PowerSwitchState.tmsCurrent, PowerSwitchState.accCurrent);
 
-    time::wait(2); // Power switches require the ADC to wait a min of 165 micro seconds before sampling SNS pin again
+    time::wait(2);// Power switches require the ADC to wait a min of 165 micro seconds before sampling SNS pin again
 
     PowerSwitchState.hibCurrent = powerSwitches[0]->getChannel2Current();
     PowerSwitchState.hudlCurrent = powerSwitches[1]->getChannel2Current();

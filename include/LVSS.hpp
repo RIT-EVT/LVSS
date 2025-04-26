@@ -53,7 +53,7 @@ public:
     typedef union switchState {
         uint16_t battCurrent;
         uint16_t hibCurrent;
-        uint16_t tmsCurrent ;
+        uint16_t tmsCurrent;
         uint16_t hudlCurrent;
         uint16_t accCurrent;
         uint16_t gubCurrent;
@@ -86,9 +86,8 @@ public:
      */
     void process();
 
-
 private:
-    TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE]{}; // a struct for each power switch (of which there are 3)
+    TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE]{};// a struct for each power switch (of which there are 3)
 
     u_t boardEN;
 
@@ -158,13 +157,13 @@ private:
         RECEIVE_PDO_SETTINGS_OBJECT_140X(0x00, 0x00, VCU_NODE_ID, RECEIVE_PDO_TRIGGER_ASYNC),
 
         RECEIVE_PDO_MAPPING_START_KEY_16XX(0x00, 0x01),
-        {                                                                           \
-        .Key = CO_KEY(0x1600 + 0x00, 0x01, CO_OBJ_D___R_),                             \
-        .Type = CO_TUNSIGNED32,                                                        \
-        .Data = (CO_DATA) CO_LINK(0x2200 + 0x00, 0x00 + 0x01, PDO_MAPPING_UNSIGNED16), \
+        {
+            .Key = CO_KEY(0x1600 + 0x00, 0x01, CO_OBJ_D___R_),
+            .Type = CO_TUNSIGNED32,
+            .Data = (CO_DATA) CO_LINK(0x2200 + 0x00, 0x00 + 0x01, PDO_MAPPING_UNSIGNED16),
         },
 
-        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x00, TRANSMIT_PDO_TRIGGER_TIMER,TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x00, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
         TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x01, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
         TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x02, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
         TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x03, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
@@ -216,15 +215,15 @@ private:
         DATA_LINK_21XX(0x03, 0x03, CO_TSIGNED16, &PowerSwitchState.switch2Temp),
 
         /** Receive data */
-        {                                                   \
-            .Key = CO_KEY(0x2200 + 0x00, 0, CO_OBJ_D___R_),    \
-            .Type = CO_TUNSIGNED8,                             \
-            .Data = (CO_DATA) 0x01,                            \
+        {
+            .Key = CO_KEY(0x2200 + 0x00, 0, CO_OBJ_D___R_),
+            .Type = CO_TUNSIGNED8,
+            .Data = (CO_DATA) 0x01,
         },
-        {                                                   \
-            .Key = CO_KEY(0x2200 + 0x00, 0x01, CO_OBJ____PRW), \
-            .Type = CO_TUNSIGNED16,                            \
-            .Data = (CO_DATA) &VCUBoardSig,                    \
+        {
+            .Key = CO_KEY(0x2200 + 0x00, 0x01, CO_OBJ____PRW),
+            .Type = CO_TUNSIGNED16,
+            .Data = (CO_DATA) &VCUBoardSig,
         },
 
         // End of dictionary marker
