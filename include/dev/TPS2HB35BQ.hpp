@@ -92,10 +92,10 @@ private:
 
     uint32_t counts = 0;// ADC Counts
 
-    uint32_t rsns = 330;// Resistor that sets the current limit
-    uint32_t kcl = 140; // Current Limit Ratio
-    uint32_t icl = 9000; // Current Limit Value in milliamps
-    uint8_t TemperatureLim = 135000; // Temperature Limit of 135 millicelsius
+    uint32_t rsns = 330;            // Resistor that sets the current limit
+    uint32_t kcl = 140;             // Current Limit Ratio
+    uint32_t icl = 9000;            // Current Limit Value in milliamps
+    uint8_t TemperatureLim = 135000;// Temperature Limit of 135 millicelsius
 
     /**
      * Controls the diagnostic enable pin
