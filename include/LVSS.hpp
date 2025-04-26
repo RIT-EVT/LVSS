@@ -65,26 +65,9 @@ public:
 
     /** FSM State declaration */
     enum class State {
-        /** When LVSS is powered on */
         INITIALIZATION = 0u,
-        /** Reads VCU signal and starting data liike switch current */
-        SOFT_START = 1u,
-        /** Turns on the specified boards */
-        POWER_UP = 2u,
-        /** Checks values for errors */
-        IDLE = 3u,
-        /** Handles errors */
-        FAULT = 4u,
+        IDLE = 1u,
     };
-
-    enum class PowerSwitchStatus {
-        Safe = 1u,
-        OverCurrent = 2u,
-        Temperature = 3u,
-        Fault = 4u
-    };
-
-    PowerSwitchStatus err[3] = {PowerSwitchStatus::Safe, PowerSwitchStatus::Safe, PowerSwitchStatus::Safe};// Holds the error status for each power switch
 
     /**
      * Constructor for the LVSS class, takes a pointer to an array of power switches
@@ -103,16 +86,13 @@ public:
      */
     void process();
 
-    void running();
-
 
 private:
-    TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE]{};// a struct for each power switch (of which there are 3)
+    TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE]{}; // a struct for each power switch (of which there are 3)
 
     u_t boardEN;
 
     switchState PowerSwitchState;
-
 
     /** Tracks signal from VCU */
     uint16_t VCUBoardSig;
@@ -135,9 +115,6 @@ private:
      */
     State state;
 
-    uint8_t CurrentLim = 9000;   // Current Limit
-    uint8_t TemperatureLim = 135;// Temperature Limit
-
     /**
      * Boolean flag which represents that a state has just changed
      *
@@ -148,27 +125,11 @@ private:
 
     /**
      * Handle VICOR Initialization state
-     * Waits for 110ms while the VICOR initializes.
+     * Waits for 101ms while the VICOR initializes.
      *
      * State: State::INITIALIZATION
      */
     void initState();
-
-    /**
-     * Handle VICOR soft start state
-     * Reads in CANopen messages from the VCU of which boards to turn on/ff.
-     *
-     * State: State::SOFT_START
-     */
-    void softStartState();
-
-    /**
-     * Handle VICOR when the LVSS sends out power to the boards
-     * Determines which boards get turned on/off first based on priority.
-     *
-     * State: State::POWER_UP
-     */
-    void powerUpState();
 
     /**
      * Checks LVSS values
@@ -176,13 +137,6 @@ private:
      * State: State::IDLE
      */
     void idleState();
-
-    /**
-     * Checks LVSS values
-     *
-     * State: State::FAULT
-     */
-    void faultState();
 
     /**
      * Have to know the size of the object dictionary for initialization
@@ -204,9 +158,9 @@ private:
         RECEIVE_PDO_SETTINGS_OBJECT_140X(0x00, 0x00, VCU_NODE_ID, RECEIVE_PDO_TRIGGER_ASYNC),
 
         RECEIVE_PDO_MAPPING_START_KEY_16XX(0x00, 0x01),
-        {                                                                                 \
-        .Key = CO_KEY(0x1600 + 0x00, 0x01, CO_OBJ_D___R_),                \
-        .Type = CO_TUNSIGNED32,                                                       \
+        {                                                                           \
+        .Key = CO_KEY(0x1600 + 0x00, 0x01, CO_OBJ_D___R_),                             \
+        .Type = CO_TUNSIGNED32,                                                        \
         .Data = (CO_DATA) CO_LINK(0x2200 + 0x00, 0x00 + 0x01, PDO_MAPPING_UNSIGNED16), \
         },
 
@@ -262,15 +216,15 @@ private:
         DATA_LINK_21XX(0x03, 0x03, CO_TSIGNED16, &PowerSwitchState.switch2Temp),
 
         /** Receive data */
-        {                                                               \
-            .Key = CO_KEY(0x2200 + 0x00, 0, CO_OBJ_D___R_),       \
-            .Type = CO_TUNSIGNED8,                                      \
-            .Data = (CO_DATA) 0x01,                    \
+        {                                                   \
+            .Key = CO_KEY(0x2200 + 0x00, 0, CO_OBJ_D___R_),    \
+            .Type = CO_TUNSIGNED8,                             \
+            .Data = (CO_DATA) 0x01,                            \
         },
-        {                                                                  \
-            .Key = CO_KEY(0x2200 + 0x00, 0x01, CO_OBJ____PRW),  \
-            .Type = CO_TUNSIGNED16,                                             \
-            .Data = (CO_DATA) &VCUBoardSig,                                \
+        {                                                   \
+            .Key = CO_KEY(0x2200 + 0x00, 0x01, CO_OBJ____PRW), \
+            .Type = CO_TUNSIGNED16,                            \
+            .Data = (CO_DATA) &VCUBoardSig,                    \
         },
 
         // End of dictionary marker

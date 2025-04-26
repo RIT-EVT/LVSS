@@ -94,8 +94,13 @@ private:
 
     uint32_t rsns = 330;// Resistor that sets the current limit
     uint32_t kcl = 140; // Current Limit Ratio
-    uint32_t icl = 18;  // Current Limit Value
+    uint32_t icl = 9000; // Current Limit Value in milliamps
+    uint8_t TemperatureLim = 135000; // Temperature Limit of 135 millicelsius
 
+    /**
+     * Controls the diagnostic enable pin
+     * @param state Selects the function of the SNS pin
+     */
     void setDiagStateEnabled(bool state);
 
     /**
