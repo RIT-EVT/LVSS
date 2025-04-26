@@ -133,6 +133,6 @@ int main() {
     while (1) {
         lvss.process();
         IO::processCANopenNode(&canNode);
-        time::wait(500);
+        time::wait(1);
     }
 }

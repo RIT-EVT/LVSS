@@ -95,7 +95,7 @@ private:
     switchState PowerSwitchState;
 
     /** Tracks signal from VCU */
-    uint16_t VCUBoardSig;
+    uint16_t VCUBoardSig = 0;
 
     /** Tracks high value current */
     uint16_t highValCurrent = 0x00;
