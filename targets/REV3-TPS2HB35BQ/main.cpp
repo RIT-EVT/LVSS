@@ -120,7 +120,7 @@ int main() {
         } else if (strcmp(buf, "temp") == 0) {
             uart.printf("\r\ntemp: %d\r\n", powerSwitch0.getTempandFault());
         } else if (strcmp(buf, "current") == 0) {
-            uart.printf("\r\nCurrent: %d\r\n", powerSwitch0.getChannel1Current());
+            uart.printf("\r\nCurrent: %d\r\n", powerSwitch0.getCurrent(1));
         } else if (strcmp(buf, "fault") == 0) {
             uart.printf("\r\nFault state: %d\r\n", powerSwitch0.getTempandFault());
         } else {
