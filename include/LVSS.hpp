@@ -97,14 +97,7 @@ private:
     uint16_t VCUBoardSig = 0;
 
     /** Tracks high value current */
-    uint16_t highValCurrent = 0x00;
-
-    /** Tracks power switch current */
-    uint16_t switchCH1Current = 0x00;
-    uint16_t switchCH2Current = 0x00;
-
-    /** Tracks power switch temperature */
-    uint16_t switchTemperature = 0x00;
+    uint16_t battPackCurrent = 0x00;
 
     /** Tracks power switch fault */
     uint16_t switchFaultstatus = 0x00;
@@ -164,7 +157,7 @@ private:
         },
 
         TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x00, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
-        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x01, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x01, TRANSMIT_PDO_TRIGGER_TIMER,TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
         TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x02, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
         TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x03, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
 
@@ -196,7 +189,7 @@ private:
 
         /** Transfer data */
         DATA_LINK_START_KEY_21XX(0x00, 0x02),
-        DATA_LINK_21XX(0x00, 0x01, CO_TUNSIGNED16, &highValCurrent),
+        DATA_LINK_21XX(0x00, 0x01, CO_TUNSIGNED16, &battPackCurrent),
         DATA_LINK_21XX(0x00, 0x02, CO_TUNSIGNED16, &switchFaultstatus),
 
         DATA_LINK_START_KEY_21XX(0x01, 0x04),
@@ -215,16 +208,8 @@ private:
         DATA_LINK_21XX(0x03, 0x03, CO_TSIGNED16, &PowerSwitchState.switch2Temp),
 
         /** Receive data */
-        {
-            .Key = CO_KEY(0x2200 + 0x00, 0, CO_OBJ_D___R_),
-            .Type = CO_TUNSIGNED8,
-            .Data = (CO_DATA) 0x01,
-        },
-        {
-            .Key = CO_KEY(0x2200 + 0x00, 0x01, CO_OBJ____PRW),
-            .Type = CO_TUNSIGNED16,
-            .Data = (CO_DATA) &VCUBoardSig,
-        },
+        DATA_LINK_START_KEY_21XX(0x100, 0x01),
+        DATA_LINK_21XX(0x100, 0x01, CO_TUNSIGNED16, &VCUBoardSig),
 
         // End of dictionary marker
         CO_OBJ_DICT_ENDMARK,

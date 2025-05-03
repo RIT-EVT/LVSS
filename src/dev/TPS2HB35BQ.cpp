@@ -2,7 +2,7 @@
 
 namespace LVSS {
 
-TPS2HB35BQ::TPS2HB35BQ(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc)
+TPS2HB35BQ::TPS2HB35BQ(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc, uint32_t rsns)
     : en1(en1), en2(en2), latchPin(latch), diagEn(diagEn), diagSelect1(diagSelect1), diagSelect2(diagSelect2), senseOut(adc) {
     setDiagnostics(DiagMode::OFF);
 }
@@ -71,29 +71,14 @@ void TPS2HB35BQ::setDiagnostics(DiagMode diag_mode) {
     }
 }
 
-uint32_t TPS2HB35BQ::getChannel1Current() {
-    setDiagnostics(DiagMode::CH1CURRENT);// Set diagnostic mode to sense current
-    counts = readSenseOut();
-
-    if (counts >= 4095) {
-        setDiagnostics(DiagMode::OFF);
+uint32_t TPS2HB35BQ::getCurrent(uint8_t channelSelect) {
+    if (channelSelect == 1) {
+        setDiagnostics(DiagMode::CH1CURRENT); // Set diagnostic mode to sense current
+    }
+    else {
+        setDiagnostics(DiagMode::CH2CURRENT); // Set diagnostic mode to sense current
     }
 
-    /* volts = (ADC Counts * 3300 kilovolts) / 4096 */
-    uint32_t millivolts = (counts * 3300) / 4096;// Turn ADC counts into milli volts
-    uint32_t milliamps = millivolts / rsns;      // Turn milli volts into milli amps
-
-    /* If current is greater than the current limit latch the sns pin */
-    if (milliamps >= icl) {
-        setDiagnostics(DiagMode::OFF);
-        setLatch(LatchMode::LATCHED);// Latch power switches
-    }
-
-    return milliamps;
-}
-
-uint32_t TPS2HB35BQ::getChannel2Current() {
-    setDiagnostics(DiagMode::CH2CURRENT);// Set diagnostic mode to sense current
     counts = readSenseOut();
 
     if (counts >= 4095) {
@@ -134,6 +119,13 @@ int32_t TPS2HB35BQ::getTempandFault() {
     }
 
     return milliCelsius;
+}
+
+void TPS2HB35BQ::setLimits(uint32_t ohms, uint32_t ratio, uint32_t milliamps, uint8_t millicelsius) {
+    rsns = ohms;
+    kcl = ratio;
+    icl = milliamps;
+    TemperatureLim = millicelsius;
 }
 
 }// namespace LVSS

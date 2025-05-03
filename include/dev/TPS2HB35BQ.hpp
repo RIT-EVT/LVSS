@@ -29,7 +29,7 @@ public:
      * @param diagSelect2 Mux select pin for diagnostics, see setDiagnostics
      */
     TPS2HB35BQ(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn,
-               IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& senseOut);
+               IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& senseOut, uint32_t rsns = 330);
 
     enum DiagMode {
         OFF = 0x00,
@@ -47,21 +47,15 @@ public:
     void setPowerSwitchStates(bool powerSwitchOneEnabled, bool powerSwitchTwoEnabled);
 
     /**
-     * Get the current of the power switch on channel 1
+     * Get the current of the power switch
      *
      * @return The current of the power switch in milli amps
      */
-    uint32_t getChannel1Current();
+    uint32_t getCurrent(uint8_t channelSelect);
 
     /**
-     * Get the current of the power switch on channel 2
-     *
-     * @return The current of the power switch in milli amps
-     */
-    uint32_t getChannel2Current();
-
-    /**
-     * Get the temperature of the power switch
+     * Get the temperature of the power switch.
+     * A fault is detected if the temperature >= 300 C
      *
      * @return The temperature of the power switch in Celsius
      */
@@ -73,6 +67,8 @@ public:
     * @param mode The latch mode to set
     */
     void setLatch(LatchMode mode);
+
+    void setLimits(uint32_t, uint32_t, uint32_t, uint8_t);
 
     /**
      * diagMode::OFF: Sets diagnostics pin to low, along with both diag select pins.

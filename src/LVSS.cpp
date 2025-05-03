@@ -63,9 +63,9 @@ void LVSS::idleState() {
     powerSwitches[2]->setPowerSwitchStates(boardEN.acc, boardEN.gub); // Turn on Acc and GUB
 
     /* Current Checking */
-    PowerSwitchState.battCurrent = powerSwitches[0]->getChannel1Current();
-    PowerSwitchState.tmsCurrent = powerSwitches[1]->getChannel1Current();
-    PowerSwitchState.accCurrent = powerSwitches[2]->getChannel1Current();
+    PowerSwitchState.battCurrent = powerSwitches[0]->getCurrent(1);
+    PowerSwitchState.tmsCurrent = powerSwitches[1]->getCurrent(1);
+    PowerSwitchState.accCurrent = powerSwitches[2]->getCurrent(1);
 
     if (PowerSwitchState.battCurrent == -1 || PowerSwitchState.tmsCurrent == -1 || PowerSwitchState.accCurrent == -1) {
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Power Switch Error\r\n");
@@ -76,9 +76,9 @@ void LVSS::idleState() {
 
     time::wait(2);// Power switches require the ADC to wait a min of 165 micro seconds before sampling SNS pin again
 
-    PowerSwitchState.hibCurrent = powerSwitches[0]->getChannel2Current();
-    PowerSwitchState.hudlCurrent = powerSwitches[1]->getChannel2Current();
-    PowerSwitchState.gubCurrent = powerSwitches[2]->getChannel2Current();
+    PowerSwitchState.hibCurrent  = powerSwitches[0]->getCurrent(2);
+    PowerSwitchState.hudlCurrent = powerSwitches[1]->getCurrent(2);
+    PowerSwitchState.gubCurrent  = powerSwitches[2]->getCurrent(2);
 
     if (PowerSwitchState.hibCurrent == -1 || PowerSwitchState.hudlCurrent == -1 || PowerSwitchState.gubCurrent == -1) {
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Power Switch Error\r\n");
