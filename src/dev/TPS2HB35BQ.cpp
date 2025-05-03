@@ -73,10 +73,9 @@ void TPS2HB35BQ::setDiagnostics(DiagMode diag_mode) {
 
 uint32_t TPS2HB35BQ::getCurrent(uint8_t channelSelect) {
     if (channelSelect == 1) {
-        setDiagnostics(DiagMode::CH1CURRENT); // Set diagnostic mode to sense current
-    }
-    else {
-        setDiagnostics(DiagMode::CH2CURRENT); // Set diagnostic mode to sense current
+        setDiagnostics(DiagMode::CH1CURRENT);// Set diagnostic mode to sense current
+    } else {
+        setDiagnostics(DiagMode::CH2CURRENT);// Set diagnostic mode to sense current
     }
 
     counts = readSenseOut();

@@ -78,9 +78,9 @@ void LVSS::idleState() {
 
     time::wait(2);// Power switches require the ADC to wait a min of 165 micro seconds before sampling SNS pin again
 
-    PowerSwitchState.hibCurrent  = powerSwitches[0]->getCurrent(2);
+    PowerSwitchState.hibCurrent = powerSwitches[0]->getCurrent(2);
     PowerSwitchState.hudlCurrent = powerSwitches[1]->getCurrent(2);
-    PowerSwitchState.gubCurrent  = powerSwitches[2]->getCurrent(2);
+    PowerSwitchState.gubCurrent = powerSwitches[2]->getCurrent(2);
 
     if (PowerSwitchState.hibCurrent == -1 || PowerSwitchState.hudlCurrent == -1 || PowerSwitchState.gubCurrent == -1) {
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Power Switch Error\r\n");
