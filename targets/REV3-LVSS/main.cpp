@@ -84,7 +84,7 @@ int main() {
     LVSS::TPS2HB35BQ* powerSwitches[3] = {&powerSwitch0, &powerSwitch1, &powerSwitch2};
 
     // initialize timer? probably don't need
-    DEV::Timerf3xx timer(TIM2, 160);
+    DEV::Timerf3xx timer(TIM2, 100);
 
     types::FixedQueue<CANOPEN_QUEUE_SIZE, IO::CANMessage> canOpenQueue;
 
@@ -122,8 +122,14 @@ int main() {
     // Get vicor fault signal
     IO::GPIO& vicorFT = IO::getGPIO<LVSS::LVSS::vicorFaultPin>(IO::GPIO::Direction::INPUT);
 
+    // setup ADC
+    IO::ADC& adc0 = IO::getADC<IO::Pin::PA_4>();
+
+    //Create ACS71240 instance
+    LVSS::ACS71240 acs71240(adc0);
+
     // Initialize LVSS object
-    LVSS::LVSS lvss = LVSS::LVSS(powerSwitches, vicorFT);
+    LVSS::LVSS lvss = LVSS::LVSS(powerSwitches, vicorFT, acs71240);
 
     // Initialize the CANOpen node we are using.
     IO::initializeCANopenNode(&canNode, &lvss, &canStackDriver, sdoBuffer, appTmrMem);

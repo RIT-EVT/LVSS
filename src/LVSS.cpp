@@ -14,7 +14,7 @@ CO_OBJ_T* LVSS::getObjectDictionary() {
     return &objectDictionary[0];
 }
 
-LVSS::LVSS(TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT) : vicorFT(vicorFT), boardEN({0}), state(State::INITIALIZATION) {
+LVSS::LVSS(TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT, ACS71240 acs71240) : vicorFT(vicorFT), boardEN({0}), adc0(adc0), acs71240(acs71240), state(State::INITIALIZATION) {
     for (int i = 0; i < POWER_SWITCHES_SIZE; i++) {
         this->powerSwitches[i] = powerSwitches[i];
     }
@@ -40,7 +40,9 @@ void LVSS::initState() {
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Entering initialization state");
     }
 
-    if (time::millis() >= 101) {
+    VICOR_FAULT_ACTIVE_STATE = vicorFT.readPin();
+
+    if (time::millis() >= 101 && VICOR_FAULT_ACTIVE_STATE == IO::GPIO::State::LOW) {
         state = State::IDLE;
         isNewState = true;
     }
@@ -97,5 +99,7 @@ void LVSS::idleState() {
     }
 
     log::LOGGER.log(log::Logger::LogLevel::INFO, "Switch 0 Temperature: %d\r\nSwitch 1 Temperature: %d\r\nSwitch 2 Temperature: %d\r\n", PowerSwitchState.switch0Temp, PowerSwitchState.switch1Temp, PowerSwitchState.switch2Temp);
+
+    log::LOGGER.log(log::Logger::LogLevel::INFO, "Vicor Temperature: %d\r\n", acs71240.readCurrent());
 }
 }// namespace LVSS

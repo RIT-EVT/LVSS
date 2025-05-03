@@ -30,7 +30,8 @@ public:
 
     IO::GPIO& vicorFT;
     static constexpr IO::Pin vicorFaultPin = IO::Pin::PB_4;
-    static constexpr IO::GPIO::State VICOR_FAULT_ACTIVE_STATE = IO::GPIO::State::HIGH;
+    static constexpr IO::Pin vicorSNS = IO::Pin::PA_4;
+    IO::GPIO::State VICOR_FAULT_ACTIVE_STATE = IO::GPIO::State::HIGH;
 
     /** Union bit field to hold a bit representing which boards are on/off */
     typedef union {
@@ -73,7 +74,7 @@ public:
      * Constructor for the LVSS class, takes a pointer to an array of power switches
      * @param powerSwitches an array of pointers to power switches
      */
-    explicit LVSS(TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT);
+    explicit LVSS(TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT, ACS71240 acs71240);
 
     CO_OBJ_T* getObjectDictionary() override;
 
@@ -90,6 +91,10 @@ private:
     TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE]{};// a struct for each power switch (of which there are 3)
 
     u_t boardEN;
+
+    IO::ADC& adc0;
+
+    ACS71240 acs71240;
 
     switchState PowerSwitchState;
 
@@ -156,10 +161,10 @@ private:
             .Data = (CO_DATA) CO_LINK(0x2200 + 0x00, 0x00 + 0x01, PDO_MAPPING_UNSIGNED16),
         },
 
-        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x00, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
-        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x01, TRANSMIT_PDO_TRIGGER_TIMER,TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
-        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x02, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
-        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x03, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x00, 100,  TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x01, 1000, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x02, 1000, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
+        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x03, 1000, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 2000),
 
         // TPDO 0 Map
         TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x00, 0x02),
