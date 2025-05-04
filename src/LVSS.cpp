@@ -100,6 +100,6 @@ void LVSS::idleState() {
 
     log::LOGGER.log(log::Logger::LogLevel::INFO, "Switch 0 Temperature: %d\r\nSwitch 1 Temperature: %d\r\nSwitch 2 Temperature: %d\r\n", PowerSwitchState.switch0Temp, PowerSwitchState.switch1Temp, PowerSwitchState.switch2Temp);
 
-    log::LOGGER.log(log::Logger::LogLevel::INFO, "Vicor Temperature: %d\r\n", acs71240.readCurrent());
+    log::LOGGER.log(log::Logger::LogLevel::INFO, "Vicor Current: %d\r\n", acs71240.readCurrent());
 }
 }// namespace LVSS

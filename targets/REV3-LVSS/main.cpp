@@ -125,11 +125,12 @@ int main() {
     // setup ADC
     IO::ADC& adc0 = IO::getADC<IO::Pin::PA_4>();
 
-    //Create ACS71240 instance
+    // Create ACS71240 instance
     LVSS::ACS71240 acs71240(adc0);
 
     // Initialize LVSS object
     LVSS::LVSS lvss = LVSS::LVSS(powerSwitches, vicorFT, acs71240);
+    powerSwitch0.setLimits(330, 140, 9000, 135000);
 
     // Initialize the CANOpen node we are using.
     IO::initializeCANopenNode(&canNode, &lvss, &canStackDriver, sdoBuffer, appTmrMem);
