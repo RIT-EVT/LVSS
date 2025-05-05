@@ -120,7 +120,7 @@ int32_t TPS2HB35BQ::getTempandFault() {
     return milliCelsius;
 }
 
-void TPS2HB35BQ::setLimits(uint32_t ohms, uint32_t ratio, uint32_t milliamps, uint8_t millicelsius) {
+void TPS2HB35BQ::setLimits(uint32_t ohms, uint32_t ratio, uint32_t milliamps, int32_t millicelsius) {
     rsns = ohms;
     kcl = ratio;
     icl = milliamps;

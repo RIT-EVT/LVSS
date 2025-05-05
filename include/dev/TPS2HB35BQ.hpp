@@ -68,7 +68,7 @@ public:
     */
     void setLatch(LatchMode mode);
 
-    void setLimits(uint32_t, uint32_t, uint32_t, uint8_t);
+    void setLimits(uint32_t ohms, uint32_t ratio, uint32_t milliamps, int32_t millicelsius);
 
     /**
      * diagMode::OFF: Sets diagnostics pin to low, along with both diag select pins.
@@ -91,7 +91,7 @@ private:
     uint32_t rsns = 330;            // Resistor that sets the current limit
     uint32_t kcl = 140;             // Current Limit Ratio
     uint32_t icl = 9000;            // Current Limit Value in milliamps
-    uint8_t TemperatureLim = 135000;// Temperature Limit of 135 millicelsius
+    int32_t TemperatureLim = 135000;// Temperature Limit of 135 millicelsius
 
     /**
      * Controls the diagnostic enable pin

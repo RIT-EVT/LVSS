@@ -14,7 +14,7 @@ CO_OBJ_T* LVSS::getObjectDictionary() {
     return &objectDictionary[0];
 }
 
-LVSS::LVSS(TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT, ACS71240 acs71240) : vicorFT(vicorFT), boardEN({0}), adc0(adc0), acs71240(acs71240), state(State::INITIALIZATION) {
+LVSS::LVSS(TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT, ACS71240 acs71240) : vicorFT(vicorFT), boardEN({0}), acs71240(acs71240), state(State::INITIALIZATION) {
     for (int i = 0; i < POWER_SWITCHES_SIZE; i++) {
         this->powerSwitches[i] = powerSwitches[i];
     }
