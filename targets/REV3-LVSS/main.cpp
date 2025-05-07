@@ -129,7 +129,7 @@ int main() {
     LVSS::ACS71240 acs71240(adc0);
 
     // Initialize LVSS object
-    LVSS::LVSS lvss = LVSS::LVSS(powerSwitches,vicorFT, acs71240);
+    LVSS::LVSS lvss = LVSS::LVSS(powerSwitches, vicorFT, acs71240);
     powerSwitch0.setLimits(330, 140, 9000, 135000);
 
     // Initialize the CANOpen node we are using.
