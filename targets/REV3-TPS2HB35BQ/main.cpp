@@ -1,7 +1,5 @@
 /**
- * This is a basic sample of using the UART module. The program provides a
- * basic echo functionality where the uart will write back whatever the user
- * enters.
+ * This is a basic sample to show the functionality of the LVSS power switches.
  */
 
 #include <EVT/io/CANopen.hpp>
@@ -10,7 +8,6 @@
 #include <EVT/io/pin.hpp>
 #include <EVT/manager.hpp>
 #include <EVT/utils/log.hpp>
-#include <EVT/utils/time.hpp>
 #include <LVSS.hpp>
 
 namespace IO = EVT::core::IO;

@@ -1,8 +1,10 @@
 /**
-* This is a basic sample of using the UART module. The program provides a
-* basic echo functionality where the uart will write back whatever the user
-* enters.
-*/
+ * This is the main target for the LVSS.
+ * The LVSS receives commands from the Vehicle Control Unit (VCU)
+ * to manage power distribution to various boards.
+ * It also transmits data back to the VCU, including current,
+ * temperature, and fault status for each board and Vicor.
+ */
 
 #include <EVT/io/CANopen.hpp>
 #include <EVT/io/GPIO.hpp>

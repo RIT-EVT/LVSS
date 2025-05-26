@@ -1,5 +1,5 @@
-#ifndef TPS2HB50BQ1_HPP
-#define TPS2HB50BQ1_HPP
+#ifndef TPS2HB35BQ_HPP
+#define TPS2HB35BQ_HPP
 
 #include <EVT/io/ADC.hpp>
 #include <EVT/io/CAN.hpp>
@@ -10,17 +10,18 @@ namespace IO = EVT::core::IO;
 namespace LVSS {
 
 /**
- * This class is used to control the TPS2HB50BQ1 power switch.
- * The TPS2HB50BQ1 is a high side switch that can be used to control
+ * This class is used to control the TPS2HB35BQ power switch.
+ * The TPS2HB35BQ is a high side switch that can be used to control
  * the power to up to two devices.
  *
- * The TPS2HB50BQ1 has a diagnostic mode that can be used to read the
- * current, temperature, or fault status of the device.
+ * The TPS2HB35BQ has a diagnostic mode that can be used to read the
+ * current, temperature, or fault status of the device and set an
+ * auto retry latch.
  */
 class TPS2HB35BQ {
 public:
     /**
-     * Constructor for the TPS2HB50BQ1 class
+     * Constructor for the TPS2HB35BQ class
      * @param en1 GPIO pin for first power switch
      * @param en2 GPIO pin for second power switch
      * @param latch GPIO pin for latch, see LatchMode enum for options
@@ -86,7 +87,8 @@ private:
     IO::GPIO& diagSelect2;
     IO::ADC& senseOut;
 
-    uint32_t counts = 0;// ADC Counts
+    /** ADC Counts */
+    uint32_t counts = 0;
 
     uint32_t rsns = 330;            // Resistor that sets the current limit
     uint32_t kcl = 140;             // Current Limit Ratio
@@ -95,6 +97,7 @@ private:
 
     /**
      * Controls the diagnostic enable pin
+     *
      * @param state Selects the function of the SNS pin
      */
     void setDiagStateEnabled(bool state);

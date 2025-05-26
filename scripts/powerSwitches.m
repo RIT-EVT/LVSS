@@ -1,3 +1,6 @@
+% The purpose of this file is to perform calculations to get 
+% accurate test values for the current and temperature sensing features
+% of the TPS2HB35BQ power switches.
 clc;clear;close all;
 
 % Parameters %

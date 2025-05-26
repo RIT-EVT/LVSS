@@ -49,7 +49,7 @@ public:
             uint8_t gub : 1;
             uint8_t acc : 1;
         };
-    } u_t;
+    } BoardPowerState_u;
 
     typedef union switchState {
         uint16_t battCurrent;
@@ -72,7 +72,10 @@ public:
 
     /**
      * Constructor for the LVSS class, takes a pointer to an array of power switches
+     *
      * @param powerSwitches an array of pointers to power switches
+     * @param vicorFT fault status pin of the vicor
+     * @param acs71240 vicor current sensing IC
      */
     explicit LVSS(TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT, ACS71240 acs71240);
 
@@ -88,9 +91,10 @@ public:
     void process();
 
 private:
-    TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE]{};// a struct for each power switch (of which there are 3)
+    /** A struct for each power switch (of which there are 3) */
+    TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE]{};
 
-    u_t boardEN;
+    BoardPowerState_u boardEN;
 
     ACS71240 acs71240;
 
