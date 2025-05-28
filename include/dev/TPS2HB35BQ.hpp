@@ -69,12 +69,21 @@ public:
     */
     void setLatch(LatchMode mode);
 
+    /**
+     * Set the limits for the power switches
+     *
+     * @param ohms The resistance value of the sense resistor
+     * @param ratio The current sense ratio
+     * @param milliamps The current limit
+     * @param millicelsius The temperature limit
+     */
     void setLimits(uint32_t ohms, uint32_t ratio, uint32_t milliamps, int32_t millicelsius);
 
     /**
-     * diagMode::OFF: Sets diagnostics pin to low, along with both diag select pins.
+     * diagMode::OFF: Sets diagnostics pin  low, along with both diag select pins.
      * diagMode::FAULT_STATUS: Get the fault status of the power switch
-     * diagMode::CURRENT: Get the current of the power switch
+     * diagMode::CH1CURRENT: Get the channel 1 current of the power switch
+     * diagMode::CH2CURRENT: Get the channel 2 current of the power switch
      * diagMode::TEMP: Get the temperature of the power switch
      */
 

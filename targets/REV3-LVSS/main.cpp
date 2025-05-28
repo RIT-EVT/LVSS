@@ -132,7 +132,11 @@ int main() {
 
     // Initialize LVSS object
     LVSS::LVSS lvss = LVSS::LVSS(powerSwitches, vicorFT, acs71240);
+
+    // Set current and temperature limits on the power switches
     powerSwitch0.setLimits(330, 140, 9000, 135000);
+    powerSwitch1.setLimits(330, 140, 9000, 135000);
+    powerSwitch2.setLimits(330, 140, 9000, 135000);
 
     // Initialize the CANOpen node we are using.
     IO::initializeCANopenNode(&canNode, &lvss, &canStackDriver, sdoBuffer, appTmrMem);

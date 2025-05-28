@@ -92,7 +92,7 @@ uint32_t TPS2HB35BQ::getCurrent(uint8_t channelSelect) {
     if (milliamps >= icl) {
         setDiagnostics(DiagMode::OFF);
         setLatch(LatchMode::LATCHED);// Latch power switches
-        return -1;
+        return INTMAX_MIN;
     }
 
     return milliamps;
@@ -114,7 +114,7 @@ int32_t TPS2HB35BQ::getTempandFault() {
     int32_t milliCelsius = (microAmps - 850) / 11 + 25000;// Returns temperature in milli celsius
 
     if (milliCelsius >= TemperatureLim) {
-        return -1;
+        return INTMAX_MIN;
     }
 
     return milliCelsius;

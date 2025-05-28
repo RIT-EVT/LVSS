@@ -28,7 +28,7 @@ void LVSS::process() {
         break;
 
     case State::IDLE:
-        idleState();
+        runningState();
         break;
     }
 }
@@ -48,7 +48,7 @@ void LVSS::initState() {
     }
 }
 
-void LVSS::idleState() {
+void LVSS::runningState() {
     /* Check if it is a new state */
     if (isNewState) {
         isNewState = false;
@@ -57,7 +57,7 @@ void LVSS::idleState() {
     /* Assigns the VCU signal to the union bit field */
     this->boardEN.val = VCUBoardSig;
 
-    log::LOGGER.log(log::Logger::LogLevel::INFO, "Battery: %d\r\nHIB: %d\r\nTMS: %d\r\nHUDL: %d\r\nACC: %d\r\nGUB: %d\r\n", boardEN.batt, boardEN.hib, boardEN.tms, boardEN.hudl, boardEN.acc, boardEN.gub);
+    log::LOGGER.log(log::Logger::LogLevel::DEBUG, "Battery: %d\r\nHIB: %d\r\nTMS: %d\r\nHUDL: %d\r\nACC: %d\r\nGUB: %d\r\n", boardEN.batt, boardEN.hib, boardEN.tms, boardEN.hudl, boardEN.acc, boardEN.gub);
 
     /* Turn on boards */
     powerSwitches[0]->setPowerSwitchStates(boardEN.batt, boardEN.hib);// Turn on Battery and HIB
@@ -71,10 +71,10 @@ void LVSS::idleState() {
 
     if (PowerSwitchState.battCurrent == -1 || PowerSwitchState.tmsCurrent == -1 || PowerSwitchState.accCurrent == -1) {
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Power Switch Error\r\n");
-        switchFaultstatus = 1;
+        switchFaultstatus = INTMAX_MIN;
     }
 
-    log::LOGGER.log(log::Logger::LogLevel::INFO, "Switch 0 Channel 1: %d\r\nSwitch 1 Channel 1: %d\r\nSwitch 2 Channel 1: %d\r\n", PowerSwitchState.battCurrent, PowerSwitchState.tmsCurrent, PowerSwitchState.accCurrent);
+    log::LOGGER.log(log::Logger::LogLevel::DEBUG, "Switch 0 Channel 1: %d\r\nSwitch 1 Channel 1: %d\r\nSwitch 2 Channel 1: %d\r\n", PowerSwitchState.battCurrent, PowerSwitchState.tmsCurrent, PowerSwitchState.accCurrent);
 
     time::wait(2);// Power switches require the ADC to wait a min of 165 micro seconds before sampling SNS pin again
 
@@ -84,7 +84,7 @@ void LVSS::idleState() {
 
     if (PowerSwitchState.hibCurrent == -1 || PowerSwitchState.hudlCurrent == -1 || PowerSwitchState.gubCurrent == -1) {
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Power Switch Error\r\n");
-        switchFaultstatus = 1;
+        switchFaultstatus = INTMAX_MIN;
     }
 
     log::LOGGER.log(log::Logger::LogLevel::INFO, "Switch 0 Channel 2: %d\r\nSwitch 1 Channel 2: %d\r\nSwitch 2 Channel 2: %d\r\n", PowerSwitchState.hibCurrent, PowerSwitchState.hudlCurrent, PowerSwitchState.gubCurrent);

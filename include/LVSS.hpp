@@ -11,6 +11,38 @@
 #include <dev/ACS71240.hpp>
 #include <dev/TPS2HB35BQ.hpp>
 
+// Clang was removed because it adds unnecessary tabs in front of the following macros.
+// clang-format off
+//TODO: REMOVE ONCE SDOs ARE IN EVT-CORE!!!!
+//Temporary fix for CAN SDO server to process requests!!!!
+#define SDO_CONFIGURATION_1200                  \
+{                                               \
+/* Communication Object SDO Server */           \
+.Key  = CO_KEY(0x1200, 0x00, CO_OBJ_D___R_),    \
+.Type = CO_TUNSIGNED32,                         \
+.Data = (CO_DATA) 0x02,                         \
+},                                              \
+{                                               \
+/* SDO Server Request COBID */                  \
+.Key  = CO_KEY(0x1200, 0x01, CO_OBJ_DN__R_),    \
+.Type = CO_TUNSIGNED32,                         \
+.Data = (CO_DATA) CO_COBID_SDO_REQUEST(),       \
+},                                              \
+{ /* SDO Server Response COBID */               \
+.Key  = CO_KEY(0x1200, 0x02, CO_OBJ_DN__R_),    \
+.Type = CO_TUNSIGNED32,                         \
+.Data = (CO_DATA) CO_COBID_SDO_RESPONSE(),      \
+}
+//TODO: REMOVE ONCE RPDO FIX IS IN EVT-CORE!!!!
+//Temporary fix for RPDOs being mapped to the same data as TPDOs!!!!
+#define RECEIVE_PDO_MAPPING_ENTRY_16XX(RPDO_NUMBER, SUB_INDEX, DATA_SIZE)     \
+{                                                                             \
+.Key  = CO_KEY(0x1600 + RPDO_NUMBER, SUB_INDEX, CO_OBJ_D___R_),               \
+.Type = CO_TUNSIGNED32,                                                       \
+.Data = (CO_DATA) CO_LINK(0x2200 + RPDO_NUMBER, 0x00 + SUB_INDEX, DATA_SIZE), \
+}
+// clang-format on
+
 namespace IO = EVT::core::IO;
 namespace DEV = EVT::core::DEV;
 namespace time = EVT::core::time;
@@ -135,7 +167,7 @@ private:
      *
      * State: State::IDLE
      */
-    void idleState();
+    void runningState();
 
     /**
      * Have to know the size of the object dictionary for initialization
