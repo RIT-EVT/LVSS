@@ -5,7 +5,7 @@ namespace LVSS {
 ACS71240::ACS71240(IO::ADC& adc0) : ADC(adc0) {}
 
 int32_t ACS71240::readCurrent() {
-    //Gets adcCounts from adc
+    // Gets adcCounts from adc
     int32_t adcCounts = ADC.readRaw();
 
     //(((adcCounts - average adc counts) * 3.3) / (4096 * 0.044)) * 1000
@@ -14,4 +14,4 @@ int32_t ACS71240::readCurrent() {
     return current;
 }
 
-}// namespace LVSS
+} // namespace LVSS

@@ -2,8 +2,10 @@
 
 namespace LVSS {
 
-TPS2HB35BQ::TPS2HB35BQ(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc, uint32_t rsns)
-    : en1(en1), en2(en2), latchPin(latch), diagEn(diagEn), diagSelect1(diagSelect1), diagSelect2(diagSelect2), senseOut(adc) {
+TPS2HB35BQ::TPS2HB35BQ(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1,
+                       IO::GPIO& diagSelect2, IO::ADC& adc, uint32_t rsns)
+    : en1(en1), en2(en2), latchPin(latch), diagEn(diagEn), diagSelect1(diagSelect1), diagSelect2(diagSelect2),
+      senseOut(adc) {
     setDiagnostics(DiagMode::OFF);
 }
 
@@ -73,9 +75,9 @@ void TPS2HB35BQ::setDiagnostics(DiagMode diag_mode) {
 
 uint32_t TPS2HB35BQ::getCurrent(uint8_t channelSelect) {
     if (channelSelect == 1) {
-        setDiagnostics(DiagMode::CH1CURRENT);// Set diagnostic mode to sense current
+        setDiagnostics(DiagMode::CH1CURRENT); // Set diagnostic mode to sense current
     } else {
-        setDiagnostics(DiagMode::CH2CURRENT);// Set diagnostic mode to sense current
+        setDiagnostics(DiagMode::CH2CURRENT); // Set diagnostic mode to sense current
     }
 
     counts = readSenseOut();
@@ -85,13 +87,13 @@ uint32_t TPS2HB35BQ::getCurrent(uint8_t channelSelect) {
     }
 
     /* volts = (ADC Counts * 3300 kilovolts) / 4096 */
-    uint32_t millivolts = (counts * 3300) / 4096;// Turn ADC counts into milli volts
-    uint32_t milliamps = millivolts / rsns;      // Turn milli volts into milli amps
+    uint32_t millivolts = (counts * 3300) / 4096; // Turn ADC counts into milli volts
+    uint32_t milliamps  = millivolts / rsns;      // Turn milli volts into milli amps
 
     /* If current is greater than the current limit latch the sns pin */
     if (milliamps >= icl) {
         setDiagnostics(DiagMode::OFF);
-        setLatch(LatchMode::LATCHED);// Latch power switches
+        setLatch(LatchMode::LATCHED); // Latch power switches
         return INTMAX_MIN;
     }
 
@@ -99,19 +101,19 @@ uint32_t TPS2HB35BQ::getCurrent(uint8_t channelSelect) {
 }
 
 int32_t TPS2HB35BQ::getTempandFault() {
-    setDiagnostics(DiagMode::TEMP);// Set diagnostic mode to sense temperature
+    setDiagnostics(DiagMode::TEMP); // Set diagnostic mode to sense temperature
     counts = readSenseOut();
 
     if (counts >= 4095) {
         setDiagnostics(DiagMode::OFF);
-        setLatch(LatchMode::LATCHED);// Latch power switches
+        setLatch(LatchMode::LATCHED); // Latch power switches
     }
 
-    uint32_t milliVolts = (counts * 3300) / 4096;  // Turn ADC counts into milli volts
-    int32_t microAmps = (milliVolts * 1000) / rsns;// Turn milli volts into micro amps
+    uint32_t milliVolts = (counts * 3300) / 4096;     // Turn ADC counts into milli volts
+    int32_t microAmps   = (milliVolts * 1000) / rsns; // Turn milli volts into micro amps
 
     /* ( Isns (mA) - 0.85 mA ) / (dIsnst/dT) + 25 celsius */
-    int32_t milliCelsius = (microAmps - 850) / 11 + 25000;// Returns temperature in milli celsius
+    int32_t milliCelsius = (microAmps - 850) / 11 + 25000; // Returns temperature in milli celsius
 
     if (milliCelsius >= TemperatureLim) {
         return INTMAX_MIN;
@@ -121,10 +123,10 @@ int32_t TPS2HB35BQ::getTempandFault() {
 }
 
 void TPS2HB35BQ::setLimits(uint32_t ohms, uint32_t ratio, uint32_t milliamps, int32_t millicelsius) {
-    rsns = ohms;
-    kcl = ratio;
-    icl = milliamps;
+    rsns           = ohms;
+    kcl            = ratio;
+    icl            = milliamps;
     TemperatureLim = millicelsius;
 }
 
-}// namespace LVSS
+} // namespace LVSS

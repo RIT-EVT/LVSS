@@ -10,10 +10,10 @@
 #include <EVT/utils/log.hpp>
 #include <LVSS.hpp>
 
-namespace IO = EVT::core::IO;
-namespace DEV = EVT::core::DEV;
-namespace time = EVT::core::time;
-namespace log = EVT::core::log;
+namespace IO    = EVT::core::IO;
+namespace DEV   = EVT::core::DEV;
+namespace time  = EVT::core::time;
+namespace log   = EVT::core::log;
 namespace types = EVT::core::types;
 using namespace std;
 
@@ -48,37 +48,39 @@ int main() {
     // PC14 is a LSE output, so we can't use it as a GPIO, so for testing we'll use PB_7
     IO::GPIO& lvssPowerSwitch0Enable1 = IO::getGPIO<IO::Pin::PB_7>(IO::GPIO::Direction::OUTPUT);
     IO::GPIO& lvssPowerSwitch0Enable2 = IO::getGPIO<IO::Pin::PD_2>(IO::GPIO::Direction::OUTPUT);
-    IO::GPIO& lvssPowerSwitch0Latch = IO::getGPIO<IO::Pin::PC_10>(IO::GPIO::Direction::OUTPUT);
+    IO::GPIO& lvssPowerSwitch0Latch   = IO::getGPIO<IO::Pin::PC_10>(IO::GPIO::Direction::OUTPUT);
 
-    IO::GPIO& diagEnable = IO::getGPIO<IO::Pin::PC_13>(IO::GPIO::Direction::OUTPUT);// diag enable
+    IO::GPIO& diagEnable = IO::getGPIO<IO::Pin::PC_13>(IO::GPIO::Direction::OUTPUT); // diag enable
 
     // PC15 is ALSO a LSE output, so we can't use it as a GPIO, so for testing we'll use PC_3
-    IO::GPIO& diagSelect1 = IO::getGPIO<IO::Pin::PC_3>(IO::GPIO::Direction::OUTPUT);// diag select 1
+    IO::GPIO& diagSelect1 = IO::getGPIO<IO::Pin::PC_3>(IO::GPIO::Direction::OUTPUT); // diag select 1
 
     // PF_0 is a HSE, or high speed clock output so we use PC_4 instead
-    IO::GPIO& diagSelect2 = IO::getGPIO<IO::Pin::PC_4>(IO::GPIO::Direction::OUTPUT);// diag select 2
+    IO::GPIO& diagSelect2 = IO::getGPIO<IO::Pin::PC_4>(IO::GPIO::Direction::OUTPUT); // diag select 2
 
     IO::ADC& lvssPowerSwitch0SenseOut = IO::getADC<IO::Pin::PC_0>();
 
-    LVSS::TPS2HB35BQ powerSwitch0 = LVSS::TPS2HB35BQ(lvssPowerSwitch0Enable1, lvssPowerSwitch0Enable2,
-                                                     lvssPowerSwitch0Latch, diagEnable,
-                                                     diagSelect1, diagSelect2,
+    LVSS::TPS2HB35BQ powerSwitch0 = LVSS::TPS2HB35BQ(lvssPowerSwitch0Enable1,
+                                                     lvssPowerSwitch0Enable2,
+                                                     lvssPowerSwitch0Latch,
+                                                     diagEnable,
+                                                     diagSelect1,
+                                                     diagSelect2,
                                                      lvssPowerSwitch0SenseOut);
 
     // String to store user input
     char buf[1000];
 
-    const char* commands[10] = {
-        "help: Display this help message\r\n",
-        "latch: Set latch mode\r\n",
-        "autoretry: Set auto retry mode\r\n",
-        "en1: Enable power switch 1\r\n",
-        "en2: Enable power switch 2\r\n",
-        "enAll: Enable all power switches\r\n",
-        "disAll: Disable all power switches\r\n",
-        "temp: Get temperature\r\n",
-        "current: Get current\r\n",
-        "fault: Get fault status\r\n"};
+    const char* commands[10] = {"help: Display this help message\r\n",
+                                "latch: Set latch mode\r\n",
+                                "autoretry: Set auto retry mode\r\n",
+                                "en1: Enable power switch 1\r\n",
+                                "en2: Enable power switch 2\r\n",
+                                "enAll: Enable all power switches\r\n",
+                                "disAll: Disable all power switches\r\n",
+                                "temp: Get temperature\r\n",
+                                "current: Get current\r\n",
+                                "fault: Get fault status\r\n"};
 
     // Display available commands at startup
     uart.printf("\r\nAvailable commands:\r\n");

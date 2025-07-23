@@ -43,8 +43,8 @@
 }
 // clang-format on
 
-namespace IO = EVT::core::IO;
-namespace DEV = EVT::core::DEV;
+namespace IO   = EVT::core::IO;
+namespace DEV  = EVT::core::DEV;
 namespace time = EVT::core::time;
 
 namespace LVSS {
@@ -57,13 +57,13 @@ static constexpr uint8_t POWER_SWITCHES_SIZE = 3;
  */
 class LVSS : public CANDevice {
 public:
-    static constexpr uint8_t NODE_ID = 1;
-    static constexpr uint8_t VCU_NODE_ID = 0;
+    static constexpr uint8_t NODE_ID      = 1;
+    static constexpr uint8_t VCU_NODE_ID  = 0;
     static constexpr uint8_t TPDO_NODE_ID = 1;
 
     IO::GPIO& vicorFT;
-    static constexpr IO::Pin vicorFaultPin = IO::Pin::PB_4;
-    static constexpr IO::Pin vicorSNS = IO::Pin::PA_4;
+    static constexpr IO::Pin vicorFaultPin   = IO::Pin::PB_4;
+    static constexpr IO::Pin vicorSNS        = IO::Pin::PA_4;
     IO::GPIO::State VICOR_FAULT_ACTIVE_STATE = IO::GPIO::State::HIGH;
 
     /** Union bit field to hold a bit representing which boards are on/off */
@@ -72,17 +72,17 @@ public:
         struct {
             // Power Switch 0
             uint8_t batt : 1;
-            uint8_t hib : 1;
+            uint8_t hib  : 1;
 
             // Power Switch 1
-            uint8_t tms : 1;
+            uint8_t tms  : 1;
             uint8_t hudl : 1;
 
             // Power Switch 2
             uint8_t gub : 1;
             uint8_t acc : 1;
         };
-    } ;
+    };
 
     union switchData {
         uint16_t battCurrent;
@@ -100,7 +100,7 @@ public:
     union switchFaults {
         uint16_t switchFaultVal;
         struct {
-            uint16_t currentFault : 1;
+            uint16_t currentFault     : 1;
             uint16_t temperatureFault : 1;
         };
     };
@@ -108,7 +108,7 @@ public:
     /** FSM State declaration */
     enum class State {
         INITIALIZATION = 0u,
-        IDLE = 1u,
+        IDLE           = 1u,
     };
 
     /**
@@ -202,7 +202,7 @@ private:
 
         RECEIVE_PDO_MAPPING_START_KEY_16XX(0x00, 0x01),
         {
-            .Key = CO_KEY(0x1600 + 0x00, 0x01, CO_OBJ_D___R_),
+            .Key  = CO_KEY(0x1600 + 0x00, 0x01, CO_OBJ_D___R_),
             .Type = CO_TUNSIGNED32,
             .Data = (CO_DATA) CO_LINK(0x2200 + 0x00, 0x00 + 0x01, PDO_MAPPING_UNSIGNED16),
         },
@@ -267,5 +267,5 @@ private:
     };
 };
 
-}// namespace LVSS
+} // namespace LVSS
 #endif

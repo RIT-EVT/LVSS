@@ -4,7 +4,7 @@
 #include <EVT/io/ADC.hpp>
 #include <EVT/utils/log.hpp>
 
-namespace IO = EVT::core::IO;
+namespace IO  = EVT::core::IO;
 namespace DEV = EVT::core::DEV;
 namespace log = EVT::core::log;
 
@@ -21,10 +21,10 @@ public:
     ACS71240(IO::ADC& adc0);
 
     /**
-      * Get the current detected by the ACS71240
-      *
-      * @return The current in mA
-      */
+     * Get the current detected by the ACS71240
+     *
+     * @return The current in mA
+     */
     int32_t readCurrent();
 
 private:
@@ -32,6 +32,6 @@ private:
     IO::ADC& ADC;
 };
 
-}// namespace LVSS
+} // namespace LVSS
 
 #endif

@@ -28,19 +28,19 @@ public:
      * @param diagSelect1 Mux select pin for diagnostics, see setDiagnostics
      * @param diagSelect2 Mux select pin for diagnostics, see setDiagnostics
      */
-    TPS2HB35BQ(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn,
-               IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& senseOut, uint32_t rsns = 330);
+    TPS2HB35BQ(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1,
+               IO::GPIO& diagSelect2, IO::ADC& senseOut, uint32_t rsns = 330);
 
     enum DiagMode {
-        OFF = 0x00,
+        OFF          = 0x00,
         FAULT_STATUS = 0x01,
-        CH1CURRENT = 0x02,
-        CH2CURRENT = 0x03,
-        TEMP = 0x04
+        CH1CURRENT   = 0x02,
+        CH2CURRENT   = 0x03,
+        TEMP         = 0x04
     };
 
     enum LatchMode {
-        LATCHED = 0x00,
+        LATCHED    = 0x00,
         AUTO_RETRY = 0x01
     };
 
@@ -62,10 +62,10 @@ public:
     int32_t getTempandFault();
 
     /**
-    * Set the latch mode of the power switch
-    *
-    * @param mode The latch mode to set
-    */
+     * Set the latch mode of the power switch
+     *
+     * @param mode The latch mode to set
+     */
     void setLatch(LatchMode mode);
 
     /**
@@ -98,10 +98,10 @@ private:
     /** ADC Counts */
     uint32_t counts = 0;
 
-    uint32_t rsns = 330;            // Resistor that sets the current limit
-    uint32_t kcl = 140;             // Current Limit Ratio
-    uint32_t icl = 9000;            // Current Limit Value in milliamps
-    int32_t TemperatureLim = 135000;// Temperature Limit of 135 millicelsius
+    uint32_t rsns          = 330;    // Resistor that sets the current limit
+    uint32_t kcl           = 140;    // Current Limit Ratio
+    uint32_t icl           = 9000;   // Current Limit Value in milliamps
+    int32_t TemperatureLim = 135000; // Temperature Limit of 135 millicelsius
 
     /**
      * Controls the diagnostic enable pin
@@ -126,5 +126,5 @@ private:
     void setDiagnostics(DiagMode diag_mode);
 };
 
-}// namespace LVSS
+} // namespace LVSS
 #endif

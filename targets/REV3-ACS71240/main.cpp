@@ -10,10 +10,10 @@
 #include <EVT/utils/time.hpp>
 #include <LVSS.hpp>
 
-namespace IO = EVT::core::IO;
-namespace DEV = EVT::core::DEV;
+namespace IO   = EVT::core::IO;
+namespace DEV  = EVT::core::DEV;
 namespace time = EVT::core::time;
-namespace log = EVT::core::log;
+namespace log  = EVT::core::log;
 
 int main() {
     // Initialize system
@@ -24,10 +24,10 @@ int main() {
     log::LOGGER.setUART(&uart);
     log::LOGGER.setLogLevel(log::Logger::LogLevel::INFO);
 
-    //ADC
+    // ADC
     IO::ADC& adc0 = IO::getADC<IO::Pin::PA_1>();
 
-    //Create ACS71240 instance
+    // Create ACS71240 instance
     LVSS::ACS71240 acs71240(adc0);
 
     while (1) {
