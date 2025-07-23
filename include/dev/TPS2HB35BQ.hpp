@@ -2,7 +2,6 @@
 #define TPS2HB35BQ_HPP
 
 #include <EVT/io/ADC.hpp>
-#include <EVT/io/CAN.hpp>
 #include <EVT/io/GPIO.hpp>
 
 namespace IO = EVT::core::IO;

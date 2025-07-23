@@ -52,7 +52,8 @@ namespace LVSS {
 static constexpr uint8_t POWER_SWITCHES_SIZE = 3;
 
 /**
- * This is an example of a class for a board
+ * This is the main board class for the LVSS.
+ * Updates the power switch temperature, current, and fault values.
  */
 class LVSS : public CANDevice {
 public:
@@ -66,7 +67,7 @@ public:
     IO::GPIO::State VICOR_FAULT_ACTIVE_STATE = IO::GPIO::State::HIGH;
 
     /** Union bit field to hold a bit representing which boards are on/off */
-    typedef union {
+    union BoardPowerState_u {
         uint16_t val;
         struct {
             // Power Switch 0
@@ -81,9 +82,9 @@ public:
             uint8_t gub : 1;
             uint8_t acc : 1;
         };
-    } BoardPowerState_u;
+    } ;
 
-    typedef union switchState {
+    union switchData {
         uint16_t battCurrent;
         uint16_t hibCurrent;
         uint16_t tmsCurrent;
@@ -94,6 +95,14 @@ public:
         int16_t switch0Temp;
         int16_t switch1Temp;
         int16_t switch2Temp;
+    };
+
+    union switchFaults {
+        uint16_t switchFaultVal;
+        struct {
+            uint16_t currentFault : 1;
+            uint16_t temperatureFault : 1;
+        };
     };
 
     /** FSM State declaration */
@@ -126,11 +135,14 @@ private:
     /** A struct for each power switch (of which there are 3) */
     TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE]{};
 
+    /** Holds the value of each board to enable/disable */
     BoardPowerState_u boardEN;
 
     ACS71240 acs71240;
 
-    switchState PowerSwitchState;
+    switchData PowerSwitchState;
+
+    switchFaults SwitchFaults;
 
     /** Tracks signal from VCU */
     uint16_t VCUBoardSig = 0;

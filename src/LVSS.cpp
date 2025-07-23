@@ -52,7 +52,7 @@ void LVSS::runningState() {
     /* Check if it is a new state */
     if (isNewState) {
         isNewState = false;
-        log::LOGGER.log(log::Logger::LogLevel::INFO, "Entering idle state");
+        log::LOGGER.log(log::Logger::LogLevel::INFO, "Entering running state");
     }
     /* Assigns the VCU signal to the union bit field */
     this->boardEN.val = VCUBoardSig;
@@ -87,7 +87,7 @@ void LVSS::runningState() {
         switchFaultstatus = INTMAX_MIN;
     }
 
-    log::LOGGER.log(log::Logger::LogLevel::INFO, "Switch 0 Channel 2: %d\r\nSwitch 1 Channel 2: %d\r\nSwitch 2 Channel 2: %d\r\n", PowerSwitchState.hibCurrent, PowerSwitchState.hudlCurrent, PowerSwitchState.gubCurrent);
+    log::LOGGER.log(log::Logger::LogLevel::DEBUG, "Switch 0 Channel 2: %d\r\nSwitch 1 Channel 2: %d\r\nSwitch 2 Channel 2: %d\r\n", PowerSwitchState.hibCurrent, PowerSwitchState.hudlCurrent, PowerSwitchState.gubCurrent);
 
     PowerSwitchState.switch0Temp = powerSwitches[0]->getTempandFault();
     PowerSwitchState.switch1Temp = powerSwitches[1]->getTempandFault();
@@ -98,7 +98,7 @@ void LVSS::runningState() {
         switchFaultstatus = 1;
     }
 
-    log::LOGGER.log(log::Logger::LogLevel::INFO, "Switch 0 Temperature: %d\r\nSwitch 1 Temperature: %d\r\nSwitch 2 Temperature: %d\r\n", PowerSwitchState.switch0Temp, PowerSwitchState.switch1Temp, PowerSwitchState.switch2Temp);
+    log::LOGGER.log(log::Logger::LogLevel::DEBUG, "Switch 0 Temperature: %d\r\nSwitch 1 Temperature: %d\r\nSwitch 2 Temperature: %d\r\n", PowerSwitchState.switch0Temp, PowerSwitchState.switch1Temp, PowerSwitchState.switch2Temp);
 
     log::LOGGER.log(log::Logger::LogLevel::INFO, "Vicor Current: %d\r\n", acs71240.readCurrent());
 }
