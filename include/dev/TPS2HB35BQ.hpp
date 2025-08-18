@@ -40,8 +40,8 @@ public:
     };
 
     enum LatchMode {
-        LATCHED    = 0x00,
-        AUTO_RETRY = 0x01
+        LATCHED    = 0x00, // If there is a fault the power switch will shut off and stay off
+        AUTO_RETRY = 0x01  // If there is a fault the power switch will shut off and try to turn back on until there is no longer a fault
     };
 
     void setPowerSwitchStates(bool powerSwitchOneEnabled, bool powerSwitchTwoEnabled);

@@ -28,7 +28,7 @@ void LVSS::process() {
         initState();
         break;
 
-    case State::IDLE:
+    case State::RUNNING:
         runningState();
         break;
     }
@@ -44,7 +44,7 @@ void LVSS::initState() {
     VICOR_FAULT_ACTIVE_STATE = vicorFT.readPin();
 
     if (time::millis() >= 101 && VICOR_FAULT_ACTIVE_STATE == IO::GPIO::State::LOW) {
-        state      = State::IDLE;
+        state      = State::RUNNING;
         isNewState = true;
     }
 }
@@ -79,7 +79,7 @@ void LVSS::runningState() {
 
     if (PowerSwitchState.battCurrent == -1 || PowerSwitchState.tmsCurrent == -1 || PowerSwitchState.accCurrent == -1) {
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Power Switch Error\r\n");
-        switchFaultstatus = INTMAX_MIN;
+        switchFaultStatus = INTMAX_MIN;
     }
 
     log::LOGGER.log(log::Logger::LogLevel::DEBUG,
@@ -96,7 +96,7 @@ void LVSS::runningState() {
 
     if (PowerSwitchState.hibCurrent == -1 || PowerSwitchState.hudlCurrent == -1 || PowerSwitchState.gubCurrent == -1) {
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Power Switch Error\r\n");
-        switchFaultstatus = INTMAX_MIN;
+        switchFaultStatus = INTMAX_MIN;
     }
 
     log::LOGGER.log(log::Logger::LogLevel::DEBUG,
@@ -112,7 +112,7 @@ void LVSS::runningState() {
     if (PowerSwitchState.switch0Temp == -1 || PowerSwitchState.switch1Temp == -1
         || PowerSwitchState.switch2Temp == -1) {
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Power Switch Error\r\n");
-        switchFaultstatus = 1;
+        switchFaultStatus = INTMAX_MIN;
     }
 
     log::LOGGER.log(log::Logger::LogLevel::DEBUG,
@@ -121,6 +121,6 @@ void LVSS::runningState() {
                     PowerSwitchState.switch1Temp,
                     PowerSwitchState.switch2Temp);
 
-    log::LOGGER.log(log::Logger::LogLevel::INFO, "Vicor Current: %d\r\n", acs71240.readCurrent());
+    log::LOGGER.log(log::Logger::LogLevel::DEBUG, "Vicor Current: %d\r\n", acs71240.readCurrent());
 }
 } // namespace LVSS

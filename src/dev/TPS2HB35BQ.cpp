@@ -33,9 +33,9 @@ void TPS2HB35BQ::setDiagStateEnabled(bool state) {
 
 void TPS2HB35BQ::setLatch(LatchMode mode) {
     if (mode == LatchMode::LATCHED) {
-        latchPin.writePin(IO::GPIO::State::LOW);
-    } else if (mode == LatchMode::AUTO_RETRY) {
         latchPin.writePin(IO::GPIO::State::HIGH);
+    } else if (mode == LatchMode::AUTO_RETRY) {
+        latchPin.writePin(IO::GPIO::State::LOW);
     }
 }
 

@@ -84,7 +84,8 @@ public:
         };
     };
 
-    union switchData {
+    /** Struct to hold the data for individual boards */
+    union switchData_u {
         uint16_t battCurrent;
         uint16_t hibCurrent;
         uint16_t tmsCurrent;
@@ -97,18 +98,10 @@ public:
         int16_t switch2Temp;
     };
 
-    union switchFaults {
-        uint16_t switchFaultVal;
-        struct {
-            uint16_t currentFault     : 1;
-            uint16_t temperatureFault : 1;
-        };
-    };
-
     /** FSM State declaration */
     enum class State {
         INITIALIZATION = 0u,
-        IDLE           = 1u,
+        RUNNING        = 1u,
     };
 
     /**
@@ -140,9 +133,8 @@ private:
 
     ACS71240 acs71240;
 
-    switchData PowerSwitchState;
-
-    switchFaults SwitchFaults;
+    /** Holds data for individual boards */
+    switchData_u PowerSwitchState;
 
     /** Tracks signal from VCU */
     uint16_t VCUBoardSig = 0;
@@ -151,7 +143,7 @@ private:
     uint16_t battPackCurrent = 0x00;
 
     /** Tracks power switch fault */
-    uint16_t switchFaultstatus = 0x00;
+    uint16_t switchFaultStatus = 0x00;
 
     /**
      * The current state of the LVSS
@@ -177,7 +169,7 @@ private:
     /**
      * Checks LVSS values
      *
-     * State: State::IDLE
+     * State: State::RUNNING
      */
     void runningState();
 
@@ -241,7 +233,7 @@ private:
         /** Transfer data */
         DATA_LINK_START_KEY_21XX(0x00, 0x02),
         DATA_LINK_21XX(0x00, 0x01, CO_TUNSIGNED16, &battPackCurrent),
-        DATA_LINK_21XX(0x00, 0x02, CO_TUNSIGNED16, &switchFaultstatus),
+        DATA_LINK_21XX(0x00, 0x02, CO_TUNSIGNED16, &switchFaultStatus),
 
         DATA_LINK_START_KEY_21XX(0x01, 0x04),
         DATA_LINK_21XX(0x01, 0x01, CO_TUNSIGNED16, &PowerSwitchState.battCurrent),
