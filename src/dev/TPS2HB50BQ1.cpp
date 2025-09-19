@@ -2,8 +2,8 @@
 
 namespace LVSS {
 
-TPS2HB50BQ1::TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc)
-    : en1(en1), en2(en2), latchPin(latch), diagEn(diagEn), diagSelect1(diagSelect1), diagSelect2(diagSelect2), senseOut(adc) {
+TPS2HB50BQ1::TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& adc, LVSS::ACS71240& currentSens)
+    : en1(en1), en2(en2), latchPin(latch), diagEn(diagEn), diagSelect1(diagSelect1), diagSelect2(diagSelect2), senseOut{adc}, currentSensor(currentSens) {
     setDiagnostics(DiagMode::OFF);
 }
 
@@ -71,8 +71,8 @@ void TPS2HB50BQ1::setDiagnostics(DiagMode diag_mode) {
 
 uint32_t TPS2HB50BQ1::getCurrent() {
     setDiagnostics(DiagMode::CURRENT);
-    uint32_t current = readSenseOut();
-    //setDiagnostics(DiagMode::OFF);
+    uint32_t current = currentSensor.readCurrent();
+    setDiagnostics(DiagMode::OFF);
 
     // TODO: more processing on raw adc senseOut pin output
 
@@ -80,13 +80,15 @@ uint32_t TPS2HB50BQ1::getCurrent() {
 }
 
 uint32_t TPS2HB50BQ1::getTemp() {
+
     setDiagnostics(DiagMode::TEMP);
-    uint32_t temp = readSenseOut();
-    //setDiagnostics(DiagMode::OFF);
+    constexpr uint32_t coefficient = 11; //found in datasheet
+    uint32_t current = this->getCurrent(); //read current from current sensor
+    setDiagnostics(DiagMode::OFF);
+
+    return (current * coefficient)/1000;
 
     // TODO: more processing on raw adc senseOut pin output
-
-    return temp;
 }
 
 uint32_t TPS2HB50BQ1::getFaultStatus() {
