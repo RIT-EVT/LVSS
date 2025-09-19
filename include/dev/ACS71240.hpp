@@ -11,7 +11,8 @@ namespace log = EVT::core::log;
 namespace LVSS {
 
 /**
- * Class for LVSS current sensor
+ * Class for LVSS current sensor, 70% sure it is ACS71240KEXBLT-030B3-S specifically
+ * Datasheet in datasheets folder
  */
 class ACS71240 {
 public:
