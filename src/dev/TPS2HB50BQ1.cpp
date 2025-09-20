@@ -87,8 +87,6 @@ uint32_t TPS2HB50BQ1::getTemp() {
     setDiagnostics(DiagMode::OFF);
 
     return (current * coefficient)/1000;
-
-    // TODO: more processing on raw adc senseOut pin output
 }
 
 uint32_t TPS2HB50BQ1::getFaultStatus() {
