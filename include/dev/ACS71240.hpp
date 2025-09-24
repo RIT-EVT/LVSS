@@ -19,7 +19,7 @@ public:
     /**
      * Constructor for current sensing class
      */
-    ACS71240(IO::ADC& adc0);
+    explicit ACS71240(IO::ADC& adc0);
 
     /**
       * Get the current detected by the ACS71240
