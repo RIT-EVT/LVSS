@@ -31,11 +31,9 @@ public:
      * @param diagSelect1 Mux select pin for diagnostics, see setDiagnostics
      * @param diagSelect2 Mux select pin for diagnostics, see setDiagnostics
      * @param senseOut
-     * @param currentSensor
      */
     TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn,
-                IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& senseOut,
-                LVSS::ACS71240& currentSensor);
+                IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& senseOut);
 
     enum DiagMode {
         OFF = 0x00,
@@ -49,7 +47,6 @@ public:
         AUTO_RETRY = 0x01
     };
 
-    TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& senseOut);
     void setPowerSwitchStates(bool powerSwitchOneEnabled, bool powerSwitchTwoEnabled);
 
     /**
@@ -95,7 +92,7 @@ private:
     IO::GPIO& diagSelect1;
     IO::GPIO& diagSelect2;
     IO::ADC& senseOut;
-    LVSS::ACS71240& currentSensor; //current sensor
+    ACS71240 currentSensor;
 
     void setDiagStateEnabled(bool state);
 
