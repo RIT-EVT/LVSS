@@ -98,8 +98,6 @@ private:
 
     /**
      * Read the sense out of the power switch
-     *
-     * @param senseOut The sense out value
      */
     uint32_t readSenseOut();
 
