@@ -6,6 +6,7 @@
 #include <EVT/io/CANOpenMacros.hpp>
 #include <EVT/io/CANopen.hpp>
 #include <EVT/io/GPIO.hpp>
+#include <dev/ACS71240.hpp>
 
 namespace IO = EVT::core::IO;
 
@@ -29,6 +30,7 @@ public:
      * @param diagEn GPIO pin for diagnostics enable, see setDiagnostics
      * @param diagSelect1 Mux select pin for diagnostics, see setDiagnostics
      * @param diagSelect2 Mux select pin for diagnostics, see setDiagnostics
+     * @param senseOut
      */
     TPS2HB50BQ1(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn,
                 IO::GPIO& diagSelect1, IO::GPIO& diagSelect2, IO::ADC& senseOut);
@@ -90,13 +92,12 @@ private:
     IO::GPIO& diagSelect1;
     IO::GPIO& diagSelect2;
     IO::ADC& senseOut;
+    ACS71240 currentSensor;
 
     void setDiagStateEnabled(bool state);
 
     /**
      * Read the sense out of the power switch
-     *
-     * @param senseOut The sense out value
      */
     uint32_t readSenseOut();
 
