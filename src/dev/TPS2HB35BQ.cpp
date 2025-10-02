@@ -115,7 +115,7 @@ int32_t TPS2HB35BQ::getTempandFault() {
     /* ( Isns (mA) - 0.85 mA ) / (dIsnst/dT) + 25 celsius */
     int32_t milliCelsius = (microAmps - 850) / 11 + 25000; // Returns temperature in milli celsius
 
-    if (milliCelsius >= TemperatureLim) {
+    if (milliCelsius >= TemperatureLimit) {
         return INTMAX_MIN;
     }
 
@@ -126,7 +126,7 @@ void TPS2HB35BQ::setLimits(uint32_t ohms, uint32_t ratio, uint32_t milliamps, in
     rsns           = ohms;
     kcl            = ratio;
     icl            = milliamps;
-    TemperatureLim = millicelsius;
+    TemperatureLimit = millicelsius;
 }
 
 } // namespace LVSS
