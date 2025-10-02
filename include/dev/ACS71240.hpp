@@ -18,7 +18,7 @@ public:
     /**
      * Constructor for current sensing class
      */
-    ACS71240(IO::ADC& adc0);
+    explicit ACS71240(IO::ADC& adc0);
 
     /**
      * Get the current detected by the ACS71240
@@ -29,6 +29,9 @@ public:
 
 private:
     /** ADC instance for getting input voltage */
+    int32_t voltIn = 3300; //millivolts
+    int32_t sensitivity = 44; //millivolts / amp
+    int32_t avgAdcCount = 1970; //Background Noise
     IO::ADC& ADC;
 };
 
