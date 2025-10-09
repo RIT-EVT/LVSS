@@ -102,6 +102,7 @@ private:
     uint32_t rsns          = 330;    // Resistor that sets the current limit
     uint32_t kcl           = 140;    // Current Limit Ratio
     uint32_t icl           = 9000;   // Current Limit Value in milliamps
+    uint32_t voltIn        = 3300;
     int32_t TemperatureLimit = 135000; // Temperature Limit of 135 C in millicelsius
 
     /**
