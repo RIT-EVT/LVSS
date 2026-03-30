@@ -2,8 +2,8 @@
 
 namespace LVSS {
 
-TPS2HB35BQ::TPS2HB35BQ(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1,
-                       IO::GPIO& diagSelect2, IO::ADC& adc, uint32_t rsns)
+TPS2HB35BQ::TPS2HB35BQ(io::GPIO& en1, io::GPIO& en2, io::GPIO& latch, io::GPIO& diagEn, io::GPIO& diagSelect1,
+                       io::GPIO& diagSelect2, io::ADC& adc, uint32_t rsns)
     : en1(en1), en2(en2), latchPin(latch), diagEn(diagEn), diagSelect1(diagSelect1), diagSelect2(diagSelect2),
       senseOut(adc) {
     setDiagnostics(DiagMode::OFF);
@@ -11,31 +11,31 @@ TPS2HB35BQ::TPS2HB35BQ(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& 
 
 void TPS2HB35BQ::setPowerSwitchStates(bool powerSwitchOneEnabled, bool powerSwitchTwoEnabled) {
     if (powerSwitchOneEnabled) {
-        en1.writePin(IO::GPIO::State::HIGH);
+        en1.writePin(io::GPIO::State::HIGH);
     } else {
-        en1.writePin(IO::GPIO::State::LOW);
+        en1.writePin(io::GPIO::State::LOW);
     }
 
     if (powerSwitchTwoEnabled) {
-        en2.writePin(IO::GPIO::State::HIGH);
+        en2.writePin(io::GPIO::State::HIGH);
     } else {
-        en2.writePin(IO::GPIO::State::LOW);
+        en2.writePin(io::GPIO::State::LOW);
     }
 }
 
 void TPS2HB35BQ::setDiagStateEnabled(bool state) {
     if (state) {
-        diagEn.writePin(IO::GPIO::State::HIGH);
+        diagEn.writePin(io::GPIO::State::HIGH);
     } else {
-        diagEn.writePin(IO::GPIO::State::LOW);
+        diagEn.writePin(io::GPIO::State::LOW);
     }
 }
 
 void TPS2HB35BQ::setLatch(LatchMode mode) {
     if (mode == LatchMode::LATCHED) {
-        latchPin.writePin(IO::GPIO::State::HIGH);
+        latchPin.writePin(io::GPIO::State::HIGH);
     } else if (mode == LatchMode::AUTO_RETRY) {
-        latchPin.writePin(IO::GPIO::State::LOW);
+        latchPin.writePin(io::GPIO::State::LOW);
     }
 }
 
@@ -47,33 +47,33 @@ void TPS2HB35BQ::setDiagnostics(DiagMode diag_mode) {
     switch (diag_mode) {
     case OFF:
         setDiagStateEnabled(false);
-        diagSelect1.writePin(IO::GPIO::State::LOW);
-        diagSelect2.writePin(IO::GPIO::State::LOW);
+        diagSelect1.writePin(io::GPIO::State::LOW);
+        diagSelect2.writePin(io::GPIO::State::LOW);
         break;
     case FAULT_STATUS:
         setDiagStateEnabled(true);
-        diagSelect1.writePin(IO::GPIO::State::HIGH);
-        diagSelect2.writePin(IO::GPIO::State::LOW);
+        diagSelect1.writePin(io::GPIO::State::LOW);
+        diagSelect2.writePin(io::GPIO::State::HIGH);
         break;
     case CH1CURRENT:
         setDiagStateEnabled(true);
-        diagSelect1.writePin(IO::GPIO::State::LOW);
-        diagSelect2.writePin(IO::GPIO::State::LOW);
+        diagSelect1.writePin(io::GPIO::State::LOW);
+        diagSelect2.writePin(io::GPIO::State::LOW);
         break;
     case CH2CURRENT:
         setDiagStateEnabled(true);
-        diagSelect1.writePin(IO::GPIO::State::LOW);
-        diagSelect2.writePin(IO::GPIO::State::HIGH);
+        diagSelect1.writePin(io::GPIO::State::LOW);
+        diagSelect2.writePin(io::GPIO::State::HIGH);
         break;
     case TEMP:
         setDiagStateEnabled(true);
-        diagSelect1.writePin(IO::GPIO::State::HIGH);
-        diagSelect2.writePin(IO::GPIO::State::LOW);
+        diagSelect1.writePin(io::GPIO::State::HIGH);
+        diagSelect2.writePin(io::GPIO::State::LOW);
         break;
     }
 }
 
-uint32_t TPS2HB35BQ::getCurrent(uint8_t channelSelect) {
+uint32_t TPS2HB35BQ::getCurrentAndFault(uint8_t channelSelect) {
     if (channelSelect == 1) {
         setDiagnostics(DiagMode::CH1CURRENT); // Set diagnostic mode to sense current
     } else {
@@ -87,9 +87,8 @@ uint32_t TPS2HB35BQ::getCurrent(uint8_t channelSelect) {
     }
 
     /* volts = (ADC Counts * 3300 kilovolts) / 4096 */
-    uint32_t millivolts = (counts * voltIn) / 4096; // Turn ADC counts into milli volts
-    uint32_t milliamps  = millivolts / rsns;      // Turn milli volts into milli amps
-
+    uint32_t millivolts = (counts * adcVoltage) / 4096; // Turn ADC counts into milli volts
+    uint32_t milliamps  = millivolts / rsns;            // Turn milli volts into milli amps
 
     /* If current is greater than the current limit latch the sns pin */
     if (milliamps >= icl) {
@@ -101,7 +100,7 @@ uint32_t TPS2HB35BQ::getCurrent(uint8_t channelSelect) {
     return milliamps;
 }
 
-int32_t TPS2HB35BQ::getTempandFault() {
+int32_t TPS2HB35BQ::getTemperature() {
     setDiagnostics(DiagMode::TEMP); // Set diagnostic mode to sense temperature
     counts = readSenseOut();
 
@@ -110,10 +109,8 @@ int32_t TPS2HB35BQ::getTempandFault() {
         setLatch(LatchMode::LATCHED); // Latch power switches
     }
 
-    uint32_t milliVolts = (counts * voltIn) / 4096;     // Turn ADC counts into milli volts
-    int32_t microAmps   = (milliVolts * 1000) / rsns; // Turn milli volts into micro amps
-    uint32_t dIsnst = 11;
-    uint32_t resistanceOnJunctionTemp = 25000; // 25 C in millicelsius
+    uint32_t milliVolts = (counts * adcVoltage) / 4096; // Turn ADC counts into milli volts
+    int32_t microAmps   = (milliVolts * 1000) / rsns;   // Turn milli volts into micro amps
 
     /* ( Isns (mA) - 0.85 mA ) / (dIsnst/dT) + 25 celsius */
     int32_t milliCelsius = (microAmps - 850) / dIsnst + resistanceOnJunctionTemp; // Returns temperature in milli celsius
@@ -126,9 +123,9 @@ int32_t TPS2HB35BQ::getTempandFault() {
 }
 
 void TPS2HB35BQ::setLimits(uint32_t ohms, uint32_t ratio, uint32_t milliamps, int32_t millicelsius) {
-    rsns           = ohms;
-    kcl            = ratio;
-    icl            = milliamps;
+    rsns             = ohms;
+    kcl              = ratio;
+    icl              = milliamps;
     TemperatureLimit = millicelsius;
 }
 

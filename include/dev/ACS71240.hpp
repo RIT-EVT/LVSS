@@ -1,12 +1,12 @@
 #ifndef LVSS_ACS71240_HPP
 #define LVSS_ACS71240_HPP
 
-#include <EVT/io/ADC.hpp>
-#include <EVT/utils/log.hpp>
+#include <core/io/ADC.hpp>
+#include <core/utils/log.hpp>
 
-namespace IO  = EVT::core::IO;
-namespace DEV = EVT::core::DEV;
-namespace log = EVT::core::log;
+namespace io  = core::io;
+namespace dev = core::dev;
+namespace log = core::log;
 
 namespace LVSS {
 
@@ -18,7 +18,7 @@ public:
     /**
      * Constructor for current sensing class
      */
-    explicit ACS71240(IO::ADC& adc0);
+    explicit ACS71240(io::ADC& adc0);
 
     /**
      * Get the current detected by the ACS71240
@@ -32,7 +32,7 @@ private:
     int32_t voltIn = 3300; //millivolts
     int32_t sensitivity = 44; //millivolts / amp
     int32_t avgAdcCount = 1970; //Background Noise
-    IO::ADC& ADC;
+    io::ADC& ADC;
 };
 
 } // namespace LVSS

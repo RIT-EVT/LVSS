@@ -14,7 +14,7 @@ CO_OBJ_T* LVSS::getObjectDictionary() {
     return &objectDictionary[0];
 }
 
-LVSS::LVSS(TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT, ACS71240 acs71240)
+LVSS::LVSS(TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE], io::GPIO& vicorFT, ACS71240 acs71240)
     : vicorFT(vicorFT), boardEN({0}), acs71240(acs71240), state(State::INITIALIZATION) {
     for (int i = 0; i < POWER_SWITCHES_SIZE; i++) {
         this->powerSwitches[i] = powerSwitches[i];
@@ -43,7 +43,7 @@ void LVSS::initState() {
 
     VICOR_FAULT_ACTIVE_STATE = vicorFT.readPin();
 
-    if (time::millis() >= 101 && VICOR_FAULT_ACTIVE_STATE == IO::GPIO::State::LOW) {
+    if (time::millis() >= 101 && VICOR_FAULT_ACTIVE_STATE == io::GPIO::State::LOW) {
         state      = State::RUNNING;
         isNewState = true;
     }
@@ -73,9 +73,9 @@ void LVSS::runningState() {
     powerSwitches[2]->setPowerSwitchStates(boardEN.acc, boardEN.gub);  // Turn on Acc and GUB
 
     /* Current Checking */
-    PowerSwitchState.battCurrent = powerSwitches[0]->getCurrent(1);
-    PowerSwitchState.tmsCurrent  = powerSwitches[1]->getCurrent(1);
-    PowerSwitchState.accCurrent  = powerSwitches[2]->getCurrent(1);
+    PowerSwitchState.battCurrent = powerSwitches[0]->getCurrentAndFault(1);
+    PowerSwitchState.tmsCurrent  = powerSwitches[1]->getCurrentAndFault(1);
+    PowerSwitchState.accCurrent  = powerSwitches[2]->getCurrentAndFault(1);
 
     if (PowerSwitchState.battCurrent == -1 || PowerSwitchState.tmsCurrent == -1 || PowerSwitchState.accCurrent == -1) {
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Power Switch Error\r\n");
@@ -90,9 +90,9 @@ void LVSS::runningState() {
 
     time::wait(2); // Power switches require the ADC to wait a min of 165 micro seconds before sampling SNS pin again
 
-    PowerSwitchState.hibCurrent  = powerSwitches[0]->getCurrent(2);
-    PowerSwitchState.hudlCurrent = powerSwitches[1]->getCurrent(2);
-    PowerSwitchState.gubCurrent  = powerSwitches[2]->getCurrent(2);
+    PowerSwitchState.hibCurrent  = powerSwitches[0]->getCurrentAndFault(2);
+    PowerSwitchState.hudlCurrent = powerSwitches[1]->getCurrentAndFault(2);
+    PowerSwitchState.gubCurrent  = powerSwitches[2]->getCurrentAndFault(2);
 
     if (PowerSwitchState.hibCurrent == -1 || PowerSwitchState.hudlCurrent == -1 || PowerSwitchState.gubCurrent == -1) {
         log::LOGGER.log(log::Logger::LogLevel::INFO, "Power Switch Error\r\n");
@@ -105,9 +105,9 @@ void LVSS::runningState() {
                     PowerSwitchState.hudlCurrent,
                     PowerSwitchState.gubCurrent);
 
-    PowerSwitchState.switch0Temp = powerSwitches[0]->getTempandFault();
-    PowerSwitchState.switch1Temp = powerSwitches[1]->getTempandFault();
-    PowerSwitchState.switch2Temp = powerSwitches[2]->getTempandFault();
+    PowerSwitchState.switch0Temp = powerSwitches[0]->getTemperature();
+    PowerSwitchState.switch1Temp = powerSwitches[1]->getTemperature();
+    PowerSwitchState.switch2Temp = powerSwitches[2]->getTemperature();
 
     if (PowerSwitchState.switch0Temp == -1 || PowerSwitchState.switch1Temp == -1
         || PowerSwitchState.switch2Temp == -1) {

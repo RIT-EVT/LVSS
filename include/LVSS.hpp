@@ -1,10 +1,10 @@
 #ifndef _LVSS_
 #define _LVSS_
 
-#include <EVT/dev/LCD.hpp>
-#include <EVT/io/CANOpenMacros.hpp>
-#include <EVT/io/CANopen.hpp>
-#include <EVT/utils/log.hpp>
+#include <core/dev/LCD.hpp>
+#include <core/io/CANOpenMacros.hpp>
+#include <core/io/CANopen.hpp>
+#include <core/utils/log.hpp>
 #include <LVSS.hpp>
 #include <cstdio>
 #include <cstring>
@@ -43,9 +43,9 @@
 }
 // clang-format on
 
-namespace IO   = EVT::core::IO;
-namespace DEV  = EVT::core::DEV;
-namespace time = EVT::core::time;
+namespace io   = core::io;
+namespace dev  = core::dev;
+namespace time = core::time;
 
 namespace LVSS {
 
@@ -61,10 +61,10 @@ public:
     static constexpr uint8_t VCU_NODE_ID  = 0;
     static constexpr uint8_t TPDO_NODE_ID = 1;
 
-    IO::GPIO& vicorFT;
-    static constexpr IO::Pin vicorFaultPin   = IO::Pin::PB_4;
-    static constexpr IO::Pin vicorSNS        = IO::Pin::PA_4;
-    IO::GPIO::State VICOR_FAULT_ACTIVE_STATE = IO::GPIO::State::HIGH;
+    io::GPIO& vicorFT;
+    static constexpr io::Pin vicorFaultPin   = io::Pin::PB_4;
+    static constexpr io::Pin vicorSNS        = io::Pin::PA_4;
+    io::GPIO::State VICOR_FAULT_ACTIVE_STATE = io::GPIO::State::HIGH;
 
     /** Union bit field to hold a bit representing which boards are on/off */
     union BoardPowerState_u {
@@ -111,7 +111,7 @@ public:
      * @param vicorFT fault status pin of the vicor
      * @param acs71240 vicor current sensing IC
      */
-    explicit LVSS(TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE], IO::GPIO& vicorFT, ACS71240 acs71240);
+    explicit LVSS(TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE], io::GPIO& vicorFT, ACS71240 acs71240);
 
     CO_OBJ_T* getObjectDictionary() override;
 
@@ -131,6 +131,7 @@ private:
     /** Holds the value of each board to enable/disable */
     BoardPowerState_u boardEN;
 
+    /** Vicor Current */
     ACS71240 acs71240;
 
     /** Holds data for individual boards */
@@ -145,9 +146,7 @@ private:
     /** Tracks power switch fault */
     uint16_t switchFaultStatus = 0x00;
 
-    /**
-     * The current state of the LVSS
-     */
+    /** The current state of the LVSS */
     State state;
 
     /**
@@ -177,84 +176,68 @@ private:
      * Have to know the size of the object dictionary for initialization
      * process.
      */
-    static constexpr uint8_t OBJECT_DICTIONARY_SIZE = 70;
-    /**
-     * The object dictionary itself. Will be populated by this object during
-     * construction.
-     *
-     * The plus one is for the special "end of dictionary" marker.
-     */
+    static constexpr uint8_t OBJECT_DICTIONARY_SIZE       = 56;
     CO_OBJ_T objectDictionary[OBJECT_DICTIONARY_SIZE + 1] = {
         MANDATORY_IDENTIFICATION_ENTRIES_1000_1014,
         HEARTBEAT_PRODUCER_1017(2000),
         IDENTITY_OBJECT_1018,
         SDO_CONFIGURATION_1200,
 
-        RECEIVE_PDO_SETTINGS_OBJECT_140X(0x00, 0x00, VCU_NODE_ID, RECEIVE_PDO_TRIGGER_ASYNC),
-
-        RECEIVE_PDO_MAPPING_START_KEY_16XX(0x00, 0x01),
-        {
-            .Key  = CO_KEY(0x1600 + 0x00, 0x01, CO_OBJ_D___R_),
-            .Type = CO_TUNSIGNED32,
-            .Data = (CO_DATA) CO_LINK(0x2200 + 0x00, 0x00 + 0x01, PDO_MAPPING_UNSIGNED16),
-        },
-
-        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x00, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 100),
+        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x00, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 1000),
         TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x01, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 1000),
         TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x02, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 1000),
-        TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x03, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 1000),
 
-        // TPDO 0 Map
-        TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x00, 0x02),
+        ///////////////////////////////////////////////////////////////////////////
+        // TPDO0: 4 × u16  (8 bytes) sending currents 0,1,2,3
+        ///////////////////////////////////////////////////////////////////////////
+        TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x00, 0x04),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x00, 0x01, PDO_MAPPING_UNSIGNED16),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x00, 0x02, PDO_MAPPING_UNSIGNED16),
+        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x00, 0x03, PDO_MAPPING_UNSIGNED16),
+        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x00, 0x04, PDO_MAPPING_UNSIGNED16),
 
-        // TPDO 1 Map
-        TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x01, 0x04),
+        ///////////////////////////////////////////////////////////////////////////
+        // TPDO1: 3 × u16  (6 bytes) sending currents 4,5 and vicor current
+        ///////////////////////////////////////////////////////////////////////////
+        TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x01, 0x03),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x01, 0x01, PDO_MAPPING_UNSIGNED16),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x01, 0x02, PDO_MAPPING_UNSIGNED16),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x01, 0x03, PDO_MAPPING_UNSIGNED16),
-        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x01, 0x04, PDO_MAPPING_UNSIGNED16),
 
-        // TPDO 2 Map
-        TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x02, 0x02),
+        ///////////////////////////////////////////////////////////////////////////
+        // TPDO2: 4 × u16  (8 bytes) sending temperatures 0,1,2 and board_en bitarray
+        ///////////////////////////////////////////////////////////////////////////
+        TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x02, 0x04),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x02, 0x01, PDO_MAPPING_UNSIGNED16),
         TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x02, 0x02, PDO_MAPPING_UNSIGNED16),
+        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x02, 0x03, PDO_MAPPING_UNSIGNED16),
+        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x02, 0x04, PDO_MAPPING_UNSIGNED16),
 
-        // TPDO 3 Map
-        TRANSMIT_PDO_MAPPING_START_KEY_1AXX(0x03, 0x03),
-        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x03, 0x01, PDO_MAPPING_UNSIGNED16),
-        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x03, 0x02, PDO_MAPPING_UNSIGNED16),
-        TRANSMIT_PDO_MAPPING_ENTRY_1AXX(0x03, 0x03, PDO_MAPPING_UNSIGNED16),
+        ///////////////////////////////////////////////////////////////////////////
+        // Data links: what those mapped entries point to in memory
+        // (Group numbers 0x00..0x03 correspond to the TPDO number)
+        ///////////////////////////////////////////////////////////////////////////
 
-        // User defined data, this will be where we put elements that can be
-        // accessed via SDO and depending on configuration PDO
+        // TPDO0 payload: HV Current Data (2×u16)
+        DATA_LINK_START_KEY_21XX(LINK_TPDO_NUMBER(0x00), 0x04),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x00), 0x01, CO_TUNSIGNED16, &PowerSwitchState.battCurrent),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x00), 0x02, CO_TUNSIGNED16, &PowerSwitchState.hibCurrent),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x00), 0x03, CO_TUNSIGNED16, &PowerSwitchState.tmsCurrent),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x00), 0x04, CO_TUNSIGNED16, &PowerSwitchState.hudlCurrent),
 
-        /** Transfer data */
-        DATA_LINK_START_KEY_21XX(0x00, 0x02),
-        DATA_LINK_21XX(0x00, 0x01, CO_TUNSIGNED16, &battPackCurrent),
-        DATA_LINK_21XX(0x00, 0x02, CO_TUNSIGNED16, &switchFaultStatus),
+        // TPDO1 payload: Power Switch rest of Currents & vicor
+        DATA_LINK_START_KEY_21XX(LINK_TPDO_NUMBER(0x01), 0x03),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x01), 0x01, CO_TUNSIGNED16, &PowerSwitchState.accCurrent),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x01), 0x02, CO_TUNSIGNED16, &PowerSwitchState.gubCurrent),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x01), 0x03, CO_TUNSIGNED16, &vicorFT),
 
-        DATA_LINK_START_KEY_21XX(0x01, 0x04),
-        DATA_LINK_21XX(0x01, 0x01, CO_TUNSIGNED16, &PowerSwitchState.battCurrent),
-        DATA_LINK_21XX(0x01, 0x02, CO_TUNSIGNED16, &PowerSwitchState.hibCurrent),
-        DATA_LINK_21XX(0x01, 0x03, CO_TUNSIGNED16, &PowerSwitchState.tmsCurrent),
-        DATA_LINK_21XX(0x01, 0x04, CO_TUNSIGNED16, &PowerSwitchState.hudlCurrent),
+        // TPDO2 payload: Temperature Data & board_en signals
+        DATA_LINK_START_KEY_21XX(LINK_TPDO_NUMBER(0x02), 0x04),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x01, CO_TUNSIGNED16, &PowerSwitchState.switch0Temp),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x02, CO_TUNSIGNED16, &PowerSwitchState.switch1Temp),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x03, CO_TUNSIGNED16, &PowerSwitchState.switch2Temp),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x04, CO_TUNSIGNED16, &boardEN),
 
-        DATA_LINK_START_KEY_21XX(0x02, 0x02),
-        DATA_LINK_21XX(0x02, 0x01, CO_TUNSIGNED16, &PowerSwitchState.accCurrent),
-        DATA_LINK_21XX(0x02, 0x02, CO_TUNSIGNED16, &PowerSwitchState.gubCurrent),
-
-        DATA_LINK_START_KEY_21XX(0x03, 0x03),
-        DATA_LINK_21XX(0x03, 0x01, CO_TSIGNED16, &PowerSwitchState.switch0Temp),
-        DATA_LINK_21XX(0x03, 0x02, CO_TSIGNED16, &PowerSwitchState.switch1Temp),
-        DATA_LINK_21XX(0x03, 0x03, CO_TSIGNED16, &PowerSwitchState.switch2Temp),
-
-        /** Receive data */
-        DATA_LINK_START_KEY_21XX(0x100, 0x01),
-        DATA_LINK_21XX(0x100, 0x01, CO_TUNSIGNED16, &VCUBoardSig),
-
-        // End of dictionary marker
         CO_OBJ_DICT_ENDMARK,
     };
 };

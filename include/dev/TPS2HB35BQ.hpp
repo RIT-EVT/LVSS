@@ -1,13 +1,12 @@
 #ifndef TPS2HB35BQ_HPP
 #define TPS2HB35BQ_HPP
 
-#include <EVT/io/ADC.hpp>
-#include <EVT/io/GPIO.hpp>
+#include <core/io/ADC.hpp>
+#include <core/io/GPIO.hpp>
 
-namespace IO = EVT::core::IO;
+namespace io = core::io;
 
 namespace LVSS {
-
 /**
  * This class is used to control the TPS2HB35BQ power switch.
  * The TPS2HB35BQ is a high side switch that can be used to control
@@ -28,8 +27,8 @@ public:
      * @param diagSelect1 Mux select pin for diagnostics, see setDiagnostics
      * @param diagSelect2 Mux select pin for diagnostics, see setDiagnostics
      */
-    TPS2HB35BQ(IO::GPIO& en1, IO::GPIO& en2, IO::GPIO& latch, IO::GPIO& diagEn, IO::GPIO& diagSelect1,
-               IO::GPIO& diagSelect2, IO::ADC& senseOut, uint32_t rsns = 330);
+    TPS2HB35BQ(io::GPIO& en1, io::GPIO& en2, io::GPIO& latch, io::GPIO& diagEn, io::GPIO& diagSelect1,
+               io::GPIO& diagSelect2, io::ADC& senseOut, uint32_t rsns = 330);
 
     enum DiagMode {
         OFF          = 0x00,
@@ -49,18 +48,18 @@ public:
 
     /**
      * Get the current of the power switch
+     * A fault is detected if the current is somewhere between 4 and 5.3 mA
      *
      * @return The current of the power switch in milli amps
      */
-    uint32_t getCurrent(uint8_t channelSelect);
+    uint32_t getCurrentAndFault(uint8_t channelSelect);
 
     /**
      * Get the temperature of the power switch.
-     * A fault is detected if the temperature >= 300 C
      *
      * @return The temperature of the power switch in Celsius
      */
-    int32_t getTempandFault();
+    int32_t getTemperature();
 
     /**
      * Set the latch mode of the power switch
@@ -88,22 +87,22 @@ public:
      */
 
 private:
-    IO::GPIO& en1;
-    IO::GPIO& en2;
-    IO::GPIO& latchPin;
-    IO::GPIO& diagEn;
-    IO::GPIO& diagSelect1;
-    IO::GPIO& diagSelect2;
-    IO::ADC& senseOut;
+    io::GPIO& en1;
+    io::GPIO& en2;
+    io::GPIO& latchPin;
+    io::GPIO& diagEn;
+    io::GPIO& diagSelect1;
+    io::GPIO& diagSelect2;
+    io::ADC& senseOut;
 
-    /** ADC Counts */
-    uint32_t counts = 0;
-
-    uint32_t rsns          = 330;    // Resistor that sets the current limit
-    uint32_t kcl           = 140;    // Current Limit Ratio
-    uint32_t icl           = 9000;   // Current Limit Value in milliamps
-    uint32_t voltIn        = 3300;
-    int32_t TemperatureLimit = 135000; // Temperature Limit of 135 C in millicelsius
+    uint32_t counts                   = 0;      // ADC Counts
+    uint32_t adcVoltage               = 3300;   // ADC Voltage
+    uint32_t rsns                     = 330;    // Resistor that sets the current limit
+    uint32_t kcl                      = 140;    // Current Limit Ratio
+    uint32_t icl                      = 9000;   // Current Limit Value in milliamps
+    int32_t TemperatureLimit          = 135000; // Temperature Limit of 135 C in millicelsius
+    uint32_t dIsnst                   = 11;     // Coefficient 0.011 mA/C in microamps
+    uint32_t resistanceOnJunctionTemp = 25000;  // 25 C in millicelsius
 
     /**
      * Controls the diagnostic enable pin

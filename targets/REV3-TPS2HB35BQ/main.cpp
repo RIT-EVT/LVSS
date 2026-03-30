@@ -117,11 +117,11 @@ int main() {
             uart.printf("\r\nEnabling power switch 2\r\n");
             powerSwitch0.setPowerSwitchStates(false, true);
         } else if (strcmp(buf, "temp") == 0) {
-            uart.printf("\r\ntemp: %d\r\n", powerSwitch0.getTempandFault());
+            uart.printf("\r\ntemp: %d\r\n", powerSwitch0.getTemperature());
         } else if (strcmp(buf, "current") == 0) {
-            uart.printf("\r\nCurrent: %d\r\n", powerSwitch0.getCurrent(1));
+            uart.printf("\r\nCurrent: %d\r\n", powerSwitch0.getCurrentAndFault(1));
         } else if (strcmp(buf, "fault") == 0) {
-            uart.printf("\r\nFault state: %d\r\n", powerSwitch0.getTempandFault());
+            uart.printf("\r\nFault state: %d\r\n", powerSwitch0.getTemperature());
         } else {
             uart.printf("\r\nInvalid command\r\n");
             for (auto& command : commands) {
