@@ -98,6 +98,27 @@ public:
         int16_t switch2Temp;
     };
 
+    union switchFaults_u {
+        uint16_t val;
+        struct {
+            // Power Switch 0
+            uint16_t battCurrentFault : 1;
+            uint16_t hibCurrentFault  : 1;
+
+            // Power Switch 1
+            uint16_t tmsCurrentFault  : 1;
+            uint16_t hudlCurrentFault : 1;
+
+            // Power Switch 2
+            uint16_t accCurrentFault  : 1;
+            uint16_t gubCurrentFault  : 1;
+
+            uint16_t switch0TempFault : 1;
+            uint16_t switch1TempFault : 1;
+            uint16_t switch2TempFault : 1;
+        };
+    };
+
     /** FSM State declaration */
     enum class State {
         INITIALIZATION = 0u,
@@ -136,6 +157,9 @@ private:
 
     /** Holds data for individual boards */
     switchData_u PowerSwitchState;
+
+    /** Holds faults for individual boards */
+    switchFaults_u PowerSwitchFaults;
 
     /** Tracks signal from VCU */
     uint16_t VCUBoardSig = 0;
@@ -176,7 +200,7 @@ private:
      * Have to know the size of the object dictionary for initialization
      * process.
      */
-    static constexpr uint8_t OBJECT_DICTIONARY_SIZE       = 56;
+    static constexpr uint8_t OBJECT_DICTIONARY_SIZE       = 57;
     CO_OBJ_T objectDictionary[OBJECT_DICTIONARY_SIZE + 1] = {
         MANDATORY_IDENTIFICATION_ENTRIES_1000_1014,
         HEARTBEAT_PRODUCER_1017(2000),
@@ -226,10 +250,11 @@ private:
         DATA_LINK_21XX(LINK_TPDO_NUMBER(0x00), 0x04, CO_TUNSIGNED16, &PowerSwitchState.hudlCurrent),
 
         // TPDO1 payload: Power Switch rest of Currents & vicor
-        DATA_LINK_START_KEY_21XX(LINK_TPDO_NUMBER(0x01), 0x03),
+        DATA_LINK_START_KEY_21XX(LINK_TPDO_NUMBER(0x01), 0x04),
         DATA_LINK_21XX(LINK_TPDO_NUMBER(0x01), 0x01, CO_TUNSIGNED16, &PowerSwitchState.accCurrent),
         DATA_LINK_21XX(LINK_TPDO_NUMBER(0x01), 0x02, CO_TUNSIGNED16, &PowerSwitchState.gubCurrent),
-        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x01), 0x03, CO_TUNSIGNED16, &vicorFT),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x01), 0x03, CO_TUNSIGNED16, &battPackCurrent),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x01), 0x04, CO_TUNSIGNED16, &PowerSwitchFaults),
 
         // TPDO2 payload: Temperature Data & board_en signals
         DATA_LINK_START_KEY_21XX(LINK_TPDO_NUMBER(0x02), 0x04),

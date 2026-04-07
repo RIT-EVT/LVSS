@@ -77,16 +77,38 @@ void LVSS::runningState() {
     PowerSwitchState.tmsCurrent  = powerSwitches[1]->getCurrentAndFault(1);
     PowerSwitchState.accCurrent  = powerSwitches[2]->getCurrentAndFault(1);
 
-    if (PowerSwitchState.battCurrent == -1 || PowerSwitchState.tmsCurrent == -1 || PowerSwitchState.accCurrent == -1) {
-        log::LOGGER.log(log::Logger::LogLevel::INFO, "Power Switch Error\r\n");
-        switchFaultStatus = INTMAX_MIN;
+    if (PowerSwitchState.battCurrent == INTMAX_MIN) {
+        PowerSwitchFaults.battCurrentFault = 1;
+        powerSwitches[0]->setLatch(TPS2HB35BQ::LATCHED);
+        powerSwitches[0]->setPowerSwitchStates(false
+            , false);
     }
 
+    if (PowerSwitchState.tmsCurrent == INTMAX_MIN) {
+        PowerSwitchFaults.tmsCurrentFault = 1;
+        powerSwitches[1]->setLatch(TPS2HB35BQ::LATCHED);
+        powerSwitches[1]->setPowerSwitchStates(false
+            , false);
+    }
+
+    if (PowerSwitchState.accCurrent == INTMAX_MIN) {
+        PowerSwitchFaults.accCurrentFault = 1;
+        powerSwitches[2]->setLatch(TPS2HB35BQ::LATCHED);
+        powerSwitches[2]->setPowerSwitchStates(false
+            , false);
+    }
+
+    log::LOGGER.log(log::Logger::LogLevel::INFO,
+        "Power Switch Channel 1 Current Fault Status\r\nBattery: %d\r\nTMS: %d\r\nAcc: %d\r\n",
+        PowerSwitchFaults.battCurrentFault,
+        PowerSwitchFaults.tmsCurrentFault,
+        PowerSwitchFaults.accCurrentFault);
+
     log::LOGGER.log(log::Logger::LogLevel::DEBUG,
-                    "Switch 0 Channel 1: %d\r\nSwitch 1 Channel 1: %d\r\nSwitch 2 Channel 1: %d\r\n",
-                    PowerSwitchState.battCurrent,
-                    PowerSwitchState.tmsCurrent,
-                    PowerSwitchState.accCurrent);
+    "Switch 0 Channel 1 Current: %d\r\nSwitch 1 Channel 1 Current: %d\r\nSwitch 2 Channel 1 Current: %d\r\n",
+    PowerSwitchState.battCurrent,
+    PowerSwitchState.tmsCurrent,
+    PowerSwitchState.accCurrent);
 
     time::wait(2); // Power switches require the ADC to wait a min of 165 micro seconds before sampling SNS pin again
 
@@ -94,26 +116,68 @@ void LVSS::runningState() {
     PowerSwitchState.hudlCurrent = powerSwitches[1]->getCurrentAndFault(2);
     PowerSwitchState.gubCurrent  = powerSwitches[2]->getCurrentAndFault(2);
 
-    if (PowerSwitchState.hibCurrent == -1 || PowerSwitchState.hudlCurrent == -1 || PowerSwitchState.gubCurrent == -1) {
-        log::LOGGER.log(log::Logger::LogLevel::INFO, "Power Switch Error\r\n");
-        switchFaultStatus = INTMAX_MIN;
+    if (PowerSwitchState.hibCurrent == INTMAX_MIN) {
+        PowerSwitchFaults.hibCurrentFault = 1;
+        powerSwitches[0]->setLatch(TPS2HB35BQ::LATCHED);
+        powerSwitches[0]->setPowerSwitchStates(false
+            , false);
     }
 
+    if (PowerSwitchState.hudlCurrent == INTMAX_MIN) {
+        PowerSwitchFaults.hudlCurrentFault = 1;
+        powerSwitches[1]->setLatch(TPS2HB35BQ::LATCHED);
+        powerSwitches[1]->setPowerSwitchStates(false
+            , false);
+    }
+
+    if (PowerSwitchState.gubCurrent == INTMAX_MIN) {
+        PowerSwitchFaults.gubCurrentFault = 1;
+        powerSwitches[2]->setLatch(TPS2HB35BQ::LATCHED);
+        powerSwitches[2]->setPowerSwitchStates(false
+            , false);
+    }
+
+    log::LOGGER.log(log::Logger::LogLevel::INFO,
+        "Power Switch Channel 2 Current Fault Status\r\nHIB: %d\r\nHUDL: %d\r\nGUB: %d\r\n", PowerSwitchFaults.hibCurrentFault,
+        PowerSwitchFaults.hudlCurrentFault,
+        PowerSwitchFaults.gubCurrentFault);
+
     log::LOGGER.log(log::Logger::LogLevel::DEBUG,
-                    "Switch 0 Channel 2: %d\r\nSwitch 1 Channel 2: %d\r\nSwitch 2 Channel 2: %d\r\n",
-                    PowerSwitchState.hibCurrent,
-                    PowerSwitchState.hudlCurrent,
-                    PowerSwitchState.gubCurrent);
+    "Switch 0 Channel 2 Current: %d\r\nSwitch 1 Channel 2 Current: %d\r\nSwitch 2 Channel 2 Current: %d\r\n",
+    PowerSwitchState.hibCurrent,
+    PowerSwitchState.hudlCurrent,
+    PowerSwitchState.gubCurrent);
 
     PowerSwitchState.switch0Temp = powerSwitches[0]->getTemperature();
     PowerSwitchState.switch1Temp = powerSwitches[1]->getTemperature();
     PowerSwitchState.switch2Temp = powerSwitches[2]->getTemperature();
 
-    if (PowerSwitchState.switch0Temp == -1 || PowerSwitchState.switch1Temp == -1
-        || PowerSwitchState.switch2Temp == -1) {
-        log::LOGGER.log(log::Logger::LogLevel::INFO, "Power Switch Error\r\n");
-        switchFaultStatus = INTMAX_MIN;
+    if (PowerSwitchState.switch0Temp == INTMAX_MIN) {
+        PowerSwitchFaults.switch0TempFault = 1;
+        powerSwitches[0]->setLatch(TPS2HB35BQ::LATCHED);
+        powerSwitches[0]->setPowerSwitchStates(false
+            , false);
     }
+
+    if (PowerSwitchState.switch1Temp == INTMAX_MIN) {
+        PowerSwitchFaults.switch1TempFault = 1;
+        powerSwitches[1]->setLatch(TPS2HB35BQ::LATCHED);
+        powerSwitches[1]->setPowerSwitchStates(false
+            , false);
+    }
+
+    if (PowerSwitchState.switch2Temp == INTMAX_MIN) {
+        PowerSwitchFaults.switch2TempFault = 1;
+        powerSwitches[2]->setLatch(TPS2HB35BQ::LATCHED);
+        powerSwitches[2]->setPowerSwitchStates(false
+            , false);
+    }
+
+    log::LOGGER.log(log::Logger::LogLevel::INFO,
+    "Power Switch Temperature Fault Status\r\nSwitch 0: %d\r\nSwitch 1: %d\r\nSwitch 2: %d\r\n",
+    PowerSwitchFaults.switch0TempFault,
+    PowerSwitchFaults.switch1TempFault,
+    PowerSwitchFaults.switch2TempFault);
 
     log::LOGGER.log(log::Logger::LogLevel::DEBUG,
                     "Switch 0 Temperature: %d\r\nSwitch 1 Temperature: %d\r\nSwitch 2 Temperature: %d\r\n",
@@ -121,6 +185,7 @@ void LVSS::runningState() {
                     PowerSwitchState.switch1Temp,
                     PowerSwitchState.switch2Temp);
 
-    log::LOGGER.log(log::Logger::LogLevel::DEBUG, "Vicor Current: %d\r\n", acs71240.readCurrent());
+    battPackCurrent = acs71240.readCurrent();
+    log::LOGGER.log(log::Logger::LogLevel::DEBUG, "Vicor Current: %d\r\n", battPackCurrent);
 }
 } // namespace LVSS

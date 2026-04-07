@@ -25,13 +25,13 @@ public:
      *
      * @return The current in mA
      */
-    int32_t readCurrent();
+    uint16_t readCurrent();
 
 private:
     /** ADC instance for getting input voltage */
-    int32_t voltIn = 3300; //millivolts
-    int32_t sensitivity = 44; //millivolts / amp
-    int32_t avgAdcCount = 1970; //Background Noise
+    int16_t voltIn = 3300; //millivolts
+    int16_t sensitivity = 44; //millivolts / amp
+    int16_t avgAdcCount = 1970; //Background Noise
     io::ADC& ADC;
 };
 

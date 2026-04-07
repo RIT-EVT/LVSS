@@ -15,7 +15,7 @@
 #include <LVSS.hpp>
 
 namespace io    = core::io;
-namespace DEV   = core::dev;
+namespace dev   = core::dev;
 namespace time  = core::time;
 namespace log   = core::log;
 namespace types = core::types;
@@ -64,9 +64,9 @@ int main() {
     io::GPIO& diagSelect1 = io::getGPIO<io::Pin::PC_15>(io::GPIO::Direction::OUTPUT); // diag select 1
     io::GPIO& diagSelect2 = io::getGPIO<io::Pin::PF_0>(io::GPIO::Direction::OUTPUT);  // diag select 2
 
-    io::ADC& lvssPowerSwitch0SenseOut = io::getADC<io::Pin::PC_0>();
-    io::ADC& lvssPowerSwitch1SenseOut = io::getADC<io::Pin::PC_1>();
-    io::ADC& lvssPowerSwitch2SenseOut = io::getADC<io::Pin::PC_2>();
+    io::ADC& lvssPowerSwitch0SenseOut = io::getADC<io::Pin::PC_1>();
+    io::ADC& lvssPowerSwitch1SenseOut = io::getADC<io::Pin::PC_2>();
+    io::ADC& lvssPowerSwitch2SenseOut = io::getADC<io::Pin::PC_0>();
 
     LVSS::TPS2HB35BQ powerSwitch0 = LVSS::TPS2HB35BQ(lvssPowerSwitch0Enable0,
                                                      lvssPowerSwitch0Enable1,

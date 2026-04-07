@@ -2,19 +2,19 @@
  * This is a basic sample to show the functionality of the LVSS power switches.
  */
 
-#include <EVT/io/CANopen.hpp>
-#include <EVT/io/GPIO.hpp>
-#include <EVT/io/UART.hpp>
-#include <EVT/io/pin.hpp>
-#include <EVT/manager.hpp>
-#include <EVT/utils/log.hpp>
+#include <core/io/CANopen.hpp>
+#include <core/io/GPIO.hpp>
+#include <core/io/UART.hpp>
+#include <core/io/pin.hpp>
+#include <core/manager.hpp>
+#include <core/utils/log.hpp>
 #include <LVSS.hpp>
 
-namespace IO    = EVT::core::IO;
-namespace DEV   = EVT::core::DEV;
-namespace time  = EVT::core::time;
-namespace log   = EVT::core::log;
-namespace types = EVT::core::types;
+namespace io    = core::io;
+namespace dev   = core::dev;
+namespace time  = core::time;
+namespace log   = core::log;
+namespace types = core::types;
 using namespace std;
 
 /**
@@ -28,8 +28,8 @@ using namespace std;
  * @param message[in] The passed in CAN message that was read.
  */
 // create a can interrupt handler
-void canInterrupt(IO::CANMessage& message, void* priv) {
-    auto* queue = reinterpret_cast<types::FixedQueue<CANOPEN_QUEUE_SIZE, IO::CANMessage>*>(priv);
+void canInterrupt(io::CANMessage& message, void* priv) {
+    auto* queue = reinterpret_cast<types::FixedQueue<CANOPEN_QUEUE_SIZE, io::CANMessage>*>(priv);
 
     if (queue != nullptr) {
         queue->append(message);
@@ -38,27 +38,27 @@ void canInterrupt(IO::CANMessage& message, void* priv) {
 
 int main() {
     // Initialize system
-    EVT::core::platform::init();
+    core::platform::init();
 
     // Setup UART
-    IO::UART& uart = IO::getUART<IO::Pin::UART_TX, IO::Pin::UART_RX>(9600, true);
+    io::UART& uart = io::getUART<io::Pin::UART_TX, io::Pin::UART_RX>(9600);
     log::LOGGER.setUART(&uart);
     log::LOGGER.setLogLevel(log::Logger::LogLevel::INFO);
 
     // PC14 is a LSE output, so we can't use it as a GPIO, so for testing we'll use PB_7
-    IO::GPIO& lvssPowerSwitch0Enable1 = IO::getGPIO<IO::Pin::PB_7>(IO::GPIO::Direction::OUTPUT);
-    IO::GPIO& lvssPowerSwitch0Enable2 = IO::getGPIO<IO::Pin::PD_2>(IO::GPIO::Direction::OUTPUT);
-    IO::GPIO& lvssPowerSwitch0Latch   = IO::getGPIO<IO::Pin::PC_10>(IO::GPIO::Direction::OUTPUT);
+    io::GPIO& lvssPowerSwitch0Enable1 = io::getGPIO<io::Pin::PB_7>(io::GPIO::Direction::OUTPUT);
+    io::GPIO& lvssPowerSwitch0Enable2 = io::getGPIO<io::Pin::PD_2>(io::GPIO::Direction::OUTPUT);
+    io::GPIO& lvssPowerSwitch0Latch   = io::getGPIO<io::Pin::PC_10>(io::GPIO::Direction::OUTPUT);
 
-    IO::GPIO& diagEnable = IO::getGPIO<IO::Pin::PC_13>(IO::GPIO::Direction::OUTPUT); // diag enable
+    io::GPIO& diagEnable = io::getGPIO<io::Pin::PC_13>(io::GPIO::Direction::OUTPUT); // diag enable
 
     // PC15 is ALSO a LSE output, so we can't use it as a GPIO, so for testing we'll use PC_3
-    IO::GPIO& diagSelect1 = IO::getGPIO<IO::Pin::PC_3>(IO::GPIO::Direction::OUTPUT); // diag select 1
+    io::GPIO& diagSelect1 = io::getGPIO<io::Pin::PC_3>(io::GPIO::Direction::OUTPUT); // diag select 1
 
     // PF_0 is a HSE, or high speed clock output so we use PC_4 instead
-    IO::GPIO& diagSelect2 = IO::getGPIO<IO::Pin::PC_4>(IO::GPIO::Direction::OUTPUT); // diag select 2
+    io::GPIO& diagSelect2 = io::getGPIO<io::Pin::PC_4>(io::GPIO::Direction::OUTPUT); // diag select 2
 
-    IO::ADC& lvssPowerSwitch0SenseOut = IO::getADC<IO::Pin::PC_0>();
+    io::ADC& lvssPowerSwitch0SenseOut = io::getADC<io::Pin::PC_0>();
 
     LVSS::TPS2HB35BQ powerSwitch0 = LVSS::TPS2HB35BQ(lvssPowerSwitch0Enable1,
                                                      lvssPowerSwitch0Enable2,
