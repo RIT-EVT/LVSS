@@ -8,10 +8,10 @@ uint16_t ACS71240::readCurrent() {
     // Gets adcCounts from adc
     int16_t adcCounts = ADC.readRaw();
 
-    //(((adcCounts - average adc counts) * inputVoltage) / (sensitivity * 2^12)/100)
-    int16_t current = (((adcCounts - avgAdcCount) * voltIn) / (sensitivity << 12)/100);
+    // (((adcCounts - average adc counts) * 3.3) / (4096 * 0.044)) * 1000
+    int16_t rawCurrent = (((adcCounts - avgAdcCount) * adcVoltage) / scaledCurrent);
 
-    return current;
+    return rawCurrent;
 }
 
 } // namespace LVSS

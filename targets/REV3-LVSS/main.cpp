@@ -30,7 +30,6 @@ namespace types = core::types;
  *
  * @param message[in] The passed in CAN message that was read.
  */
-// create a can interrupt handler
 void canInterrupt(io::CANMessage& message, void* priv) {
     auto* queue = reinterpret_cast<types::FixedQueue<CANOPEN_QUEUE_SIZE, io::CANMessage>*>(priv);
 
@@ -38,6 +37,26 @@ void canInterrupt(io::CANMessage& message, void* priv) {
         queue->append(message);
     }
 }
+
+io::GPIO& lvssPowerSwitch0Enable0 = io::getGPIO<io::Pin::PC_14>(io::GPIO::Direction::OUTPUT); // hib
+io::GPIO& lvssPowerSwitch0Enable1 = io::getGPIO<io::Pin::PD_2>(io::GPIO::Direction::OUTPUT);  // battery
+io::GPIO& lvssPowerSwitch0Latch   = io::getGPIO<io::Pin::PC_10>(io::GPIO::Direction::OUTPUT); // latch
+
+io::GPIO& lvssPowerSwitch1Enable0 = io::getGPIO<io::Pin::PF_1>(io::GPIO::Direction::OUTPUT); // hudl
+io::GPIO& lvssPowerSwitch1Enable1 = io::getGPIO<io::Pin::PA_0>(io::GPIO::Direction::OUTPUT); // tms
+io::GPIO& lvssPowerSwitch1Latch   = io::getGPIO<io::Pin::PC_3>(io::GPIO::Direction::OUTPUT); // latch
+
+io::GPIO& lvssPowerSwitch2Enable0 = io::getGPIO<io::Pin::PA_1>(io::GPIO::Direction::OUTPUT);  // gub
+io::GPIO& lvssPowerSwitch2Enable1 = io::getGPIO<io::Pin::PC_8>(io::GPIO::Direction::OUTPUT);  // acc
+io::GPIO& lvssPowerSwitch2Latch   = io::getGPIO<io::Pin::PB_14>(io::GPIO::Direction::OUTPUT); // latch
+
+io::GPIO& diagEnable  = io::getGPIO<io::Pin::PC_13>(io::GPIO::Direction::OUTPUT); // diag enable
+io::GPIO& diagSelect1 = io::getGPIO<io::Pin::PC_15>(io::GPIO::Direction::OUTPUT); // diag select 1
+io::GPIO& diagSelect2 = io::getGPIO<io::Pin::PF_0>(io::GPIO::Direction::OUTPUT);  // diag select 2
+
+io::ADC& lvssPowerSwitch0SenseOut = io::getADC<io::Pin::PC_1>();
+io::ADC& lvssPowerSwitch1SenseOut = io::getADC<io::Pin::PC_2>();
+io::ADC& lvssPowerSwitch2SenseOut = io::getADC<io::Pin::PC_0>();
 
 int main() {
     // Initialize system
@@ -47,26 +66,6 @@ int main() {
     io::UART& uart = io::getUART<io::Pin::UART_TX, io::Pin::UART_RX>(9600);
     log::LOGGER.setUART(&uart);
     log::LOGGER.setLogLevel(log::Logger::LogLevel::DEBUG);
-
-    io::GPIO& lvssPowerSwitch0Enable0 = io::getGPIO<io::Pin::PC_14>(io::GPIO::Direction::OUTPUT); // hib
-    io::GPIO& lvssPowerSwitch0Enable1 = io::getGPIO<io::Pin::PD_2>(io::GPIO::Direction::OUTPUT);  // battery
-    io::GPIO& lvssPowerSwitch0Latch   = io::getGPIO<io::Pin::PC_10>(io::GPIO::Direction::OUTPUT); // latch
-
-    io::GPIO& lvssPowerSwitch1Enable0 = io::getGPIO<io::Pin::PF_1>(io::GPIO::Direction::OUTPUT); // hudl
-    io::GPIO& lvssPowerSwitch1Enable1 = io::getGPIO<io::Pin::PA_0>(io::GPIO::Direction::OUTPUT); // tms
-    io::GPIO& lvssPowerSwitch1Latch   = io::getGPIO<io::Pin::PC_3>(io::GPIO::Direction::OUTPUT); // latch
-
-    io::GPIO& lvssPowerSwitch2Enable0 = io::getGPIO<io::Pin::PA_1>(io::GPIO::Direction::OUTPUT);  // gub
-    io::GPIO& lvssPowerSwitch2Enable1 = io::getGPIO<io::Pin::PC_8>(io::GPIO::Direction::OUTPUT);  // acc
-    io::GPIO& lvssPowerSwitch2Latch   = io::getGPIO<io::Pin::PB_14>(io::GPIO::Direction::OUTPUT); // latch
-
-    io::GPIO& diagEnable  = io::getGPIO<io::Pin::PC_13>(io::GPIO::Direction::OUTPUT); // diag enable
-    io::GPIO& diagSelect1 = io::getGPIO<io::Pin::PC_15>(io::GPIO::Direction::OUTPUT); // diag select 1
-    io::GPIO& diagSelect2 = io::getGPIO<io::Pin::PF_0>(io::GPIO::Direction::OUTPUT);  // diag select 2
-
-    io::ADC& lvssPowerSwitch0SenseOut = io::getADC<io::Pin::PC_1>();
-    io::ADC& lvssPowerSwitch1SenseOut = io::getADC<io::Pin::PC_2>();
-    io::ADC& lvssPowerSwitch2SenseOut = io::getADC<io::Pin::PC_0>();
 
     LVSS::TPS2HB35BQ powerSwitch0 = LVSS::TPS2HB35BQ(lvssPowerSwitch0Enable0,
                                                      lvssPowerSwitch0Enable1,

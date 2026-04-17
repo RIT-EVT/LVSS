@@ -50,24 +50,24 @@ namespace time = core::time;
 namespace LVSS {
 
 static constexpr uint8_t POWER_SWITCHES_SIZE = 3;
-
 /**
  * This is the main board class for the LVSS.
  * Updates the power switch temperature, current, and fault values.
  */
 class LVSS : public CANDevice {
 public:
-    static constexpr uint8_t NODE_ID      = 1;
-    static constexpr uint8_t VCU_NODE_ID  = 0;
-    static constexpr uint8_t TPDO_NODE_ID = 1;
+    static constexpr uint8_t NODE_ID       = 1;
+    static constexpr uint8_t TPDO_NODE_ID  = 1;
+    static constexpr uint8_t VCU_NODE_ID   = 0;
+    static constexpr io::Pin vicorFaultPin = io::Pin::PB_4;
+    static constexpr io::Pin vicorSNS      = io::Pin::PA_4;
 
+    /** Vicor fault pin */
     io::GPIO& vicorFT;
-    static constexpr io::Pin vicorFaultPin   = io::Pin::PB_4;
-    static constexpr io::Pin vicorSNS        = io::Pin::PA_4;
     io::GPIO::State VICOR_FAULT_ACTIVE_STATE = io::GPIO::State::HIGH;
 
     /** Union bit field to hold a bit representing which boards are on/off */
-    union BoardPowerState_u {
+    typedef union {
         uint16_t val;
         struct {
             // Power Switch 0
@@ -81,11 +81,11 @@ public:
             // Power Switch 2
             uint8_t gub : 1;
             uint8_t acc : 1;
-        };
-    };
+        } __attribute__((packed));
+    } BoardPowerState_u;
 
     /** Struct to hold the data for individual boards */
-    union switchData_u {
+    typedef union {
         uint16_t battCurrent;
         uint16_t hibCurrent;
         uint16_t tmsCurrent;
@@ -96,9 +96,9 @@ public:
         int16_t switch0Temp;
         int16_t switch1Temp;
         int16_t switch2Temp;
-    };
+    } switchData_u;
 
-    union switchFaults_u {
+    typedef union {
         uint16_t val;
         struct {
             // Power Switch 0
@@ -110,14 +110,14 @@ public:
             uint16_t hudlCurrentFault : 1;
 
             // Power Switch 2
-            uint16_t accCurrentFault  : 1;
-            uint16_t gubCurrentFault  : 1;
+            uint16_t accCurrentFault : 1;
+            uint16_t gubCurrentFault : 1;
 
             uint16_t switch0TempFault : 1;
             uint16_t switch1TempFault : 1;
             uint16_t switch2TempFault : 1;
-        };
-    };
+        } __attribute__((packed));
+    } switchFaults_u;
 
     /** FSM State declaration */
     enum class State {
@@ -128,9 +128,9 @@ public:
     /**
      * Constructor for the LVSS class, takes a pointer to an array of power switches
      *
-     * @param powerSwitches an array of pointers to power switches
-     * @param vicorFT fault status pin of the vicor
-     * @param acs71240 vicor current sensing IC
+     * @param powerSwitches[in] an array of pointers to power switches
+     * @param vicorFT[in] fault status pin of the vicor
+     * @param acs71240[in] vicor current sensing IC
      */
     explicit LVSS(TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE], io::GPIO& vicorFT, ACS71240 acs71240);
 

@@ -87,7 +87,7 @@ uint32_t TPS2HB35BQ::getCurrentAndFault(uint8_t channelSelect) {
     }
 
     /* volts = (ADC Counts * 3300 kilovolts) / 4096 */
-    uint32_t milliVolts = (counts * adcVoltage) / 4096; // Turn ADC counts into milli volts
+    uint32_t milliVolts = (counts * adcVoltage) / adcResolution; // Turn ADC counts into milli volts
     uint32_t microAmps  = (milliVolts * 1000) / rsns;   // Turn milli volts into micro amps
 
     /* If current is greater than the current limit latch the sns pin */
@@ -109,7 +109,7 @@ int32_t TPS2HB35BQ::getTemperature() {
         setLatch(LatchMode::LATCHED); // Latch power switches
     }
 
-    uint32_t milliVolts = (counts * adcVoltage) / 4096; // Turn ADC counts into milli volts
+    uint32_t milliVolts = (counts * adcVoltage) / adcResolution; // Turn ADC counts into milli volts
     int32_t microAmps   = (milliVolts * 1000) / rsns;   // Turn milli volts into micro amps
 
     /* ( Isns (mA) - 0.85 mA ) / (dIsnst/dT) + 25 celsius */
