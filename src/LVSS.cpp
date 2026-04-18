@@ -79,36 +79,37 @@ void LVSS::runningState() {
 
     if (PowerSwitchState.battCurrent == INTMAX_MIN) {
         PowerSwitchFaults.battCurrentFault = 1;
-        boardEN.batt = 0;
+        boardEN.batt                       = 0;
         powerSwitches[0]->setLatch(TPS2HB35BQ::LATCHED);
         powerSwitches[0]->setPowerSwitchStates(boardEN.batt, boardEN.hib);
     }
 
     if (PowerSwitchState.tmsCurrent == INTMAX_MIN) {
         PowerSwitchFaults.tmsCurrentFault = 1;
-        boardEN.tms = 0;
+        boardEN.tms                       = 0;
         powerSwitches[1]->setLatch(TPS2HB35BQ::LATCHED);
         powerSwitches[1]->setPowerSwitchStates(boardEN.tms, boardEN.hudl);
     }
 
     if (PowerSwitchState.accCurrent == INTMAX_MIN) {
         PowerSwitchFaults.accCurrentFault = 1;
-        boardEN.acc = 0;
+        boardEN.acc                       = 0;
         powerSwitches[2]->setLatch(TPS2HB35BQ::LATCHED);
         powerSwitches[2]->setPowerSwitchStates(boardEN.acc, boardEN.gub);
     }
 
     log::LOGGER.log(log::Logger::LogLevel::INFO,
-        "Power Switch Channel 1 Current Fault Status\r\nBattery: %d\r\nTMS: %d\r\nAcc: %d\r\n",
-        PowerSwitchFaults.battCurrentFault,
-        PowerSwitchFaults.tmsCurrentFault,
-        PowerSwitchFaults.accCurrentFault);
+                    "Power Switch Channel 1 Current Fault Status\r\nBattery: %d\r\nTMS: %d\r\nAcc: %d\r\n",
+                    PowerSwitchFaults.battCurrentFault,
+                    PowerSwitchFaults.tmsCurrentFault,
+                    PowerSwitchFaults.accCurrentFault);
 
-    log::LOGGER.log(log::Logger::LogLevel::DEBUG,
-    "Switch 0 Channel 1 Current: %d\r\nSwitch 1 Channel 1 Current: %d\r\nSwitch 2 Channel 1 Current: %d\r\n",
-    PowerSwitchState.battCurrent,
-    PowerSwitchState.tmsCurrent,
-    PowerSwitchState.accCurrent);
+    log::LOGGER.log(
+        log::Logger::LogLevel::DEBUG,
+        "Switch 0 Channel 1 Current: %d\r\nSwitch 1 Channel 1 Current: %d\r\nSwitch 2 Channel 1 Current: %d\r\n",
+        PowerSwitchState.battCurrent,
+        PowerSwitchState.tmsCurrent,
+        PowerSwitchState.accCurrent);
 
     time::wait(2); // Power switches require the ADC to wait a min of 165 micro seconds before sampling SNS pin again
 
@@ -118,7 +119,7 @@ void LVSS::runningState() {
 
     if (PowerSwitchState.hibCurrent == INTMAX_MIN) {
         PowerSwitchFaults.hibCurrentFault = 1;
-        boardEN.hib = 0;
+        boardEN.hib                       = 0;
         powerSwitches[0]->setLatch(TPS2HB35BQ::LATCHED);
         powerSwitches[0]->setPowerSwitchStates(boardEN.batt, boardEN.hib);
     }
@@ -132,21 +133,23 @@ void LVSS::runningState() {
 
     if (PowerSwitchState.gubCurrent == INTMAX_MIN) {
         PowerSwitchFaults.gubCurrentFault = 1;
-        boardEN.gub = 0;
+        boardEN.gub                       = 0;
         powerSwitches[2]->setLatch(TPS2HB35BQ::LATCHED);
         powerSwitches[2]->setPowerSwitchStates(boardEN.acc, boardEN.gub);
     }
 
     log::LOGGER.log(log::Logger::LogLevel::INFO,
-        "Power Switch Channel 2 Current Fault Status\r\nHIB: %d\r\nHUDL: %d\r\nGUB: %d\r\n", PowerSwitchFaults.hibCurrentFault,
-        PowerSwitchFaults.hudlCurrentFault,
-        PowerSwitchFaults.gubCurrentFault);
+                    "Power Switch Channel 2 Current Fault Status\r\nHIB: %d\r\nHUDL: %d\r\nGUB: %d\r\n",
+                    PowerSwitchFaults.hibCurrentFault,
+                    PowerSwitchFaults.hudlCurrentFault,
+                    PowerSwitchFaults.gubCurrentFault);
 
-    log::LOGGER.log(log::Logger::LogLevel::DEBUG,
-    "Switch 0 Channel 2 Current: %d\r\nSwitch 1 Channel 2 Current: %d\r\nSwitch 2 Channel 2 Current: %d\r\n",
-    PowerSwitchState.hibCurrent,
-    PowerSwitchState.hudlCurrent,
-    PowerSwitchState.gubCurrent);
+    log::LOGGER.log(
+        log::Logger::LogLevel::DEBUG,
+        "Switch 0 Channel 2 Current: %d\r\nSwitch 1 Channel 2 Current: %d\r\nSwitch 2 Channel 2 Current: %d\r\n",
+        PowerSwitchState.hibCurrent,
+        PowerSwitchState.hudlCurrent,
+        PowerSwitchState.gubCurrent);
 
     PowerSwitchState.switch0Temp = powerSwitches[0]->getTemperature();
     PowerSwitchState.switch1Temp = powerSwitches[1]->getTemperature();
@@ -154,33 +157,33 @@ void LVSS::runningState() {
 
     if (PowerSwitchState.switch0Temp == INTMAX_MIN) {
         PowerSwitchFaults.switch0TempFault = 1;
-        boardEN.batt = 0;
-        boardEN.hib  = 0;
+        boardEN.batt                       = 0;
+        boardEN.hib                        = 0;
         powerSwitches[0]->setLatch(TPS2HB35BQ::LATCHED);
         powerSwitches[0]->setPowerSwitchStates(boardEN.batt, boardEN.hib);
     }
 
     if (PowerSwitchState.switch1Temp == INTMAX_MIN) {
         PowerSwitchFaults.switch1TempFault = 1;
-        boardEN.tms  = 0;
-        boardEN.hudl = 0;
+        boardEN.tms                        = 0;
+        boardEN.hudl                       = 0;
         powerSwitches[1]->setLatch(TPS2HB35BQ::LATCHED);
         powerSwitches[1]->setPowerSwitchStates(boardEN.tms, boardEN.hudl);
     }
 
     if (PowerSwitchState.switch2Temp == INTMAX_MIN) {
         PowerSwitchFaults.switch2TempFault = 1;
-        boardEN.gub = 0;
-        boardEN.acc = 0;
+        boardEN.gub                        = 0;
+        boardEN.acc                        = 0;
         powerSwitches[2]->setLatch(TPS2HB35BQ::LATCHED);
         powerSwitches[2]->setPowerSwitchStates(boardEN.acc, boardEN.gub);
     }
 
     log::LOGGER.log(log::Logger::LogLevel::INFO,
-    "Power Switch Temperature Fault Status\r\nSwitch 0: %d\r\nSwitch 1: %d\r\nSwitch 2: %d\r\n",
-    PowerSwitchFaults.switch0TempFault,
-    PowerSwitchFaults.switch1TempFault,
-    PowerSwitchFaults.switch2TempFault);
+                    "Power Switch Temperature Fault Status\r\nSwitch 0: %d\r\nSwitch 1: %d\r\nSwitch 2: %d\r\n",
+                    PowerSwitchFaults.switch0TempFault,
+                    PowerSwitchFaults.switch1TempFault,
+                    PowerSwitchFaults.switch2TempFault);
 
     log::LOGGER.log(log::Logger::LogLevel::DEBUG,
                     "Switch 0 Temperature: %d\r\nSwitch 1 Temperature: %d\r\nSwitch 2 Temperature: %d\r\n",

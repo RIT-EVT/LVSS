@@ -88,7 +88,7 @@ uint32_t TPS2HB35BQ::getCurrentAndFault(uint8_t channelSelect) {
 
     /* volts = (ADC Counts * 3300 kilovolts) / 4096 */
     uint32_t milliVolts = (counts * adcVoltage) / adcResolution; // Turn ADC counts into milli volts
-    uint32_t microAmps  = (milliVolts * 1000) / rsns;   // Turn milli volts into micro amps
+    uint32_t microAmps  = (milliVolts * 1000) / rsns;            // Turn milli volts into micro amps
 
     /* If current is greater than the current limit latch the sns pin */
     if (microAmps >= icl) {
@@ -110,10 +110,11 @@ int32_t TPS2HB35BQ::getTemperature() {
     }
 
     uint32_t milliVolts = (counts * adcVoltage) / adcResolution; // Turn ADC counts into milli volts
-    int32_t microAmps   = (milliVolts * 1000) / rsns;   // Turn milli volts into micro amps
+    int32_t microAmps   = (milliVolts * 1000) / rsns;            // Turn milli volts into micro amps
 
     /* ( Isns (mA) - 0.85 mA ) / (dIsnst/dT) + 25 celsius */
-    int32_t milliCelsius = (microAmps - 850) / dIsnst + resistanceOnJunctionTemp; // Returns temperature in milli celsius
+    int32_t milliCelsius =
+        (microAmps - 850) / dIsnst + resistanceOnJunctionTemp; // Returns temperature in milli celsius
 
     if (milliCelsius >= TemperatureLimit) {
         return INTMAX_MIN;

@@ -2,7 +2,7 @@
 
 namespace LVSS {
 
-ACS71240::ACS71240(io::ADC& adc0) : ADC(adc0)   {}
+ACS71240::ACS71240(io::ADC& adc0) : ADC(adc0) {}
 
 uint16_t ACS71240::readCurrent() {
     // Gets adcCounts from adc

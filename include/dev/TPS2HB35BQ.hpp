@@ -110,10 +110,10 @@ private:
     uint32_t icl             = 9000;   // Current Limit Value in milliamps
     int32_t TemperatureLimit = 135000; // Temperature Limit of 135 C in millicelsius
 
-    static constexpr uint32_t adcVoltage               = 3300;   // ADC Voltage
-    static constexpr uint32_t dIsnst                   = 11;     // Coefficient 0.011 mA/C in microamps
-    static constexpr uint32_t resistanceOnJunctionTemp = 25000;  // 25 C in millicelsius
-    static constexpr uint32_t adcResolution            = 4096;   // 25 C in millicelsius
+    static constexpr uint32_t adcVoltage               = 3300;  // ADC Voltage
+    static constexpr uint32_t dIsnst                   = 11;    // Coefficient 0.011 mA/C in microamps
+    static constexpr uint32_t resistanceOnJunctionTemp = 25000; // 25 C in millicelsius
+    static constexpr uint32_t adcResolution            = 4096;  // 25 C in millicelsius
 
     /**
      * Controls the diagnostic enable pin

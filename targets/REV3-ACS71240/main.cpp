@@ -3,12 +3,12 @@
  * LVSS using the ACS71240 IC.
  */
 
+#include <LVSS.hpp>
 #include <core/io/UART.hpp>
 #include <core/io/pin.hpp>
 #include <core/manager.hpp>
 #include <core/utils/log.hpp>
 #include <core/utils/time.hpp>
-#include <LVSS.hpp>
 
 namespace IO   = core::io;
 namespace DEV  = core::dev;

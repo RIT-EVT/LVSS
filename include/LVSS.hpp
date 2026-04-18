@@ -1,11 +1,11 @@
 #ifndef _LVSS_
 #define _LVSS_
 
+#include <LVSS.hpp>
 #include <core/dev/LCD.hpp>
 #include <core/io/CANOpenMacros.hpp>
 #include <core/io/CANopen.hpp>
 #include <core/utils/log.hpp>
-#include <LVSS.hpp>
 #include <cstdio>
 #include <cstring>
 #include <dev/ACS71240.hpp>
