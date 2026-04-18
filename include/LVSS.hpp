@@ -200,7 +200,7 @@ private:
      * Have to know the size of the object dictionary for initialization
      * process.
      */
-    static constexpr uint8_t OBJECT_DICTIONARY_SIZE       = 57;
+    static constexpr uint8_t OBJECT_DICTIONARY_SIZE       = 64;
     CO_OBJ_T objectDictionary[OBJECT_DICTIONARY_SIZE + 1] = {
         MANDATORY_IDENTIFICATION_ENTRIES_1000_1014,
         HEARTBEAT_PRODUCER_1017(2000),
@@ -262,6 +262,18 @@ private:
         DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x02, CO_TUNSIGNED16, &PowerSwitchState.switch1Temp),
         DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x03, CO_TUNSIGNED16, &PowerSwitchState.switch2Temp),
         DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x04, CO_TUNSIGNED16, &boardEN),
+
+        /**
+         * Sets up the first RPDO to be an async trigger
+         * TPDO 0 of the VCU_NODE_ID
+         */
+        RECEIVE_PDO_SETTINGS_OBJECT_140X(0, 0, VCU_NODE_ID, RECEIVE_PDO_TRIGGER_ASYNC),
+
+        RECEIVE_PDO_MAPPING_START_KEY_16XX(0, 1),
+        RECEIVE_PDO_MAPPING_ENTRY_16XX(0, 1, PDO_MAPPING_UNSIGNED16),
+
+        DATA_LINK_START_KEY_21XX(LINK_RPDO_NUMBER(0), 1),
+        DATA_LINK_21XX(LINK_RPDO_NUMBER(0), 1, CO_TUNSIGNED16, &VCUBoardSig),
 
         CO_OBJ_DICT_ENDMARK,
     };
