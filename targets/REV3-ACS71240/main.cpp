@@ -3,21 +3,21 @@
  * LVSS using the ACS71240 IC.
  */
 
-#include <EVT/io/UART.hpp>
-#include <EVT/io/pin.hpp>
-#include <EVT/manager.hpp>
-#include <EVT/utils/log.hpp>
-#include <EVT/utils/time.hpp>
+#include <core/io/UART.hpp>
+#include <core/io/pin.hpp>
+#include <core/manager.hpp>
+#include <core/utils/log.hpp>
+#include <core/utils/time.hpp>
 #include <LVSS.hpp>
 
-namespace IO   = EVT::core::IO;
-namespace DEV  = EVT::core::DEV;
-namespace time = EVT::core::time;
-namespace log  = EVT::core::log;
+namespace IO   = core::io;
+namespace DEV  = core::dev;
+namespace time = core::time;
+namespace log  = core::log;
 
 int main() {
     // Initialize system
-    EVT::core::platform::init();
+    core::platform::init();
 
     // Setup UART
     IO::UART& uart = IO::getUART<IO::Pin::UART_TX, IO::Pin::UART_RX>(9600);
