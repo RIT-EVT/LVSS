@@ -8,8 +8,8 @@
 
 #include <core/io/CANopen.hpp>
 #include <core/io/GPIO.hpp>
-#include <core/io/pin.hpp>
 #include <core/io/UART.hpp>
+#include <core/io/pin.hpp>
 #include <core/manager.hpp>
 #include <core/utils/log.hpp>
 

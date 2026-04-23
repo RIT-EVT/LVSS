@@ -3,8 +3,8 @@
  * LVSS using the ACS71240 IC.
  */
 
-#include <core/io/pin.hpp>
 #include <core/io/UART.hpp>
+#include <core/io/pin.hpp>
 #include <core/manager.hpp>
 #include <core/utils/log.hpp>
 #include <core/utils/time.hpp>

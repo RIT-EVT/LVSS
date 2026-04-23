@@ -6,8 +6,8 @@
 #include <cstring>
 
 #include <core/dev/LCD.hpp>
-#include <core/io/CANopen.hpp>
 #include <core/io/CANOpenMacros.hpp>
+#include <core/io/CANopen.hpp>
 #include <core/utils/log.hpp>
 
 #include <dev/ACS71240.hpp>
