@@ -65,6 +65,7 @@ public:
     /**
      * Get the current of the power switch.
      * A fault is detected if the current is somewhere between 4 and 5.3 mA.
+     * If a fault is detected an INTMAX_MIN is returned
      *
      * @param channelSelect The channel to sense the current from
      * @return The current of the power switch in milli amps
@@ -123,7 +124,7 @@ private:
     void setDiagStateEnabled(bool state);
 
     /**
-     * Read the sense out of the power switch
+     * Read the sense out (raw ADC value) of the power switch
      *
      * @return senseOut The sense out value
      */

@@ -2,46 +2,16 @@
 #define _LVSS_
 
 #include <LVSS.hpp>
-#include <core/dev/LCD.hpp>
-#include <core/io/CANOpenMacros.hpp>
-#include <core/io/CANopen.hpp>
-#include <core/utils/log.hpp>
-#include <cstdio>
+
 #include <cstring>
+
+#include <core/dev/LCD.hpp>
+#include <core/io/CANopen.hpp>
+#include <core/io/CANOpenMacros.hpp>
+#include <core/utils/log.hpp>
+
 #include <dev/ACS71240.hpp>
 #include <dev/TPS2HB35BQ.hpp>
-
-// Clang was removed because it adds unnecessary tabs in front of the following macros.
-// clang-format off
-//TODO: REMOVE ONCE SDOs ARE IN EVT-CORE!!!!
-//Temporary fix for CAN SDO server to process requests!!!!
-#define SDO_CONFIGURATION_1200                  \
-{                                               \
-/* Communication Object SDO Server */           \
-.Key  = CO_KEY(0x1200, 0x00, CO_OBJ_D___R_),    \
-.Type = CO_TUNSIGNED32,                         \
-.Data = (CO_DATA) 0x02,                         \
-},                                              \
-{                                               \
-/* SDO Server Request COBID */                  \
-.Key  = CO_KEY(0x1200, 0x01, CO_OBJ_DN__R_),    \
-.Type = CO_TUNSIGNED32,                         \
-.Data = (CO_DATA) CO_COBID_SDO_REQUEST(),       \
-},                                              \
-{ /* SDO Server Response COBID */               \
-.Key  = CO_KEY(0x1200, 0x02, CO_OBJ_DN__R_),    \
-.Type = CO_TUNSIGNED32,                         \
-.Data = (CO_DATA) CO_COBID_SDO_RESPONSE(),      \
-}
-//TODO: REMOVE ONCE RPDO FIX IS IN EVT-CORE!!!!
-//Temporary fix for RPDOs being mapped to the same data as TPDOs!!!!
-#define RECEIVE_PDO_MAPPING_ENTRY_16XX(RPDO_NUMBER, SUB_INDEX, DATA_SIZE)     \
-{                                                                             \
-.Key  = CO_KEY(0x1600 + RPDO_NUMBER, SUB_INDEX, CO_OBJ_D___R_),               \
-.Type = CO_TUNSIGNED32,                                                       \
-.Data = (CO_DATA) CO_LINK(0x2200 + RPDO_NUMBER, 0x00 + SUB_INDEX, DATA_SIZE), \
-}
-// clang-format on
 
 namespace io   = core::io;
 namespace dev  = core::dev;
@@ -56,16 +26,6 @@ static constexpr uint8_t POWER_SWITCHES_SIZE = 3;
  */
 class LVSS : public CANDevice {
 public:
-    static constexpr uint8_t NODE_ID       = 1;
-    static constexpr uint8_t TPDO_NODE_ID  = 1;
-    static constexpr uint8_t VCU_NODE_ID   = 0;
-    static constexpr io::Pin vicorFaultPin = io::Pin::PB_4;
-    static constexpr io::Pin vicorSNS      = io::Pin::PA_4;
-
-    /** Vicor fault pin */
-    io::GPIO& vicorFT;
-    io::GPIO::State VICOR_FAULT_ACTIVE_STATE = io::GPIO::State::HIGH;
-
     /** Union bit field to hold a bit representing which boards are on/off */
     typedef union {
         uint16_t val;
@@ -82,10 +42,10 @@ public:
             uint8_t gub : 1;
             uint8_t acc : 1;
         } __attribute__((packed));
-    } BoardPowerState_u;
+    } BoardPowerState_t;
 
     /** Struct to hold the data for individual boards */
-    typedef union {
+    typedef struct {
         uint16_t battCurrent;
         uint16_t hibCurrent;
         uint16_t tmsCurrent;
@@ -96,7 +56,7 @@ public:
         int16_t switch0Temp;
         int16_t switch1Temp;
         int16_t switch2Temp;
-    } switchData_u;
+    } switchData_t;
 
     typedef union {
         uint16_t val;
@@ -117,13 +77,23 @@ public:
             uint16_t switch1TempFault : 1;
             uint16_t switch2TempFault : 1;
         } __attribute__((packed));
-    } switchFaults_u;
+    } switchFaults_t;
 
     /** FSM State declaration */
     enum class State {
         INITIALIZATION = 0u,
         RUNNING        = 1u,
     };
+
+    static constexpr uint8_t NODE_ID         = 1;
+    static constexpr uint8_t TPDO_NODE_ID    = 1;
+    static constexpr uint8_t VCU_NODE_ID     = 0;
+    static constexpr io::Pin VICOR_FAULT_PIN = io::Pin::PB_4;
+    static constexpr io::Pin VICOR_SNS_PIN   = io::Pin::PA_4;
+
+    /** Vicor fault pin */
+    io::GPIO& vicorFT;
+    io::GPIO::State VICOR_FAULT_ACTIVE_STATE = io::GPIO::State::HIGH;
 
     /**
      * Constructor for the LVSS class, takes a pointer to an array of power switches
@@ -150,16 +120,16 @@ private:
     TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE]{};
 
     /** Holds the value of each board to enable/disable */
-    BoardPowerState_u boardEN;
+    BoardPowerState_t boardEN;
 
     /** Vicor Current */
     ACS71240 acs71240;
 
     /** Holds data for individual boards */
-    switchData_u PowerSwitchState;
+    switchData_t PowerSwitchState;
 
     /** Holds faults for individual boards */
-    switchFaults_u PowerSwitchFaults;
+    switchFaults_t PowerSwitchFaults;
 
     /** Tracks signal from VCU */
     uint16_t VCUBoardSig = 0;
@@ -206,6 +176,15 @@ private:
         HEARTBEAT_PRODUCER_1017(2000),
         IDENTITY_OBJECT_1018,
         SDO_CONFIGURATION_1200,
+
+        /**
+         * Sets up the first RPDO to be an async trigger
+         * TPDO 0 of the VCU_NODE_ID
+         */
+        RECEIVE_PDO_SETTINGS_OBJECT_140X(0, 0, VCU_NODE_ID, RECEIVE_PDO_TRIGGER_ASYNC),
+
+        RECEIVE_PDO_MAPPING_START_KEY_16XX(0, 1),
+        RECEIVE_PDO_MAPPING_ENTRY_16XX(0, 1, PDO_MAPPING_UNSIGNED16),
 
         TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x00, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 1000),
         TRANSMIT_PDO_SETTINGS_OBJECT_18XX(0x01, TRANSMIT_PDO_TRIGGER_TIMER, TRANSMIT_PDO_INHIBIT_TIME_DISABLE, 1000),
@@ -262,15 +241,6 @@ private:
         DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x02, CO_TUNSIGNED16, &PowerSwitchState.switch1Temp),
         DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x03, CO_TUNSIGNED16, &PowerSwitchState.switch2Temp),
         DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x04, CO_TUNSIGNED16, &boardEN),
-
-        /**
-         * Sets up the first RPDO to be an async trigger
-         * TPDO 0 of the VCU_NODE_ID
-         */
-        RECEIVE_PDO_SETTINGS_OBJECT_140X(0, 0, VCU_NODE_ID, RECEIVE_PDO_TRIGGER_ASYNC),
-
-        RECEIVE_PDO_MAPPING_START_KEY_16XX(0, 1),
-        RECEIVE_PDO_MAPPING_ENTRY_16XX(0, 1, PDO_MAPPING_UNSIGNED16),
 
         DATA_LINK_START_KEY_21XX(LINK_RPDO_NUMBER(0), 1),
         DATA_LINK_21XX(LINK_RPDO_NUMBER(0), 1, CO_TUNSIGNED16, &VCUBoardSig),

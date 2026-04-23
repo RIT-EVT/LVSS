@@ -2,13 +2,14 @@
  * This is a basic sample to show the functionality of the LVSS power switches.
  */
 
-#include <LVSS.hpp>
 #include <core/io/CANopen.hpp>
 #include <core/io/GPIO.hpp>
-#include <core/io/UART.hpp>
 #include <core/io/pin.hpp>
+#include <core/io/UART.hpp>
 #include <core/manager.hpp>
 #include <core/utils/log.hpp>
+
+#include <LVSS.hpp>
 
 namespace io    = core::io;
 namespace dev   = core::dev;

@@ -43,12 +43,15 @@ void LVSS::initState() {
 
     VICOR_FAULT_ACTIVE_STATE = vicorFT.readPin();
 
+    // When the Vicor starts, after a certain amount of time if the Vicor has not exited a certain state then it has
+    // most likely entered a fault state. This information can be found on pgae 8 of the Vicor datasheet.
     if (time::millis() >= 101 && VICOR_FAULT_ACTIVE_STATE == io::GPIO::State::LOW) {
         state      = State::RUNNING;
         isNewState = true;
     }
 }
 
+// TODO: Refactor this method to remove repetitive code.
 void LVSS::runningState() {
     /* Check if it is a new state */
     if (isNewState) {

@@ -6,13 +6,14 @@
  * temperature, and fault status for each board and Vicor.
  */
 
-#include <LVSS.hpp>
 #include <core/io/CANopen.hpp>
 #include <core/io/GPIO.hpp>
-#include <core/io/UART.hpp>
 #include <core/io/pin.hpp>
+#include <core/io/UART.hpp>
 #include <core/manager.hpp>
 #include <core/utils/log.hpp>
+
+#include <LVSS.hpp>
 
 namespace io    = core::io;
 namespace dev   = core::dev;
@@ -130,7 +131,7 @@ int main() {
     io::initializeCANopenDriver(&canOpenQueue, &can, &timer, &canStackDriver, &nvmDriver, &timerDriver, &canDriver);
 
     // Get vicor fault signal
-    io::GPIO& vicorFT = io::getGPIO<LVSS::LVSS::vicorFaultPin>(io::GPIO::Direction::INPUT);
+    io::GPIO& vicorFT = io::getGPIO<LVSS::LVSS::VICOR_FAULT_PIN>(io::GPIO::Direction::INPUT);
 
     // setup ADC
     io::ADC& adc0 = io::getADC<io::Pin::PA_4>();

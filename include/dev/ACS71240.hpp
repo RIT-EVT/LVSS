@@ -30,10 +30,10 @@ public:
 
 private:
     /** ADC instance for getting input voltage */
-    int16_t adcVoltage    = 3300; // ADC voltage in millivolts
-    int16_t sensitivity   = 44;   // millivolts / amp
-    int16_t scaledCurrent = 180;  // Sensitivity multiplied by ADC resolution (4096 * 0.044)
-    int16_t avgAdcCount   = 1970; // Background Noise
+    static constexpr int16_t adcVoltage    = 3300; // ADC voltage in millivolts
+    static constexpr int16_t sensitivity   = 44;   // millivolts / amp
+    static constexpr int16_t scaledCurrent = 180;  // Sensitivity multiplied by ADC resolution (4096 * 0.044)
+    static constexpr int16_t avgAdcCount   = 1970; // Background Noise
     io::ADC& ADC;
 };
 
