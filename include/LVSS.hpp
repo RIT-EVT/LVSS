@@ -86,7 +86,6 @@ public:
     };
 
     static constexpr uint8_t NODE_ID         = 1;
-    static constexpr uint8_t TPDO_NODE_ID    = 1;
     static constexpr uint8_t VCU_NODE_ID     = 0;
     static constexpr io::Pin VICOR_FAULT_PIN = io::Pin::PB_4;
     static constexpr io::Pin VICOR_SNS_PIN   = io::Pin::PA_4;

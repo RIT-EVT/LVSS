@@ -109,7 +109,8 @@ void LVSS::runningState() {
 
     log::LOGGER.log(
         log::Logger::LogLevel::DEBUG,
-        "Switch 0 Channel 1 Current: %d\r\nSwitch 1 Channel 1 Current: %d\r\nSwitch 2 Channel 1 Current: %d\r\n",
+        "Switch 0 Channel 1 Current: %d microAmps\r\nSwitch 1 Channel 1 Current: %d microAmps\r\nSwitch 2 Channel 1 Current:"
+        " %d microAmps\r\n",
         PowerSwitchState.battCurrent,
         PowerSwitchState.tmsCurrent,
         PowerSwitchState.accCurrent);
@@ -149,7 +150,7 @@ void LVSS::runningState() {
 
     log::LOGGER.log(
         log::Logger::LogLevel::DEBUG,
-        "Switch 0 Channel 2 Current: %d\r\nSwitch 1 Channel 2 Current: %d\r\nSwitch 2 Channel 2 Current: %d\r\n",
+        "Switch 0 Channel 2 Current: %d microAmps\r\nSwitch 1 Channel 2 Current: %d microAmps\r\nSwitch 2 Channel 2 Current: %d microAmps\r\n",
         PowerSwitchState.hibCurrent,
         PowerSwitchState.hudlCurrent,
         PowerSwitchState.gubCurrent);
@@ -189,7 +190,8 @@ void LVSS::runningState() {
                     PowerSwitchFaults.switch2TempFault);
 
     log::LOGGER.log(log::Logger::LogLevel::DEBUG,
-                    "Switch 0 Temperature: %d\r\nSwitch 1 Temperature: %d\r\nSwitch 2 Temperature: %d\r\n",
+                    "Switch 0 Temperature: %d milliCelsius\r\nSwitch 1 Temperature: %d milliCelsius\r\nSwitch 2 Temperature: "
+                    "%d milliCelsius\r\n",
                     PowerSwitchState.switch0Temp,
                     PowerSwitchState.switch1Temp,
                     PowerSwitchState.switch2Temp);
