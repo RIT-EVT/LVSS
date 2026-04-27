@@ -107,13 +107,13 @@ void LVSS::runningState() {
                     PowerSwitchFaults.tmsCurrentFault,
                     PowerSwitchFaults.accCurrentFault);
 
-    log::LOGGER.log(
-        log::Logger::LogLevel::DEBUG,
-        "Switch 0 Channel 1 Current: %d microAmps\r\nSwitch 1 Channel 1 Current: %d microAmps\r\nSwitch 2 Channel 1 Current:"
-        " %d microAmps\r\n",
-        PowerSwitchState.battCurrent,
-        PowerSwitchState.tmsCurrent,
-        PowerSwitchState.accCurrent);
+    log::LOGGER.log(log::Logger::LogLevel::DEBUG,
+                    "Switch 0 Channel 1 Current: %d microAmps\r\nSwitch 1 Channel 1 Current: %d microAmps\r\nSwitch 2 "
+                    "Channel 1 Current:"
+                    " %d microAmps\r\n",
+                    PowerSwitchState.battCurrent,
+                    PowerSwitchState.tmsCurrent,
+                    PowerSwitchState.accCurrent);
 
     time::wait(2); // Power switches require the ADC to wait a min of 165 micro seconds before sampling SNS pin again
 
@@ -148,12 +148,12 @@ void LVSS::runningState() {
                     PowerSwitchFaults.hudlCurrentFault,
                     PowerSwitchFaults.gubCurrentFault);
 
-    log::LOGGER.log(
-        log::Logger::LogLevel::DEBUG,
-        "Switch 0 Channel 2 Current: %d microAmps\r\nSwitch 1 Channel 2 Current: %d microAmps\r\nSwitch 2 Channel 2 Current: %d microAmps\r\n",
-        PowerSwitchState.hibCurrent,
-        PowerSwitchState.hudlCurrent,
-        PowerSwitchState.gubCurrent);
+    log::LOGGER.log(log::Logger::LogLevel::DEBUG,
+                    "Switch 0 Channel 2 Current: %d microAmps\r\nSwitch 1 Channel 2 Current: %d microAmps\r\nSwitch 2 "
+                    "Channel 2 Current: %d microAmps\r\n",
+                    PowerSwitchState.hibCurrent,
+                    PowerSwitchState.hudlCurrent,
+                    PowerSwitchState.gubCurrent);
 
     PowerSwitchState.switch0Temp = powerSwitches[0]->getTemperature();
     PowerSwitchState.switch1Temp = powerSwitches[1]->getTemperature();
@@ -189,12 +189,13 @@ void LVSS::runningState() {
                     PowerSwitchFaults.switch1TempFault,
                     PowerSwitchFaults.switch2TempFault);
 
-    log::LOGGER.log(log::Logger::LogLevel::DEBUG,
-                    "Switch 0 Temperature: %d milliCelsius\r\nSwitch 1 Temperature: %d milliCelsius\r\nSwitch 2 Temperature: "
-                    "%d milliCelsius\r\n",
-                    PowerSwitchState.switch0Temp,
-                    PowerSwitchState.switch1Temp,
-                    PowerSwitchState.switch2Temp);
+    log::LOGGER.log(
+        log::Logger::LogLevel::DEBUG,
+        "Switch 0 Temperature: %d milliCelsius\r\nSwitch 1 Temperature: %d milliCelsius\r\nSwitch 2 Temperature: "
+        "%d milliCelsius\r\n",
+        PowerSwitchState.switch0Temp,
+        PowerSwitchState.switch1Temp,
+        PowerSwitchState.switch2Temp);
 
     battPackCurrent = acs71240.readCurrent();
     log::LOGGER.log(log::Logger::LogLevel::DEBUG, "Vicor Current: %d\r\n", battPackCurrent);
