@@ -73,7 +73,7 @@ void TPS2HB35BQ::setDiagnostics(DiagMode diag_mode) {
     }
 }
 
-uint32_t TPS2HB35BQ::getCurrentAndFault(uint8_t channelSelect) {
+uint16_t TPS2HB35BQ::getCurrentAndFault(uint8_t channelSelect) {
     if (channelSelect == 1) {
         setDiagnostics(DiagMode::CH1CURRENT); // Set diagnostic mode to sense current
     } else {
@@ -94,13 +94,13 @@ uint32_t TPS2HB35BQ::getCurrentAndFault(uint8_t channelSelect) {
     if (microAmps >= icl) {
         setDiagnostics(DiagMode::OFF);
         setLatch(LatchMode::LATCHED); // Latch power switches
-        return INTMAX_MIN;
+        return CURRENT_FAULT;
     }
 
-    return microAmps;
+    return static_cast<uint16_t>(microAmps);
 }
 
-int32_t TPS2HB35BQ::getTemperature() {
+int16_t TPS2HB35BQ::getTemperature() {
     setDiagnostics(DiagMode::TEMP); // Set diagnostic mode to sense temperature
     counts = readSenseOut();
 
@@ -110,17 +110,17 @@ int32_t TPS2HB35BQ::getTemperature() {
     }
 
     uint32_t milliVolts = (counts * adcVoltage) / adcResolution; // Turn ADC counts into milli volts
-    int32_t microAmps   = (milliVolts * 1000) / rsns;            // Turn milli volts into micro amps
+    int32_t microAmps   = (static_cast<int32_t>(milliVolts) * 1000) / rsns;            // Turn milli volts into micro amps
 
     /* ( Isns (mA) - 0.85 mA ) / (dIsnst/dT) + 25 celsius */
     int32_t milliCelsius =
         (microAmps - 850) / dIsnst + resistanceOnJunctionTemp; // Returns temperature in milli celsius
 
     if (milliCelsius >= TemperatureLimit) {
-        return INTMAX_MIN;
+        return TEMP_FAULT;
     }
 
-    return milliCelsius;
+    return static_cast<int16_t>(milliCelsius);
 }
 
 void TPS2HB35BQ::setLimits(uint32_t ohms, uint32_t ratio, uint32_t milliamps, int32_t millicelsius) {

@@ -54,6 +54,10 @@ public:
                            // no longer a fault
     };
 
+
+    static constexpr uint16_t CURRENT_FAULT = UINT16_MAX;
+    static constexpr int16_t TEMP_FAULT = INT16_MIN;
+
     /**
      * Sets the power switch channel output to high or low.
      *
@@ -64,20 +68,20 @@ public:
 
     /**
      * Get the current of the power switch.
-     * A fault is detected if the current is somewhere between 4 and 5.3 mA.
-     * If a fault is detected an INTMAX_MIN is returned
+     * A fault is detected if the current is somewhere between 4 and 5.3 mA. // todo: bro wtf 4 and 5.3 mA
+     * If a fault is detected an CURRENT_FAULT is returned
      *
      * @param channelSelect The channel to sense the current from
      * @return The current of the power switch in milli amps
      */
-    uint32_t getCurrentAndFault(uint8_t channelSelect);
+    uint16_t getCurrentAndFault(uint8_t channelSelect);
 
     /**
      * Get the temperature of the power switch.
      *
      * @return The temperature of the power switch in millicelcius
      */
-    int32_t getTemperature();
+    int16_t getTemperature();
 
     /**
      * Set the latch mode of the power switch.
@@ -106,14 +110,14 @@ private:
     io::ADC& senseOut;
 
     uint32_t counts          = 0;      // ADC Counts
-    uint32_t rsns            = 360;    // Resistor that sets the current limit
+    int32_t rsns            = 360;    // Resistor that sets the current limit
     uint32_t kcl             = 140;    // Current Limit Ratio
     uint32_t icl             = 9000;   // Current Limit Value in milliamps
     int32_t TemperatureLimit = 135000; // Temperature Limit of 135 C in millicelsius
 
     static constexpr uint32_t adcVoltage               = 3300;  // ADC Voltage
-    static constexpr uint32_t dIsnst                   = 11;    // Coefficient 0.011 mA/C in microamps
-    static constexpr uint32_t resistanceOnJunctionTemp = 25000; // 25 C in millicelsius
+    static constexpr uint16_t dIsnst                   = 11;    // Coefficient 0.011 mA/C in microamps
+    static constexpr uint16_t resistanceOnJunctionTemp = 25000; // 25 C in millicelsius
     static constexpr uint32_t adcResolution            = 4096;  // 25 C in millicelsius
 
     /**
