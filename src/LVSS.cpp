@@ -88,27 +88,27 @@ void LVSS::runningState() {
 
     if (PowerSwitchState.battCurrent == TPS2HB35BQ::CURRENT_FAULT) {
         PowerSwitchFaults.battCurrentFault = 1;
-        boardEN.batt                       = 0;
-        powerSwitches[0]->setLatch(TPS2HB35BQ::LATCHED);
-        powerSwitches[0]->setPowerSwitchStates(boardEN.batt, boardEN.hib);
+//        boardEN.batt                       = 0;
+//        powerSwitches[0]->setLatch(TPS2HB35BQ::LATCHED);
+//        powerSwitches[0]->setPowerSwitchStates(boardEN.batt, boardEN.hib);
     }
 
     PowerSwitchState.tmsCurrent  = powerSwitches[1]->getCurrent(TPS2HB35BQ::CH1);
 
     if (PowerSwitchState.tmsCurrent == TPS2HB35BQ::CURRENT_FAULT) {
         PowerSwitchFaults.tmsCurrentFault = 1;
-        boardEN.tms                       = 0;
-        powerSwitches[1]->setLatch(TPS2HB35BQ::LATCHED);
-        powerSwitches[1]->setPowerSwitchStates(boardEN.tms, boardEN.hudl);
+//        boardEN.tms                       = 0;
+//        powerSwitches[1]->setLatch(TPS2HB35BQ::LATCHED);
+//        powerSwitches[1]->setPowerSwitchStates(boardEN.tms, boardEN.hudl);
     }
 
     PowerSwitchState.accCurrent  = powerSwitches[2]->getCurrent(TPS2HB35BQ::CH1);
 
     if (PowerSwitchState.accCurrent == TPS2HB35BQ::CURRENT_FAULT) {
         PowerSwitchFaults.accCurrentFault = 1;
-        boardEN.acc                       = 0;
-        powerSwitches[2]->setLatch(TPS2HB35BQ::LATCHED);
-        powerSwitches[2]->setPowerSwitchStates(boardEN.acc, boardEN.gub);
+//        boardEN.acc                       = 0;
+//        powerSwitches[2]->setLatch(TPS2HB35BQ::LATCHED);
+//        powerSwitches[2]->setPowerSwitchStates(boardEN.acc, boardEN.gub);
     }
 
     log::LOGGER.log(log::Logger::LogLevel::INFO,
@@ -131,27 +131,27 @@ void LVSS::runningState() {
 
     if (PowerSwitchState.hibCurrent == TPS2HB35BQ::CURRENT_FAULT) {
         PowerSwitchFaults.hibCurrentFault = 1;
-        boardEN.hib                       = 0;
-        powerSwitches[0]->setLatch(TPS2HB35BQ::LATCHED);
-        powerSwitches[0]->setPowerSwitchStates(boardEN.batt, boardEN.hib);
+//        boardEN.hib                       = 0;
+//        powerSwitches[0]->setLatch(TPS2HB35BQ::LATCHED);
+//        powerSwitches[0]->setPowerSwitchStates(boardEN.batt, boardEN.hib);
     }
 
     PowerSwitchState.hudlCurrent = powerSwitches[1]->getCurrent(TPS2HB35BQ::CH2);
 
     if (PowerSwitchState.hudlCurrent == TPS2HB35BQ::CURRENT_FAULT) {
         PowerSwitchFaults.hudlCurrentFault = 1;
-        boardEN.hudl = 0;
-        powerSwitches[1]->setLatch(TPS2HB35BQ::LATCHED);
-        powerSwitches[1]->setPowerSwitchStates(boardEN.tms, boardEN.hudl);
+//        boardEN.hudl = 0;
+//        powerSwitches[1]->setLatch(TPS2HB35BQ::LATCHED);
+//        powerSwitches[1]->setPowerSwitchStates(boardEN.tms, boardEN.hudl);
     }
 
     PowerSwitchState.gubCurrent  = powerSwitches[2]->getCurrent(TPS2HB35BQ::CH2);
 
     if (PowerSwitchState.gubCurrent == TPS2HB35BQ::CURRENT_FAULT) {
         PowerSwitchFaults.gubCurrentFault = 1;
-        boardEN.gub                       = 0;
-        powerSwitches[2]->setLatch(TPS2HB35BQ::LATCHED);
-        powerSwitches[2]->setPowerSwitchStates(boardEN.acc, boardEN.gub);
+//        boardEN.gub                       = 0;
+//        powerSwitches[2]->setLatch(TPS2HB35BQ::LATCHED);
+//        powerSwitches[2]->setPowerSwitchStates(boardEN.acc, boardEN.gub);
     }
 
     log::LOGGER.log(log::Logger::LogLevel::INFO,
@@ -171,30 +171,30 @@ void LVSS::runningState() {
 
     if (PowerSwitchState.switch0Temp == TPS2HB35BQ::TEMP_FAULT) {
         PowerSwitchFaults.switch0TempFault = 1;
-        boardEN.batt                       = 0;
-        boardEN.hib                        = 0;
-        powerSwitches[0]->setLatch(TPS2HB35BQ::LATCHED);
-        powerSwitches[0]->setPowerSwitchStates(boardEN.batt, boardEN.hib);
+//        boardEN.batt                       = 0;
+//        boardEN.hib                        = 0;
+//        powerSwitches[0]->setLatch(TPS2HB35BQ::LATCHED);
+//        powerSwitches[0]->setPowerSwitchStates(boardEN.batt, boardEN.hib);
     }
 
     PowerSwitchState.switch1Temp = powerSwitches[1]->getTemperature();
 
     if (PowerSwitchState.switch1Temp == TPS2HB35BQ::TEMP_FAULT) {
         PowerSwitchFaults.switch1TempFault = 1;
-        boardEN.tms                        = 0;
-        boardEN.hudl                       = 0;
-        powerSwitches[1]->setLatch(TPS2HB35BQ::LATCHED);
-        powerSwitches[1]->setPowerSwitchStates(boardEN.tms, boardEN.hudl);
+//        boardEN.tms                        = 0;
+//        boardEN.hudl                       = 0;
+//        powerSwitches[1]->setLatch(TPS2HB35BQ::LATCHED);
+//        powerSwitches[1]->setPowerSwitchStates(boardEN.tms, boardEN.hudl);
     }
 
     PowerSwitchState.switch2Temp = powerSwitches[2]->getTemperature();
 
     if (PowerSwitchState.switch2Temp == TPS2HB35BQ::TEMP_FAULT) {
         PowerSwitchFaults.switch2TempFault = 1;
-        boardEN.gub                        = 0;
-        boardEN.acc                        = 0;
-        powerSwitches[2]->setLatch(TPS2HB35BQ::LATCHED);
-        powerSwitches[2]->setPowerSwitchStates(boardEN.acc, boardEN.gub);
+//        boardEN.gub                        = 0;
+//        boardEN.acc                        = 0;
+//        powerSwitches[2]->setLatch(TPS2HB35BQ::LATCHED);
+//        powerSwitches[2]->setPowerSwitchStates(boardEN.acc, boardEN.gub);
     }
 
     log::LOGGER.log(log::Logger::LogLevel::INFO,
