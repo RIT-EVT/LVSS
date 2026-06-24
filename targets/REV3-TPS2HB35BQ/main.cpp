@@ -147,7 +147,7 @@ int main() {
         } else if (strcmp(buf, "temp") == 0) {
             uart.printf("\r\ntemp: %d\r\n", powerSwitch0.getTemperature());
         } else if (strcmp(buf, "current") == 0) {
-            uart.printf("\r\nCurrent: %u\r\n", powerSwitch0.getCurrentAndFault(LVSS::TPS2HB35BQ::Channel::CH1));
+            uart.printf("\r\nCurrent: %u\r\n", powerSwitch0.getCurrent(LVSS::TPS2HB35BQ::Channel::CH1));
         } else {
             uart.printf("\r\nInvalid command\r\n");
             for (auto& command : commands) {
