@@ -10,6 +10,7 @@
 #include <core/utils/log.hpp>
 
 #include <LVSS.hpp>
+#include <dev/TPS2HB35BQ.hpp>
 
 namespace io    = core::io;
 namespace dev   = core::dev;
@@ -45,28 +46,55 @@ int main() {
     log::LOGGER.setUART(&uart);
     log::LOGGER.setLogLevel(log::Logger::LogLevel::INFO);
 
-    // PC14 is a LSE output, so we can't use it as a GPIO, so for testing we'll use PB_7
-    io::GPIO& lvssPowerSwitch0Enable1 = io::getGPIO<io::Pin::PB_7>(io::GPIO::Direction::OUTPUT);
-    io::GPIO& lvssPowerSwitch0Enable2 = io::getGPIO<io::Pin::PD_2>(io::GPIO::Direction::OUTPUT);
-    io::GPIO& lvssPowerSwitch0Latch   = io::getGPIO<io::Pin::PC_10>(io::GPIO::Direction::OUTPUT);
 
-    io::GPIO& diagEnable = io::getGPIO<io::Pin::PC_13>(io::GPIO::Direction::OUTPUT); // diag enable
+    io::ADC& lvssPowerSwitch0SenseOut = io::getADC<io::Pin::PC_1>();
+    io::ADC& lvssPowerSwitch1SenseOut = io::getADC<io::Pin::PC_2>();
+    io::ADC& lvssPowerSwitch2SenseOut = io::getADC<io::Pin::PC_0>();
 
-    // PC15 is ALSO a LSE output, so we can't use it as a GPIO, so for testing we'll use PC_3
-    io::GPIO& diagSelect1 = io::getGPIO<io::Pin::PC_3>(io::GPIO::Direction::OUTPUT); // diag select 1
 
-    // PF_0 is a HSE, or high speed clock output so we use PC_4 instead
-    io::GPIO& diagSelect2 = io::getGPIO<io::Pin::PC_4>(io::GPIO::Direction::OUTPUT); // diag select 2
+    io::GPIO& diagEnable  = io::getGPIO<io::Pin::PC_13>(io::GPIO::Direction::OUTPUT); // diag enable
+    io::GPIO& diagSelect1 = io::getGPIO<io::Pin::PC_15>(io::GPIO::Direction::OUTPUT); // diag select 1
+    io::GPIO& diagSelect2 = io::getGPIO<io::Pin::PF_0>(io::GPIO::Direction::OUTPUT);  // diag select 2
 
-    io::ADC& lvssPowerSwitch0SenseOut = io::getADC<io::Pin::PC_0>();
+    io::GPIO& lvssPowerSwitch0Enable0 = io::getGPIO<io::Pin::PC_14>(io::GPIO::Direction::OUTPUT); // hib
+    io::GPIO& lvssPowerSwitch0Enable1 = io::getGPIO<io::Pin::PD_2>(io::GPIO::Direction::OUTPUT);  // battery
+    io::GPIO& lvssPowerSwitch0Latch   = io::getGPIO<io::Pin::PC_10>(io::GPIO::Direction::OUTPUT); // latch
 
-    LVSS::TPS2HB35BQ powerSwitch0 = LVSS::TPS2HB35BQ(lvssPowerSwitch0Enable1,
-                                                     lvssPowerSwitch0Enable2,
+    LVSS::TPS2HB35BQ powerSwitch0 = LVSS::TPS2HB35BQ(lvssPowerSwitch0Enable0,
+                                                     lvssPowerSwitch0Enable1,
                                                      lvssPowerSwitch0Latch,
                                                      diagEnable,
                                                      diagSelect1,
                                                      diagSelect2,
                                                      lvssPowerSwitch0SenseOut);
+
+    io::GPIO& lvssPowerSwitch1Enable0 = io::getGPIO<io::Pin::PF_1>(io::GPIO::Direction::OUTPUT); // hudl
+    io::GPIO& lvssPowerSwitch1Enable1 = io::getGPIO<io::Pin::PA_0>(io::GPIO::Direction::OUTPUT); // tms
+    io::GPIO& lvssPowerSwitch1Latch   = io::getGPIO<io::Pin::PC_3>(io::GPIO::Direction::OUTPUT); // latch
+
+    LVSS::TPS2HB35BQ powerSwitch1 = LVSS::TPS2HB35BQ(lvssPowerSwitch1Enable0,
+                                                     lvssPowerSwitch1Enable1,
+                                                     lvssPowerSwitch1Latch,
+                                                     diagEnable,
+                                                     diagSelect1,
+                                                     diagSelect2,
+                                                     lvssPowerSwitch1SenseOut);
+
+    powerSwitch1.setPowerSwitchStates(false, false);
+
+    io::GPIO& lvssPowerSwitch2Enable0 = io::getGPIO<io::Pin::PA_1>(io::GPIO::Direction::OUTPUT);  // gub
+    io::GPIO& lvssPowerSwitch2Enable1 = io::getGPIO<io::Pin::PC_8>(io::GPIO::Direction::OUTPUT);  // acc
+    io::GPIO& lvssPowerSwitch2Latch   = io::getGPIO<io::Pin::PB_14>(io::GPIO::Direction::OUTPUT); // latch
+
+    LVSS::TPS2HB35BQ powerSwitch2 = LVSS::TPS2HB35BQ(lvssPowerSwitch2Enable0,
+                                                     lvssPowerSwitch2Enable1,
+                                                     lvssPowerSwitch2Latch,
+                                                     diagEnable,
+                                                     diagSelect1,
+                                                     diagSelect2,
+                                                     lvssPowerSwitch2SenseOut);
+
+    powerSwitch2.setPowerSwitchStates(false, false);
 
     // String to store user input
     char buf[1000];
@@ -119,9 +147,7 @@ int main() {
         } else if (strcmp(buf, "temp") == 0) {
             uart.printf("\r\ntemp: %d\r\n", powerSwitch0.getTemperature());
         } else if (strcmp(buf, "current") == 0) {
-            uart.printf("\r\nCurrent: %d\r\n", powerSwitch0.getCurrentAndFault(1));
-        } else if (strcmp(buf, "fault") == 0) {
-            uart.printf("\r\nFault state: %d\r\n", powerSwitch0.getTemperature());
+            uart.printf("\r\nCurrent: %u\r\n", powerSwitch0.getCurrentAndFault(LVSS::TPS2HB35BQ::Channel::CH1));
         } else {
             uart.printf("\r\nInvalid command\r\n");
             for (auto& command : commands) {

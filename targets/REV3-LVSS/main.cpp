@@ -123,8 +123,6 @@ int main() {
     if (result != io::CAN::CANStatus::OK) {
         log::LOGGER.log(log::Logger::LogLevel::ERROR, "Failed to connect to CAN network\r\n");
         return 1;
-    } else {
-        log::LOGGER.log(log::Logger::LogLevel::INFO, "Connected to CAN network\r\n");
     }
 
     // Initialize all the CANOpen dev.
@@ -141,11 +139,6 @@ int main() {
 
     // Initialize LVSS object
     LVSS::LVSS lvss = LVSS::LVSS(powerSwitches, vicorFT, acs71240);
-
-    // Set current and temperature limits on the power switches
-    powerSwitch0.setLimits(330, 140, 9000, 135000);
-    powerSwitch1.setLimits(330, 140, 9000, 135000);
-    powerSwitch2.setLimits(330, 140, 9000, 135000);
 
     // Initialize the CANOpen node we are using.
     io::initializeCANopenNode(&canNode, &lvss, &canStackDriver, sdoBuffer, appTmrMem);

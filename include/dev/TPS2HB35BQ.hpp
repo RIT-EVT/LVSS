@@ -18,6 +18,11 @@ namespace LVSS {
  */
 class TPS2HB35BQ {
 public:
+    enum Channel {
+        CH1,
+        CH2
+    };
+
     /**
      * Constructor for the TPS2HB35BQ class
      * @param en1 GPIO pin for first power switch
@@ -28,21 +33,19 @@ public:
      * @param diagSelect2 Mux select pin for diagnostics, see setDiagnostics
      */
     TPS2HB35BQ(io::GPIO& en1, io::GPIO& en2, io::GPIO& latch, io::GPIO& diagEn, io::GPIO& diagSelect1,
-               io::GPIO& diagSelect2, io::ADC& senseOut, uint32_t rsns = 330);
+               io::GPIO& diagSelect2, io::ADC& senseOut);
 
     /**
      * diagMode::OFF: Sets diagnostics pin  low, along with both diag select pins.
-     * diagMode::FAULT_STATUS: Get the fault status of the power switch
      * diagMode::CH1CURRENT: Get the channel 1 current of the power switch
      * diagMode::CH2CURRENT: Get the channel 2 current of the power switch
      * diagMode::TEMP: Get the temperature of the power switch
      */
     enum DiagMode {
         OFF          = 0x00,
-        FAULT_STATUS = 0x01,
-        CH1CURRENT   = 0x02,
-        CH2CURRENT   = 0x03,
-        TEMP         = 0x04
+        CH1CURRENT   = 0x01,
+        CH2CURRENT   = 0x02,
+        TEMP         = 0x03
     };
 
     /**
@@ -68,16 +71,18 @@ public:
 
     /**
      * Get the current of the power switch.
-     * A fault is detected if the current is somewhere between 4 and 5.3 mA. // todo: bro wtf 4 and 5.3 mA
-     * If a fault is detected an CURRENT_FAULT is returned
+     * A fault is detected if the current is somewhere between 4 and 5.3 mA.
+     * If a fault is detected CURRENT_FAULT is returned
      *
      * @param channelSelect The channel to sense the current from
      * @return The current of the power switch in milli amps
      */
-    uint16_t getCurrentAndFault(uint8_t channelSelect);
+    uint16_t getCurrent(Channel channelSelect);
 
     /**
      * Get the temperature of the power switch.
+    * A fault is detected if the current is somewhere between 4 and 5.3 mA.
+    * If a fault is detected TEMP_FAULT is returned
      *
      * @return The temperature of the power switch in millicelcius
      */
@@ -90,16 +95,6 @@ public:
      */
     void setLatch(LatchMode mode);
 
-    /**
-     * Set the limits for the power switches at which they shut down.
-     *
-     * @param ohms The resistance value of the sense resistor
-     * @param ratio The current sense ratio
-     * @param milliamps The current limit
-     * @param millicelsius The temperature limit
-     */
-    void setLimits(uint32_t ohms, uint32_t ratio, uint32_t milliamps, int32_t millicelsius);
-
 private:
     io::GPIO& en1;
     io::GPIO& en2;
@@ -109,16 +104,14 @@ private:
     io::GPIO& diagSelect2;
     io::ADC& senseOut;
 
-    uint32_t counts          = 0;      // ADC Counts
-    int32_t rsns            = 360;    // Resistor that sets the current limit
-    uint32_t kcl             = 140;    // Current Limit Ratio
-    uint32_t icl             = 9000;   // Current Limit Value in milliamps
-    int32_t TemperatureLimit = 135000; // Temperature Limit of 135 C in millicelsius
-
+    static constexpr uint32_t SNS_FAULT_LOWER          = 4000;  // Minimum SNS value to mean a fault in microamps
+    static constexpr uint32_t SNS_FAULT_UPPER          = 5300;  // Maximum SNS value to mean a fault in microamps
+    static constexpr uint32_t rsns                     = 360;   // Resistor that sets the current limit
+    static constexpr uint32_t Ksns                     = 2000;  // Current sense ratio
     static constexpr uint32_t adcVoltage               = 3300;  // ADC Voltage
-    static constexpr uint16_t dIsnst                   = 11;    // Coefficient 0.011 mA/C in microamps
+    static constexpr uint16_t dIsnstdt                 = 11;    // Coefficient 0.011 mA/C in microamps
     static constexpr uint16_t resistanceOnJunctionTemp = 25000; // 25 C in millicelsius
-    static constexpr uint32_t adcResolution            = 4096;  // 25 C in millicelsius
+    static constexpr uint32_t adcResolution            = 4096;  // Max ADC value
 
     /**
      * Controls the diagnostic enable pin
