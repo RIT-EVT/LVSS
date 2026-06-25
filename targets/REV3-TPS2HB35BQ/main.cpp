@@ -47,9 +47,12 @@ int main() {
     log::LOGGER.setLogLevel(log::Logger::LogLevel::INFO);
 
 
-    io::ADC& lvssPowerSwitch0SenseOut = io::getADC<io::Pin::PC_1>();
+    io::ADC& lvssPowerSwitch0SenseOut = io::getADC<io::Pin::PC_1, io::ADCPeriph::ONE>();
+    lvssPowerSwitch0SenseOut.setVref(3.3f);
     io::ADC& lvssPowerSwitch1SenseOut = io::getADC<io::Pin::PC_2>();
+    lvssPowerSwitch1SenseOut.setVref(3.3f);
     io::ADC& lvssPowerSwitch2SenseOut = io::getADC<io::Pin::PC_0>();
+    lvssPowerSwitch2SenseOut.setVref(3.3f);
 
 
     io::GPIO& diagEnable  = io::getGPIO<io::Pin::PC_13>(io::GPIO::Direction::OUTPUT); // diag enable
@@ -68,6 +71,9 @@ int main() {
                                                      diagSelect2,
                                                      lvssPowerSwitch0SenseOut);
 
+    powerSwitch0.setPowerSwitchStates(false, false);
+    powerSwitch0.setLatch(LVSS::TPS2HB35BQ::LATCHED); // when there is a fault, stay off
+
     io::GPIO& lvssPowerSwitch1Enable0 = io::getGPIO<io::Pin::PF_1>(io::GPIO::Direction::OUTPUT); // hudl
     io::GPIO& lvssPowerSwitch1Enable1 = io::getGPIO<io::Pin::PA_0>(io::GPIO::Direction::OUTPUT); // tms
     io::GPIO& lvssPowerSwitch1Latch   = io::getGPIO<io::Pin::PC_3>(io::GPIO::Direction::OUTPUT); // latch
@@ -81,6 +87,7 @@ int main() {
                                                      lvssPowerSwitch1SenseOut);
 
     powerSwitch1.setPowerSwitchStates(false, false);
+    powerSwitch1.setLatch(LVSS::TPS2HB35BQ::LATCHED); // when there is a fault, stay off
 
     io::GPIO& lvssPowerSwitch2Enable0 = io::getGPIO<io::Pin::PA_1>(io::GPIO::Direction::OUTPUT);  // gub
     io::GPIO& lvssPowerSwitch2Enable1 = io::getGPIO<io::Pin::PC_8>(io::GPIO::Direction::OUTPUT);  // acc
@@ -95,6 +102,7 @@ int main() {
                                                      lvssPowerSwitch2SenseOut);
 
     powerSwitch2.setPowerSwitchStates(false, false);
+    powerSwitch2.setLatch(LVSS::TPS2HB35BQ::LATCHED); // when there is a fault, stay off
 
     // String to store user input
     char buf[1000];

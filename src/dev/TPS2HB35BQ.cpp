@@ -52,25 +52,24 @@ void TPS2HB35BQ::setDiagnostics(DiagMode diag_mode) {
         diagSelect2.writePin(io::GPIO::State::LOW);
         break;
     case CH1CURRENT:
-        setDiagStateEnabled(true);
         diagSelect1.writePin(io::GPIO::State::LOW);
         diagSelect2.writePin(io::GPIO::State::LOW);
+        setDiagStateEnabled(true);
         break;
     case CH2CURRENT:
-        setDiagStateEnabled(true);
         diagSelect1.writePin(io::GPIO::State::LOW);
         diagSelect2.writePin(io::GPIO::State::HIGH);
+        setDiagStateEnabled(true);
         break;
     case TEMP:
-        setDiagStateEnabled(true);
         diagSelect1.writePin(io::GPIO::State::HIGH);
         diagSelect2.writePin(io::GPIO::State::LOW);
+        setDiagStateEnabled(true);
         break;
     }
 }
 
 uint16_t TPS2HB35BQ::getCurrent(Channel channelSelect) {
-    uint32_t adcOutput;
     switch (channelSelect) {
     case CH1:
         setDiagnostics(DiagMode::CH1CURRENT);
@@ -83,13 +82,14 @@ uint16_t TPS2HB35BQ::getCurrent(Channel channelSelect) {
         core::log::LOGGER.log(core::log::Logger::LogLevel::ERROR, "Invalid channel for current diagnostics");
         return CURRENT_FAULT;
     }
+    core::time::wait(3); // Need to wait for diagnostic to switch before reading. I assume this can go lower, but haven't tested.
 
-    adcOutput = readSenseOut();
+    uint32_t adcOut = readSenseOut();
 
     setDiagnostics(DiagMode::OFF);
 
     /* volts = (ADC Counts * 3300 millivolts) / 4096 */
-    uint32_t milliVolts = (adcOutput * adcVoltage) / adcResolution; // Turn ADC value into milli volts
+    uint32_t milliVolts = (adcOut * adcVoltage) / adcResolution; // Turn ADC value into milli volts
     uint32_t microAmps  = (milliVolts * 1000) / rsns;               // Turn milli volts into micro amps
 
     // Fault range is 4mA to 5.3mA
@@ -109,6 +109,7 @@ uint16_t TPS2HB35BQ::getCurrent(Channel channelSelect) {
 
 int16_t TPS2HB35BQ::getTemperature() {
     setDiagnostics(DiagMode::TEMP); // Set diagnostic mode to sense temperature
+    core::time::wait(3); // Need to wait for diagnostic to switch before reading. I assume this can go lower, but haven't tested.
     uint32_t adcOut = readSenseOut();
 
     setDiagnostics(DiagMode::OFF);
@@ -128,6 +129,15 @@ int16_t TPS2HB35BQ::getTemperature() {
     int32_t milliCelsius = (static_cast<int32_t>(microAmps) - 850) / dIsnstdt + resistanceOnJunctionTemp;
 
     return static_cast<int16_t>(milliCelsius);
+}
+
+bool TPS2HB35BQ::clearCurrentFault() {
+    setDiagnostics(DiagMode::OFF);
+    setLatch(LatchMode::AUTO_RETRY);
+    core::time::wait(2);
+    setLatch(LatchMode::LATCHED);
+
+    return getCurrent(CH1) != CURRENT_FAULT && getCurrent(CH2) != CURRENT_FAULT;
 }
 
 } // namespace LVSS

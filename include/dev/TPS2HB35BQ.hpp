@@ -95,6 +95,29 @@ public:
      */
     void setLatch(LatchMode mode);
 
+    /**
+     * Clears current fault from the given switch.
+     *
+     * A fault can occur for a couple reasons, with varying effects:
+     *  - Temp too high     -> switch disabled
+     *  - Temp too low      -> switch disabled
+     *  - Overcurrent       -> switch disabled
+     *  - Undervoltage      -> switch disabled
+     *  - Loss of GND       -> both switches are disabled
+     *  - Reverse Battery   -> Switch automatically enables regardless of EN pin state
+     *  - Open Load         -> diagnostic output only. Will not shut off switch
+     *  - Short to Battery  -> diagnostic output only. Will not shut off switch
+     *
+     * To clear a fault two things must happen:
+     *  - Latch pin must be low (AUTO_RETRY mode)
+     *  - Temperature must be within allowable range
+     *
+     * The power switch handles checking these, this function simply sets the Latch pin to AUTO_RETRY momentarily
+     *  to see if that is all the power switch was waiting for.
+     * @return True if fault cleared successfully, else false
+     */
+    bool clearCurrentFault();
+
 private:
     io::GPIO& en1;
     io::GPIO& en2;
