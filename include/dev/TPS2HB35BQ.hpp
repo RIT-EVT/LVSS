@@ -98,15 +98,16 @@ public:
     /**
      * Clears current fault from the given switch.
      *
-     * A fault can occur for a couple reasons, with varying effects:
-     *  - Temp too high     -> switch disabled
-     *  - Temp too low      -> switch disabled
-     *  - Overcurrent       -> switch disabled
-     *  - Undervoltage      -> switch disabled
-     *  - Loss of GND       -> both switches are disabled
-     *  - Reverse Battery   -> Switch automatically enables regardless of EN pin state
-     *  - Open Load         -> diagnostic output only. Will not shut off switch
-     *  - Short to Battery  -> diagnostic output only. Will not shut off switch
+     * Fault conditions (enters FAULT state, SNS outputs 4-5.3 mA):
+     *  - Overcurrent       -> switch disabled (depends on switch version; immediate on A/B, at thermal limit on C)
+     *  - Thermal shutdown  -> switch disabled (>150C absolute, or >60/80C relative)
+     *
+     * Other conditions (do NOT enter fault state):
+     *  - Undervoltage      -> switch disabled, no SNS indication
+     *  - Loss of GND       -> both switches disabled
+     *  - Reverse Battery   -> switch is force enabled, protection (thermal shutdown, etc) unavailable
+     *  - Open Load         -> diagnostic indicator on SNS only, switch unaffected
+     *  - Short to Battery  -> diagnostic indicator on SNS only, switch unaffected
      *
      * To clear a fault two things must happen:
      *  - Latch pin must be low (AUTO_RETRY mode)
