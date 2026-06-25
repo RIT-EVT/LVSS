@@ -99,7 +99,7 @@ public:
      * Clears current fault from the given switch.
      *
      * Fault conditions (enters FAULT state, SNS outputs 4-5.3 mA):
-     *  - Overcurrent       -> switch disabled (depends on switch version; immediate on A/B, at thermal limit on C)
+     *  - Overcurrent       -> switch disabled
      *  - Thermal shutdown  -> switch disabled (>150C absolute, or >60/80C relative)
      *
      * Other conditions (do NOT enter fault state):
