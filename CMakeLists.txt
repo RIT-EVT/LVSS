@@ -10,7 +10,7 @@ if(EVT_CORE_LOG_ENABLE)
     add_compile_definitions(EVT_CORE_LOG_ENABLE)
 endif()
 
-add_compile_definitions(DIAG_ENABLED)
+#add_compile_definitions(DIAG_ENABLED)
 
 # Handle selection of the target device
 option(TARGET_DEV "Target device" "STM32F334x8")
