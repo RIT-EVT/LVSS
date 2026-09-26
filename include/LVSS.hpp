@@ -30,17 +30,19 @@ public:
     typedef union {
         uint16_t val;
         struct {
+            uint16_t rsvd : 10;
+
             // Power Switch 0
-            uint8_t batt : 1;
-            uint8_t hib  : 1;
+            uint16_t batt : 1;
+            uint16_t hib  : 1;
 
             // Power Switch 1
-            uint8_t tms  : 1;
-            uint8_t hudl : 1;
+            uint16_t tms  : 1;
+            uint16_t hudl : 1;
 
             // Power Switch 2
-            uint8_t gub : 1;
-            uint8_t acc : 1;
+            uint16_t gub : 1;
+            uint16_t acc : 1;
         } __attribute__((packed));
     } BoardPowerState_t;
 

@@ -69,21 +69,16 @@ void LVSS::runningState() {
     this->boardEN.val = VCUBoardSig;
 
     // TODO: Remove. Hardcoding everything always on while CanOpen issues persist
-    boardEN.batt = 1;
-    boardEN.hib = 1;
-    boardEN.tms = 1;
-    boardEN.hudl = 1;
-    boardEN.acc = 1;
-    boardEN.gub = 1;
+//    log::LOGGER.log(log::Logger::LogLevel::DEBUG,
+//                    "Battery: %d\tHIB: %d\tTMS: %d\tHUDL: %d\tACC: %d\tGUB: %d\r\n",
+//                    boardEN.batt, boardEN.hib, boardEN.tms, boardEN.hudl, boardEN.acc, boardEN.gub);
 
-    log::LOGGER.log(log::Logger::LogLevel::DEBUG,
-                    "Battery: %d\tHIB: %d\tTMS: %d\tHUDL: %d\tACC: %d\tGUB: %d\r\n",
-                    boardEN.batt,
-                    boardEN.hib,
-                    boardEN.tms,
-                    boardEN.hudl,
-                    boardEN.acc,
-                    boardEN.gub);
+//    boardEN.batt = 1;
+//    boardEN.hib = 1;
+//    boardEN.tms = 1;
+//    boardEN.hudl = 1;
+//    boardEN.acc = 1;
+//    boardEN.gub = 1;
 
     /* Turn on boards */
     powerSwitches[0]->setPowerSwitchStates(boardEN.batt, boardEN.hib); // Turn on Battery and HIB
@@ -220,6 +215,6 @@ void LVSS::runningState() {
 
     battPackCurrent = acs71240.readCurrent();
 
-    log::LOGGER.log(log::Logger::LogLevel::DEBUG, "Vicor Current: %d\r\n", battPackCurrent);
+//    log::LOGGER.log(log::Logger::LogLevel::DEBUG, "Vicor Current: %d\r\n", battPackCurrent);
 }
 } // namespace LVSS

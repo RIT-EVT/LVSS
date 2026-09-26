@@ -136,26 +136,28 @@ int main() {
             }
         } else if (strcmp(buf, "latch") == 0) {
             uart.printf("\r\nSetting latch\r\n");
-            powerSwitch0.setLatch(LVSS::TPS2HB35BQ::LatchMode::LATCHED);
+            powerSwitch1.setLatch(LVSS::TPS2HB35BQ::LatchMode::LATCHED);
         } else if (strcmp(buf, "autoretry") == 0) {
             uart.printf("\r\nSetting auto retry\r\n");
-            powerSwitch0.setLatch(LVSS::TPS2HB35BQ::LatchMode::AUTO_RETRY);
+            powerSwitch1.setLatch(LVSS::TPS2HB35BQ::LatchMode::AUTO_RETRY);
         } else if (strcmp(buf, "enAll") == 0) {
             uart.printf("\r\nEnabling all power switches\r\n");
+            powerSwitch1.setPowerSwitchStates(true, true);
             powerSwitch0.setPowerSwitchStates(true, true);
+            powerSwitch2.setPowerSwitchStates(true, true);
         } else if (strcmp(buf, "disAll") == 0) {
             uart.printf("\r\nDisabling all power switches\r\n");
-            powerSwitch0.setPowerSwitchStates(false, false);
+            powerSwitch1.setPowerSwitchStates(false, false);
         } else if (strcmp(buf, "en1") == 0) {
             uart.printf("\r\nEnabling power switch 1\r\n");
-            powerSwitch0.setPowerSwitchStates(true, false);
+            powerSwitch1.setPowerSwitchStates(true, false);
         } else if (strcmp(buf, "en2") == 0) {
             uart.printf("\r\nEnabling power switch 2\r\n");
-            powerSwitch0.setPowerSwitchStates(false, true);
+            powerSwitch1.setPowerSwitchStates(false, true);
         } else if (strcmp(buf, "temp") == 0) {
-            uart.printf("\r\ntemp: %d\r\n", powerSwitch0.getTemperature());
+            uart.printf("\r\ntemp: %d\r\n", powerSwitch1.getTemperature());
         } else if (strcmp(buf, "current") == 0) {
-            uart.printf("\r\nCurrent: %u\r\n", powerSwitch0.getCurrent(LVSS::TPS2HB35BQ::Channel::CH1));
+            uart.printf("\r\nCurrent: %u\r\n", powerSwitch1.getCurrent(LVSS::TPS2HB35BQ::Channel::CH1));
         } else {
             uart.printf("\r\nInvalid command\r\n");
             for (auto& command : commands) {
