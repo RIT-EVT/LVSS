@@ -68,11 +68,11 @@ void LVSS::runningState() {
     /* Assigns the VCU signal to the union bit field */
     this->boardEN.val = VCUBoardSig;
 
-    // TODO: Remove. Hardcoding everything always on while CanOpen issues persist
-//    log::LOGGER.log(log::Logger::LogLevel::DEBUG,
-//                    "Battery: %d\tHIB: %d\tTMS: %d\tHUDL: %d\tACC: %d\tGUB: %d\r\n",
-//                    boardEN.batt, boardEN.hib, boardEN.tms, boardEN.hudl, boardEN.acc, boardEN.gub);
+    log::LOGGER.log(log::Logger::LogLevel::DEBUG,
+                    "Battery: %d\tHIB: %d\tTMS: %d\tHUDL: %d\tACC: %d\tGUB: %d\r\n",
+                    boardEN.batt, boardEN.hib, boardEN.tms, boardEN.hudl, boardEN.acc, boardEN.gub);
 
+    // TODO: Remove. Hardcoding everything always on while CanOpen issues persist
 //    boardEN.batt = 1;
 //    boardEN.hib = 1;
 //    boardEN.tms = 1;

@@ -117,7 +117,7 @@ int main() {
     CO_NODE canNode;
 
     // Attempt to join the CAN network
-    io::CAN::CANStatus result = can.connect();
+    io::CAN::CANStatus result = can.connect(true);
 
     // test that the board is connected to the can network
     if (result != io::CAN::CANStatus::OK) {
