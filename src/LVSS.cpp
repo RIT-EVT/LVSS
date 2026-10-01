@@ -73,12 +73,12 @@ void LVSS::runningState() {
                     boardEN.batt, boardEN.hib, boardEN.tms, boardEN.hudl, boardEN.acc, boardEN.gub);
 
     // TODO: Remove. Hardcoding everything always on while CanOpen issues persist
-//    boardEN.batt = 1;
-//    boardEN.hib = 1;
-//    boardEN.tms = 1;
-//    boardEN.hudl = 1;
-//    boardEN.acc = 1;
-//    boardEN.gub = 1;
+    boardEN.batt = 1;
+    boardEN.hib = 1;
+    boardEN.tms = 1;
+    boardEN.hudl = 1;
+    boardEN.acc = 1;
+    boardEN.gub = 1;
 
     /* Turn on boards */
     powerSwitches[0]->setPowerSwitchStates(boardEN.batt, boardEN.hib); // Turn on Battery and HIB
