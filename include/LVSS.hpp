@@ -121,7 +121,8 @@ private:
     TPS2HB35BQ* powerSwitches[POWER_SWITCHES_SIZE]{};
 
     /** Holds the value of each board to enable/disable */
-    BoardPowerState_t boardEN;
+    BoardPowerState_t wantedEn;
+    BoardPowerState_t activeEn;
 
     /** Vicor Current */
     ACS71240 acs71240;
@@ -241,7 +242,7 @@ private:
         DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x01, CO_TUNSIGNED16, &PowerSwitchState.switch0Temp),
         DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x02, CO_TUNSIGNED16, &PowerSwitchState.switch1Temp),
         DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x03, CO_TUNSIGNED16, &PowerSwitchState.switch2Temp),
-        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x04, CO_TUNSIGNED16, &boardEN),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x04, CO_TUNSIGNED16, &wantedEn),
 
         DATA_LINK_START_KEY_21XX(LINK_RPDO_NUMBER(0), 1),
         DATA_LINK_21XX(LINK_RPDO_NUMBER(0), 1, CO_TUNSIGNED16, &VCUBoardSig),
