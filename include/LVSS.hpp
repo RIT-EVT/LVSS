@@ -128,19 +128,16 @@ private:
     ACS71240 acs71240;
 
     /** Holds data for individual boards */
-    switchData_t PowerSwitchState;
+    switchData_t powerSwitchState;
 
     /** Holds faults for individual boards */
-    switchFaults_t PowerSwitchFaults;
+    switchFaults_t powerSwitchFaults;
 
     /** Tracks signal from VCU */
-    uint16_t VCUBoardSig = 0;
+    uint16_t vcuBoardSig = 0;
 
     /** Tracks high value current */
     uint16_t battPackCurrent = 0x00;
-
-    /** Tracks power switch fault */
-    uint16_t switchFaultStatus = 0x00;
 
     /** The current state of the LVSS */
     State state;
@@ -152,6 +149,9 @@ private:
      * state change should take place.
      */
     bool isNewState = false;
+
+    /** Last time the debug status was printed, used to throttle blocking UART writes */
+    uint32_t lastDebugPrintMs = 0;
 
     /**
      * Handle VICOR Initialization state
@@ -225,27 +225,27 @@ private:
 
         // TPDO0 payload: HV Current Data (2×u16)
         DATA_LINK_START_KEY_21XX(LINK_TPDO_NUMBER(0x00), 0x04),
-        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x00), 0x01, CO_TUNSIGNED16, &PowerSwitchState.battCurrent),
-        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x00), 0x02, CO_TUNSIGNED16, &PowerSwitchState.hibCurrent),
-        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x00), 0x03, CO_TUNSIGNED16, &PowerSwitchState.tmsCurrent),
-        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x00), 0x04, CO_TUNSIGNED16, &PowerSwitchState.hudlCurrent),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x00), 0x01, CO_TUNSIGNED16, &powerSwitchState.battCurrent),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x00), 0x02, CO_TUNSIGNED16, &powerSwitchState.hibCurrent),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x00), 0x03, CO_TUNSIGNED16, &powerSwitchState.tmsCurrent),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x00), 0x04, CO_TUNSIGNED16, &powerSwitchState.hudlCurrent),
 
         // TPDO1 payload: Power Switch rest of Currents & vicor
         DATA_LINK_START_KEY_21XX(LINK_TPDO_NUMBER(0x01), 0x04),
-        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x01), 0x01, CO_TUNSIGNED16, &PowerSwitchState.accCurrent),
-        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x01), 0x02, CO_TUNSIGNED16, &PowerSwitchState.gubCurrent),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x01), 0x01, CO_TUNSIGNED16, &powerSwitchState.accCurrent),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x01), 0x02, CO_TUNSIGNED16, &powerSwitchState.gubCurrent),
         DATA_LINK_21XX(LINK_TPDO_NUMBER(0x01), 0x03, CO_TUNSIGNED16, &battPackCurrent),
-        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x01), 0x04, CO_TUNSIGNED16, &PowerSwitchFaults),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x01), 0x04, CO_TUNSIGNED16, &powerSwitchFaults),
 
         // TPDO2 payload: Temperature Data & board_en signals
         DATA_LINK_START_KEY_21XX(LINK_TPDO_NUMBER(0x02), 0x04),
-        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x01, CO_TUNSIGNED16, &PowerSwitchState.switch0Temp),
-        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x02, CO_TUNSIGNED16, &PowerSwitchState.switch1Temp),
-        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x03, CO_TUNSIGNED16, &PowerSwitchState.switch2Temp),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x01, CO_TUNSIGNED16, &powerSwitchState.switch0Temp),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x02, CO_TUNSIGNED16, &powerSwitchState.switch1Temp),
+        DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x03, CO_TUNSIGNED16, &powerSwitchState.switch2Temp),
         DATA_LINK_21XX(LINK_TPDO_NUMBER(0x02), 0x04, CO_TUNSIGNED16, &wantedEn),
 
         DATA_LINK_START_KEY_21XX(LINK_RPDO_NUMBER(0), 1),
-        DATA_LINK_21XX(LINK_RPDO_NUMBER(0), 1, CO_TUNSIGNED16, &VCUBoardSig),
+        DATA_LINK_21XX(LINK_RPDO_NUMBER(0), 1, CO_TUNSIGNED16, &vcuBoardSig),
 
         CO_OBJ_DICT_ENDMARK,
     };
