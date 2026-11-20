@@ -87,8 +87,8 @@ public:
         RUNNING        = 1u,
     };
 
-    static constexpr uint8_t NODE_ID         = 1;
-    static constexpr uint8_t VCU_NODE_ID     = 100;
+    static constexpr uint8_t NODE_ID         = 2;
+    static constexpr uint8_t VCU_NODE_ID     = 1;
     static constexpr io::Pin VICOR_FAULT_PIN = io::Pin::PB_4;
     static constexpr io::Pin VICOR_SNS_PIN   = io::Pin::PA_4;
 
